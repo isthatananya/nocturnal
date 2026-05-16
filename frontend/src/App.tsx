@@ -1,7 +1,9 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion'
 import { useAuth } from './context/AuthContext'
 import { Toaster } from './components/ui/toaster'
 import ErrorBoundary from './components/ErrorBoundary'
+import { PageTransition } from './components/ui/motion'
 
 import Landing from './pages/Landing'
 import Login from './pages/Login'
@@ -15,33 +17,54 @@ import Reports from './pages/Reports'
 import ReportDetail from './pages/ReportDetail'
 import Settings from './pages/Settings'
 
+function Spinner() {
+  return (
+    <div className="min-h-screen bg-midnight flex items-center justify-center">
+      <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
+}
+
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
-  if (loading) return <div className="min-h-screen bg-midnight flex items-center justify-center"><div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" /></div>
+  if (loading) return <Spinner />
   if (!user) return <Navigate to="/auth/login" replace />
   return <>{children}</>
 }
 
+function Wrap({ children }: { children: React.ReactNode }) {
+  return (
+    <RequireAuth>
+      <ErrorBoundary>
+        <PageTransition>{children}</PageTransition>
+      </ErrorBoundary>
+    </RequireAuth>
+  )
+}
+
 export default function App() {
+  const location = useLocation()
   return (
     <>
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/auth/login" element={<Login />} />
-      <Route path="/auth/signup" element={<Signup />} />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
+          <Route path="/auth/login"  element={<PageTransition><Login /></PageTransition>} />
+          <Route path="/auth/signup" element={<PageTransition><Signup /></PageTransition>} />
 
-      <Route path="/dashboard" element={<RequireAuth><ErrorBoundary><Dashboard /></ErrorBoundary></RequireAuth>} />
-      <Route path="/score" element={<RequireAuth><ErrorBoundary><Score /></ErrorBoundary></RequireAuth>} />
-      <Route path="/score/result" element={<RequireAuth><ErrorBoundary><ScoreResult /></ErrorBoundary></RequireAuth>} />
-      <Route path="/loan/apply" element={<RequireAuth><ErrorBoundary><LoanApply /></ErrorBoundary></RequireAuth>} />
-      <Route path="/loan/active" element={<RequireAuth><ErrorBoundary><LoanActive /></ErrorBoundary></RequireAuth>} />
-      <Route path="/reports" element={<RequireAuth><ErrorBoundary><Reports /></ErrorBoundary></RequireAuth>} />
-      <Route path="/reports/:id" element={<RequireAuth><ErrorBoundary><ReportDetail /></ErrorBoundary></RequireAuth>} />
-      <Route path="/settings" element={<RequireAuth><ErrorBoundary><Settings /></ErrorBoundary></RequireAuth>} />
+          <Route path="/dashboard"    element={<Wrap><Dashboard /></Wrap>} />
+          <Route path="/score"        element={<Wrap><Score /></Wrap>} />
+          <Route path="/score/result" element={<Wrap><ScoreResult /></Wrap>} />
+          <Route path="/loan/apply"   element={<Wrap><LoanApply /></Wrap>} />
+          <Route path="/loan/active"  element={<Wrap><LoanActive /></Wrap>} />
+          <Route path="/reports"      element={<Wrap><Reports /></Wrap>} />
+          <Route path="/reports/:id"  element={<Wrap><ReportDetail /></Wrap>} />
+          <Route path="/settings"     element={<Wrap><Settings /></Wrap>} />
 
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
-    <Toaster />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AnimatePresence>
+      <Toaster />
     </>
   )
 }
