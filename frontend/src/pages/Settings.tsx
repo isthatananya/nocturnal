@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, CheckCircle, Clock, Unlink } from 'lucide-react'
+import { CheckCircle, Clock, Unlink } from 'lucide-react'
+import AppNav from '../components/AppNav'
 import { useAuth } from '../context/AuthContext'
 import { useWallet } from '../context/WalletContext'
 import { auth } from '../lib/api'
@@ -58,14 +58,7 @@ export default function Settings() {
 
   return (
     <div className="page min-h-screen text-zinc-100">
-      <header className="app-header">
-        <div className="flex items-center gap-3">
-          <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors">
-            <ArrowLeft size={17} />
-          </Link>
-          <span className="font-semibold tracking-tight">Settings</span>
-        </div>
-      </header>
+      <AppNav back title="Settings" />
 
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-5">
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>

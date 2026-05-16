@@ -10,6 +10,7 @@ import ScoreHistoryChart from '../components/ScoreHistoryChart'
 import FactorCard from '../components/FactorCard'
 import { analyseReport } from '../lib/scoreAnalysis'
 import { credit } from '../lib/api'
+import AppNav from '../components/AppNav'
 import { SlideUp, Stagger, StaggerItem } from '../components/ui/motion'
 
 const ease = [0.16, 1, 0.3, 1]
@@ -61,22 +62,7 @@ export default function ScoreResult() {
   return (
     <div className="page min-h-screen text-zinc-100">
 
-      {/* header */}
-      <header className="app-header">
-        <Link to="/dashboard" className="text-zinc-500 hover:text-zinc-200 transition-colors text-sm font-medium flex items-center gap-1.5">
-          ← Dashboard
-        </Link>
-        <div className="flex items-center gap-4">
-          <ScoreDelta current={report.score} previous={prevScore} />
-          <motion.button
-            whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-            onClick={exportJSON}
-            className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-200 transition-colors"
-          >
-            <Download size={14} /> Export
-          </motion.button>
-        </div>
-      </header>
+      <AppNav back title="Score Result" />
 
       <main className="max-w-3xl mx-auto px-6 py-10 space-y-6">
 
@@ -101,6 +87,16 @@ export default function ScoreResult() {
         {/* ── Score overview ─────────────────────────────── */}
         <SlideUp>
           <div className="glass rounded-3xl p-8">
+            <div className="flex items-center justify-between mb-4">
+              <ScoreDelta current={report.score} previous={prevScore} />
+              <motion.button
+                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                onClick={exportJSON}
+                className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+              >
+                <Download size={13} /> Export
+              </motion.button>
+            </div>
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="flex flex-col items-center gap-3">
                 <ScoreGauge score={report.score} tier={report.tier_label} size={180} />

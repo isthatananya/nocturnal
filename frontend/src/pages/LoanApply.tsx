@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, ExternalLink, Shield } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
+import AppNav from '../components/AppNav'
 import type { Report } from '../types'
 import { applyForLoan } from '../lib/midnight'
 import { credit } from '../lib/api'
@@ -126,17 +127,7 @@ export default function LoanApply() {
   /* ── Main screen ────────────────────────────────────── */
   return (
     <div className="page min-h-screen text-zinc-100">
-      <header className="app-header">
-        <div className="flex items-center gap-3">
-          <Link to="/score/result" className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors">
-            <ArrowLeft size={17} />
-          </Link>
-          <span className="font-semibold tracking-tight">Apply for Loan</span>
-        </div>
-        <div className="flex items-center gap-1.5 text-xs text-emerald-400">
-          <Shield size={13} /> ZK-secured
-        </div>
-      </header>
+      <AppNav back title="Apply for Loan" />
 
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-6">
         {proofStep !== 'idle' ? (

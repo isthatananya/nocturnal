@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, LogOut, Settings, FileText, Zap } from 'lucide-react'
+import { ArrowRight, FileText, Zap } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { credit } from '../lib/api'
 import type { Report } from '../types'
+import AppNav from '../components/AppNav'
 import ScoreGauge from '../components/ScoreGauge'
 import TierBadge from '../components/TierBadge'
 import ReportCard from '../components/ReportCard'
-import WalletBar from '../components/WalletBar'
 import ScoreDelta from '../components/ScoreDelta'
 import ScoreHistoryChart from '../components/ScoreHistoryChart'
 import { SlideUp, Stagger, StaggerItem } from '../components/ui/motion'
@@ -30,7 +30,7 @@ function SkeletonCard() {
 }
 
 export default function Dashboard() {
-  const { user, logout } = useAuth()
+  const { user } = useAuth()
   const nav = useNavigate()
   const [latest, setLatest] = useState<Report | null>(null)
   const [history, setHistory] = useState<Report[]>([])
@@ -44,34 +44,12 @@ export default function Dashboard() {
   }, [])
 
   const stale = latest && daysSince(latest.generated_at) >= 7
-
-  const handleLogout = async () => {
-    await logout()
-    nav('/')
-  }
-
   const firstName = user?.full_name?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'there'
 
   return (
     <div className="page min-h-screen text-zinc-100">
 
-      {/* ── Header ──────────────────────────────────────── */}
-      <header className="app-header">
-        <Link to="/" className="font-bold text-lg tracking-tight">
-          ZK<span className="gradient-text">Credit</span>
-        </Link>
-        <div className="flex items-center gap-2">
-          <WalletBar />
-          <Link to="/settings"
-            className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors">
-            <Settings size={17} />
-          </Link>
-          <button onClick={handleLogout}
-            className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-red-400 transition-colors">
-            <LogOut size={17} />
-          </button>
-        </div>
-      </header>
+      <AppNav />
 
       <main className="max-w-5xl mx-auto px-6 py-10 space-y-8">
 

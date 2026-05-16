@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Download, Lock, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, X, ArrowRight, RefreshCw, Upload, ClipboardList, CreditCard } from 'lucide-react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { Download, Lock, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, X, ArrowRight, RefreshCw, Upload, ClipboardList, CreditCard } from 'lucide-react'
+import AppNav from '../components/AppNav'
 import { jsPDF } from 'jspdf'
 import { credit } from '../lib/api'
 import { encryptReport } from '../lib/crypto'
@@ -126,26 +127,7 @@ export default function ReportDetail() {
 
   return (
     <div className="page min-h-screen text-zinc-100">
-      <header className="border-b border-white/5 px-8 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link to="/reports" className="p-2 rounded-lg hover:bg-white/5 text-zinc-400">
-            <ArrowLeft size={18} />
-          </Link>
-          <span className="font-semibold">Report</span>
-          <span className="text-xs font-mono text-zinc-500">{report.report_id}</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button onClick={exportPDF} className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
-            <Download size={14} /> PDF
-          </button>
-          <button onClick={() => setEncryptModal(true)} className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
-            <Lock size={14} /> Encrypted
-          </button>
-          <button onClick={exportJSON} className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
-            <Download size={14} /> JSON
-          </button>
-        </div>
-      </header>
+      <AppNav back title={`Report · ${report.report_id}`} />
 
       <main className="max-w-2xl mx-auto px-8 py-12 space-y-6">
 
@@ -154,6 +136,19 @@ export default function ReportDetail() {
           <ScoreGauge score={report.score} tier={report.tier_label} size={180} />
           <TierBadge tier={report.tier_label} size="lg" />
           <p className="text-zinc-500 text-sm">{new Date(report.generated_at).toLocaleString()}</p>
+        </div>
+
+        {/* ── Export actions ── */}
+        <div className="flex gap-2">
+          <button onClick={exportPDF} className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 border border-white/8">
+            <Download size={13} /> PDF
+          </button>
+          <button onClick={() => setEncryptModal(true)} className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 border border-white/8">
+            <Lock size={13} /> Encrypted
+          </button>
+          <button onClick={exportJSON} className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 border border-white/8">
+            <Download size={13} /> JSON
+          </button>
         </div>
 
         {/* ── Method tag ── */}
