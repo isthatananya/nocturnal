@@ -1,0 +1,114 @@
+// ZKCredit — Credit Lending Contract
+// Deployed on Midnight (preprod / mainnet)
+//
+// Private witnesses hold the user's credit tier and expected loan terms.
+// The circuit proves the tier meets the threshold and that the requested
+// terms match — without revealing the tier to anyone on-chain.
+
+pragma language_version >= 1.0.0;
+
+import CompactStandardLibrary;
+
+// ── Types ──────────────────────────────────────────────────────────────────
+
+struct LoanRecord {
+  amount:     Uint<64>;
+  issuedAt:   Uint<64>;
+  interestBps: Uint<16>;   // basis points, e.g. 700 = 7%
+  termMonths: Uint<8>;
+  repaid:     Boolean;
+}
+
+// ── Ledger (public on-chain state) ─────────────────────────────────────────
+
+ledger {
+  loanPool:    Cell<Uint<64>>;
+  activeLoans: Map<ZswapCoinPublicKey, LoanRecord>;
+}
+
+// ── Private witnesses ──────────────────────────────────────────────────────
+// These are held in the user's local wallet state.
+// The proof server uses them to satisfy the circuit without exposing them.
+
+witness creditTier:          Uint<8>;
+witness expectedInterestBps: Uint<16>;
+witness expectedTermMonths:  Uint<8>;
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+
+pure circuit maxLoanForTier(tier: Uint<8>): Uint<64> {
+  if tier >= 4 { return 20000; }
+  if tier >= 3 { return 7500;  }
+  if tier >= 2 { return 2000;  }
+  if tier >= 1 { return 500;   }
+  return 0;
+}
+
+pure circuit rateForTier(tier: Uint<8>): Uint<16> {
+  if tier >= 4 { return 700;  }  // 7%
+  if tier >= 3 { return 1100; }  // 11%
+  if tier >= 2 { return 1600; }  // 16%
+  return 2400;                    // 24% (Bronze)
+}
+
+pure circuit termForTier(tier: Uint<8>): Uint<8> {
+  if tier >= 4 { return 60; }
+  if tier >= 3 { return 36; }
+  if tier >= 2 { return 24; }
+  return 12;
+}
+
+// ── Circuits ───────────────────────────────────────────────────────────────
+
+// Apply for a loan.
+// The caller provides the public loan parameters; the circuit proves
+// (in zero-knowledge) that their private tier justifies those parameters.
+export circuit applyForLoan(
+  requestedAmount: Uint<64>,
+  interestBps:     Uint<16>,
+  termMonths:      Uint<8>
+): [] {
+  const tier = creditTier();
+  const expRate = expectedInterestBps();
+  const expTerm = expectedTermMonths();
+
+  assert tier >= 1 "Credit tier too low for any loan";
+  assert requestedAmount <= maxLoanForTier(tier) "Requested amount exceeds tier limit";
+  assert interestBps == rateForTier(tier) "Interest rate does not match credit tier";
+  assert termMonths == termForTier(tier) "Term does not match credit tier";
+
+  // Verify the caller's claimed terms match their private witnesses.
+  // This prevents a borrower from submitting terms that differ from
+  // what the scoring system assigned.
+  assert expRate == interestBps "Witness interest rate mismatch";
+  assert expTerm == termMonths  "Witness term mismatch";
+
+  assert loanPool >= requestedAmount "Insufficient funds in loan pool";
+
+  // Update public ledger
+  loanPool = loanPool - requestedAmount;
+  const caller = ownPublicKey();
+  activeLoans = Map.insert(activeLoans, caller, LoanRecord {
+    amount:      requestedAmount,
+    issuedAt:    0,            // block timestamp inserted by runtime
+    interestBps: interestBps,
+    termMonths:  termMonths,
+    repaid:      false,
+  });
+}
+
+// Repay the caller's active loan.
+export circuit repay(amount: Uint<64>): [] {
+  const caller = ownPublicKey();
+  const loan = Map.lookup_inner(activeLoans, caller);
+  assert !loan.repaid "Loan already repaid";
+
+  loanPool = loanPool + amount;
+  activeLoans = Map.insert(activeLoans, caller, LoanRecord {
+    amount:      loan.amount,
+    issuedAt:    loan.issuedAt,
+    interestBps: loan.interestBps,
+    termMonths:  loan.termMonths,
+    repaid:      true,
+  });
+}

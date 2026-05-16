@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+# .env is committed intentionally — preprod tokens only, no real money
+dist/
+node_modules/
+.next/
+.vite/
+*.local
+*.log
+.DS_Store
+uv.lock
+redis-data/
+.env
