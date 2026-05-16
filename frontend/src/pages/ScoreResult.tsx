@@ -70,9 +70,15 @@ export default function ScoreResult() {
             <div className="flex-1 w-full space-y-4">
               {report.tier > 0 ? (
                 <div className="glass rounded-2xl p-5 space-y-3">
+                  {report.data_source === 'form' && (
+                    <div className="flex items-center gap-2 text-xs text-amber-400 bg-amber-400/8 border border-amber-400/20 rounded-xl px-3 py-2.5">
+                      <span className="shrink-0">⚠</span>
+                      <span>Simulation only — fill data cannot be used for loan applications. Use Upload or PAN to apply.</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-400">Max loan</span>
-                    <span className="text-slate-100 font-bold text-lg">{report.loan_limit.toLocaleString()} tDUST</span>
+                    <span className="text-slate-100 font-bold text-lg">₹{report.loan_limit.toLocaleString('en-IN')}</span>
                   </div>
                   {report.interest_rate && (
                     <div className="flex justify-between text-sm">
@@ -86,14 +92,20 @@ export default function ScoreResult() {
                       <span className="text-slate-100 font-semibold">{report.term_months} months</span>
                     </div>
                   )}
-                  <button onClick={() => nav('/loan/apply')} className="btn-primary w-full flex items-center justify-center gap-2 mt-2">
-                    Apply for loan <ArrowRight size={16} />
-                  </button>
+                  {report.data_source === 'form' ? (
+                    <button disabled className="btn-primary w-full flex items-center justify-center gap-2 mt-2 opacity-40 cursor-not-allowed">
+                      Apply for loan <ArrowRight size={16} />
+                    </button>
+                  ) : (
+                    <button onClick={() => nav('/loan/apply')} className="btn-primary w-full flex items-center justify-center gap-2 mt-2">
+                      Apply for loan <ArrowRight size={16} />
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="glass rounded-2xl p-5 text-center">
                   <p className="text-slate-400 text-sm mb-1">Score below eligibility threshold</p>
-                  <p className="text-slate-500 text-xs">Need 35+ points · Current: {report.score}</p>
+                  <p className="text-slate-500 text-xs">Need 510+ to qualify · Current: {report.score}</p>
                   <p className="text-slate-500 text-xs mt-3">Follow the improvement tips below to qualify.</p>
                 </div>
               )}

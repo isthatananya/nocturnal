@@ -36,7 +36,7 @@ export default function LoanActive() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-slate-500 text-sm">Loan amount</p>
-              <p className="text-4xl font-bold mt-1">— tDUST</p>
+              <p className="text-4xl font-bold mt-1">₹{loan.loan_limit.toLocaleString('en-IN')}</p>
             </div>
             <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full px-3 py-1">Active</span>
           </div>
@@ -46,7 +46,7 @@ export default function LoanActive() {
               ['Interest rate', loan.interest_rate ?? '—'],
               ['Term', loan.term_months ? `${loan.term_months} months` : '—'],
               ['Credit tier', loan.tier_label],
-              ['Score at issuance', `${loan.score}/100`],
+              ['Score at issuance', `${loan.score}/900`],
             ].map(([k, v]) => (
               <div key={k} className="glass rounded-xl p-4">
                 <p className="text-slate-500 text-xs">{k}</p>

@@ -27,8 +27,10 @@ export default function LoanApply() {
     if (!raw) { nav('/score'); return }
     const r: Report = JSON.parse(raw)
     if (r.tier === 0) { nav('/score/result'); return }
+    if (r.data_source === 'form') { nav('/score/result'); return }
     setReport(r)
-    setAmount(Math.min(500, r.loan_limit))
+    const step = r.loan_limit >= 100000 ? 5000 : r.loan_limit >= 25000 ? 1000 : 500
+    setAmount(Math.round(r.loan_limit / 2 / step) * step || step)
   }, [nav])
 
   const handleApply = async () => {
@@ -84,7 +86,7 @@ export default function LoanApply() {
           </div>
           <div>
             <h2 className="text-2xl font-bold text-slate-100">Loan approved</h2>
-            <p className="text-slate-400 text-sm mt-2">{amount.toLocaleString()} tDUST · Midnight blockchain</p>
+            <p className="text-slate-400 text-sm mt-2">₹{amount.toLocaleString('en-IN')} · Midnight blockchain</p>
           </div>
           <div className="glass rounded-xl p-4">
             <p className="text-xs text-slate-500 mb-1">Transaction hash</p>
@@ -121,7 +123,7 @@ export default function LoanApply() {
           <>
             <div>
               <h1 className="text-2xl font-bold mb-1">Choose your loan amount</h1>
-              <p className="text-slate-400 text-sm">You qualify for up to {report.loan_limit.toLocaleString()} tDUST based on your {report.tier_label} tier.</p>
+              <p className="text-slate-400 text-sm">You qualify for up to ₹{report.loan_limit.toLocaleString('en-IN')} based on your {report.tier_label} tier.</p>
             </div>
 
             <div className="glass rounded-2xl p-8">
@@ -160,12 +162,12 @@ export default function LoanApply() {
                   {installed ? 'Connect Lace to continue' : 'Proceed without wallet (demo)'}
                 </button>
                 <button onClick={handleApply} className="btn-primary w-full">
-                  Apply for {amount.toLocaleString()} tDUST (demo mode)
+                  Apply for ₹{amount.toLocaleString('en-IN')} (demo mode)
                 </button>
               </div>
             ) : (
               <button onClick={handleApply} className="btn-primary w-full text-base py-4">
-                Generate proof &amp; apply for {amount.toLocaleString()} tDUST
+                Generate proof &amp; apply for ₹{amount.toLocaleString('en-IN')}
               </button>
             )}
           </>
