@@ -8,8 +8,8 @@ const http = axios.create({
 })
 
 export const auth = {
-  signup: (email: string, password: string) =>
-    http.post<User>('/auth/signup', { email, password }).then(r => r.data),
+  signup: (email: string, password: string, full_name: string, date_of_birth: string, profession: string) =>
+    http.post<User>('/auth/signup', { email, password, full_name, date_of_birth, profession }).then(r => r.data),
 
   login: (email: string, password: string) =>
     http.post<User>('/auth/login', { email, password }).then(r => r.data),
@@ -22,6 +22,9 @@ export const auth = {
 
   linkWallet: (wallet_address: string) =>
     http.patch('/auth/wallet', { wallet_address }),
+
+  changePassword: (current_password: string, new_password: string) =>
+    http.patch('/auth/password', { current_password, new_password }),
 }
 
 export const credit = {

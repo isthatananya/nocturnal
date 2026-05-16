@@ -52,6 +52,9 @@ async def signup(body: SignupRequest, response: Response, redis: Redis = Depends
     await redis.hset(f"user:{user_id}", mapping={
         "email": body.email,
         "password_hash": hash_password(body.password),
+        "full_name": body.full_name,
+        "date_of_birth": body.date_of_birth.isoformat(),
+        "profession": body.profession,
         "wallet_address": "",
         "email_verified": "0",
     })
@@ -60,7 +63,7 @@ async def signup(body: SignupRequest, response: Response, redis: Redis = Depends
     jti = _set_session(response, user_id, body.email)
     await redis.setex(f"session:jti:{user_id}", settings.session_ttl, jti)
 
-    return {"id": user_id, "email": body.email}
+    return {"id": user_id, "email": body.email, "full_name": body.full_name}
 
 
 @router.post("/login")
@@ -102,6 +105,9 @@ async def me(user: dict = Depends(get_current_user)):
     return {
         "id": user["id"],
         "email": user["email"],
+        "full_name": user.get("full_name") or None,
+        "date_of_birth": user.get("date_of_birth") or None,
+        "profession": user.get("profession") or None,
         "wallet_address": user.get("wallet_address") or None,
         "email_verified": user.get("email_verified") == "1",
     }

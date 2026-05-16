@@ -10,16 +10,19 @@ export interface Breakdown {
   adjustment: number       // employment / ITR / CIBIL / bounce bonus-penalty
 }
 
+export type DataSource = 'upload' | 'form' | 'pan'
+
 export interface Report {
   report_id: string
   user_id?: string
-  score: number
+  score: number         // 300-900 CIBIL scale
   tier: number
   tier_label: TierLabel
-  loan_limit: number
+  loan_limit: number    // INR
   interest_rate: string | null
   term_months: number | null
   breakdown: Breakdown
+  data_source: DataSource
   generated_at: string
   cached: boolean
   loan_applied: boolean
@@ -29,6 +32,9 @@ export interface Report {
 export interface User {
   id: string
   email: string
+  full_name: string | null
+  date_of_birth: string | null
+  profession: string | null
   wallet_address: string | null
   email_verified?: boolean
 }
@@ -50,6 +56,7 @@ export interface FeatureVector {
   itr_filed: boolean
   existing_cibil_score: number | null
   signed_by: string
+  data_source: DataSource
 }
 
 export interface ActiveLoan {

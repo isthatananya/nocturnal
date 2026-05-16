@@ -8,6 +8,7 @@ interface WalletState {
   installed: boolean
   connecting: boolean
   connect: () => Promise<void>
+  disconnect: () => Promise<void>
   error: string | null
 }
 
@@ -43,8 +44,13 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  const disconnect = async () => {
+    setAddress(null)
+    await auth.linkWallet('').catch(() => {})
+  }
+
   return (
-    <WalletContext.Provider value={{ address, installed, connecting, connect, error }}>
+    <WalletContext.Provider value={{ address, installed, connecting, connect, disconnect, error }}>
       {children}
     </WalletContext.Provider>
   )

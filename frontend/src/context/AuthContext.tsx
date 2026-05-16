@@ -6,7 +6,7 @@ interface AuthState {
   user: User | null
   loading: boolean
   login: (email: string, password: string) => Promise<void>
-  signup: (email: string, password: string) => Promise<void>
+  signup: (email: string, password: string, full_name: string, date_of_birth: string, profession: string) => Promise<void>
   logout: () => Promise<void>
 }
 
@@ -29,8 +29,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(me)
   }
 
-  const signup = async (email: string, password: string) => {
-    await auth.signup(email, password)
+  const signup = async (email: string, password: string, full_name: string, date_of_birth: string, profession: string) => {
+    await auth.signup(email, password, full_name, date_of_birth, profession)
     const me = await auth.me()
     setUser(me)
   }

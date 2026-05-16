@@ -5,18 +5,21 @@ interface Props {
   reports: Report[]   // ordered most-recent-first from the API
 }
 
+const SCORE_MIN = 300
+const SCORE_MAX = 900
+
 const TIER_THRESHOLDS = [
-  { score: 80, label: 'Prime',  color: '#6366f1' },
-  { score: 65, label: 'Gold',   color: '#eab308' },
-  { score: 50, label: 'Silver', color: '#94a3b8' },
-  { score: 35, label: 'Bronze', color: '#d97706' },
+  { score: 780, label: 'Prime',  color: '#6366f1' },
+  { score: 690, label: 'Gold',   color: '#eab308' },
+  { score: 600, label: 'Silver', color: '#94a3b8' },
+  { score: 510, label: 'Bronze', color: '#d97706' },
 ]
 
 function scoreColor(score: number): string {
-  if (score >= 80) return '#6366f1'
-  if (score >= 65) return '#eab308'
-  if (score >= 50) return '#94a3b8'
-  if (score >= 35) return '#d97706'
+  if (score >= 780) return '#6366f1'
+  if (score >= 690) return '#eab308'
+  if (score >= 600) return '#94a3b8'
+  if (score >= 510) return '#d97706'
   return '#ef4444'
 }
 
@@ -25,7 +28,6 @@ function formatDate(iso: string): string {
   return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
 }
 
-// Cubic bezier smooth path through points
 function smoothPath(pts: [number, number][]): string {
   if (pts.length < 2) return ''
   let d = `M ${pts[0][0]} ${pts[0][1]}`
@@ -42,26 +44,22 @@ export default function ScoreHistoryChart({ reports }: Props) {
   const svgRef = useRef<SVGPathElement>(null)
   const [hovered, setHovered] = useState<number | null>(null)
 
-  // Chart is drawn oldest → newest (reverse the most-recent-first array)
   const data = [...reports].reverse()
 
   const W = 560, H = 200
-  const PAD = { top: 16, right: 24, bottom: 36, left: 36 }
+  const PAD = { top: 16, right: 32, bottom: 36, left: 42 }
   const cW = W - PAD.left - PAD.right
   const cH = H - PAD.top - PAD.bottom
 
   const xOf = (i: number) => PAD.left + (data.length < 2 ? cW / 2 : (i / (data.length - 1)) * cW)
-  const yOf = (score: number) => PAD.top + cH - (score / 100) * cH
+  const yOf = (score: number) => PAD.top + cH - ((score - SCORE_MIN) / (SCORE_MAX - SCORE_MIN)) * cH
 
   const pts: [number, number][] = data.map((r, i) => [xOf(i), yOf(r.score)])
   const linePath = smoothPath(pts)
-
-  // Filled area — close the path at the bottom
   const areaPath = pts.length
     ? linePath + ` L ${pts[pts.length - 1][0]} ${PAD.top + cH} L ${pts[0][0]} ${PAD.top + cH} Z`
     : ''
 
-  // Animate line draw on mount
   useEffect(() => {
     const el = svgRef.current
     if (!el) return
@@ -107,43 +105,30 @@ export default function ScoreHistoryChart({ reports }: Props) {
         })}
 
         {/* Y axis ticks */}
-        {[0, 25, 50, 75, 100].map(v => (
+        {[300, 450, 600, 750, 900].map(v => (
           <text key={v} x={PAD.left - 6} y={yOf(v) + 4} fontSize="9" fill="rgba(255,255,255,0.25)" textAnchor="end">{v}</text>
         ))}
 
-        {/* Area fill */}
         {areaPath && <path d={areaPath} fill="url(#areaGrad)" />}
 
-        {/* Line */}
         {linePath && (
           <path ref={svgRef} d={linePath} fill="none"
             stroke="url(#lineGrad)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
         )}
 
-        {/* Data points + hover zones */}
         {pts.map(([x, y], i) => {
           const r = data[i]
           const isHov = hovered === i
           return (
             <g key={i}>
-              {/* Invisible wide hit zone */}
-              <rect
-                x={x - 20} y={PAD.top} width={40} height={cH}
-                fill="transparent"
-                onMouseEnter={() => setHovered(i)}
-              />
-              {/* Dot */}
+              <rect x={x - 20} y={PAD.top} width={40} height={cH} fill="transparent" onMouseEnter={() => setHovered(i)} />
               <circle cx={x} cy={y} r={isHov ? 5 : 3.5}
-                fill={scoreColor(r.score)}
-                stroke="#070711" strokeWidth="2"
-                style={{ transition: 'r 0.15s' }}
-              />
-              {/* Vertical line on hover */}
+                fill={scoreColor(r.score)} stroke="#070711" strokeWidth="2"
+                style={{ transition: 'r 0.15s' }} />
               {isHov && (
                 <line x1={x} y1={PAD.top} x2={x} y2={PAD.top + cH}
                   stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="3 3" />
               )}
-              {/* X axis date label */}
               {(data.length <= 6 || i % Math.ceil(data.length / 6) === 0 || i === data.length - 1) && (
                 <text x={x} y={H - 6} fontSize="9" fill="rgba(255,255,255,0.3)" textAnchor="middle">
                   {formatDate(r.generated_at)}
@@ -153,7 +138,6 @@ export default function ScoreHistoryChart({ reports }: Props) {
           )
         })}
 
-        {/* Tooltip */}
         {hovered !== null && (() => {
           const [x, y] = pts[hovered]
           const r = data[hovered]

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { ArrowRight, RefreshCw, LogOut, Settings, FileText } from 'lucide-react'
+import { ArrowRight, LogOut, Settings, FileText } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { credit } from '../lib/api'
 import type { Report } from '../types'
@@ -57,7 +57,7 @@ export default function Dashboard() {
       <main className="max-w-5xl mx-auto px-8 py-12 space-y-8">
         <div>
           <p className="text-slate-400 text-sm">Welcome back</p>
-          <h1 className="text-2xl font-bold mt-0.5">{user?.email}</h1>
+          <h1 className="text-2xl font-bold mt-0.5">{user?.full_name ?? user?.email}</h1>
         </div>
 
         {loading ? (
@@ -85,9 +85,7 @@ export default function Dashboard() {
                         </div>
                       )}
                     </div>
-                    <button onClick={() => nav('/score')} className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-300 transition-colors">
-                      <RefreshCw size={13} /> Re-score
-                    </button>
+                    <span className="text-xs text-slate-600 select-none" />
                   </div>
 
                   <div className="flex items-center gap-10">
@@ -95,7 +93,7 @@ export default function Dashboard() {
                     <div className="flex-1 space-y-3">
                       <div className="flex justify-between text-sm">
                         <span className="text-slate-400">Loan limit</span>
-                        <span className="text-slate-100 font-semibold">{latest.loan_limit.toLocaleString()} tDUST</span>
+                        <span className="text-slate-100 font-semibold">₹{latest.loan_limit.toLocaleString('en-IN')}</span>
                       </div>
                       {latest.interest_rate && (
                         <div className="flex justify-between text-sm">
@@ -109,10 +107,13 @@ export default function Dashboard() {
                           <span className="text-slate-100 font-semibold">{latest.term_months} months</span>
                         </div>
                       )}
-                      {latest.tier > 0 && !latest.loan_applied && (
+                      {latest.tier > 0 && !latest.loan_applied && latest.data_source !== 'form' && (
                         <button onClick={() => nav('/loan/apply')} className="btn-primary w-full mt-4 flex items-center justify-center gap-2">
                           Apply for loan <ArrowRight size={16} />
                         </button>
+                      )}
+                      {latest.tier > 0 && !latest.loan_applied && latest.data_source === 'form' && (
+                        <p className="text-xs text-amber-400 mt-4 text-center">Simulation report — use Upload or PAN to apply for a loan.</p>
                       )}
                       {latest.loan_applied && (
                         <button onClick={() => nav('/loan/active')} className="btn-ghost w-full mt-4 flex items-center justify-center gap-2">

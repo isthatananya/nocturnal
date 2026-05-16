@@ -86,6 +86,7 @@ async def score_user(
             "itr_filed": body.itr_filed,
             "existing_cibil_score": body.existing_cibil_score,
         },
+        "data_source": body.data_source,
         "generated_at": now,
         "cached": False,
         "loan_applied": False,

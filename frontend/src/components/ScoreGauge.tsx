@@ -8,8 +8,11 @@ const TIER_STROKE: Record<TierLabel, string> = {
   Prime:  '#6366f1',
 }
 
+const SCORE_MIN = 300
+const SCORE_MAX = 900
+
 interface Props {
-  score: number
+  score: number   // 300-900
   tier: TierLabel
   size?: number
 }
@@ -19,14 +22,12 @@ export default function ScoreGauge({ score, tier, size = 180 }: Props) {
   const cx = size / 2
   const cy = size / 2
   const strokeWidth = 10
-  // arc spans 240 degrees, starting from 150deg (bottom-left)
   const circumference = 2 * Math.PI * r
   const arcLength = (circumference * 240) / 360
-  const filled = (score / 100) * arcLength
-
+  const pct = (score - SCORE_MIN) / (SCORE_MAX - SCORE_MIN)
+  const filled = pct * arcLength
   const color = TIER_STROKE[tier]
 
-  // SVG arc path for a 240-degree arc
   function describeArc(startAngle: number, endAngle: number): string {
     const toRad = (d: number) => (d * Math.PI) / 180
     const sx = cx + r * Math.cos(toRad(startAngle))
@@ -38,16 +39,13 @@ export default function ScoreGauge({ score, tier, size = 180 }: Props) {
   }
 
   const trackPath = describeArc(150, 390)
-  // filled portion
-  const filledEnd = 150 + (score / 100) * 240
-  const filledPath = score > 0 ? describeArc(150, filledEnd) : ''
+  const filledEnd = 150 + pct * 240
+  const filledPath = pct > 0 ? describeArc(150, filledEnd) : ''
 
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size}>
-        {/* track */}
         <path d={trackPath} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth={strokeWidth} strokeLinecap="round" />
-        {/* filled */}
         {filledPath && (
           <path d={filledPath} fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round"
             style={{ filter: `drop-shadow(0 0 6px ${color})` }} />
@@ -55,7 +53,8 @@ export default function ScoreGauge({ score, tier, size = 180 }: Props) {
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span className="text-4xl font-bold text-slate-100">{score}</span>
-        <span className="text-sm font-medium mt-0.5" style={{ color }}>{tier}</span>
+        <span className="text-xs text-slate-500 mt-0.5">out of 900</span>
+        <span className="text-sm font-medium mt-1" style={{ color }}>{tier}</span>
       </div>
     </div>
   )

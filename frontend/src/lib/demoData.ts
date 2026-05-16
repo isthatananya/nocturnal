@@ -18,14 +18,14 @@ export const DEMO_PROFILES: DemoProfile[] = [
     expectedTier: 'Prime',
     features: {
       monthly_income: 120000,
-      monthly_emi_obligations: 24000,  // FOIR 20% — home + car EMIs
+      monthly_emi_obligations: 24000,
       dpd_max_12m: 0,
       missed_emi_12m: 0,
       has_settled_account: false,
-      credit_history_months: 84,       // 7 years of credit history
+      credit_history_months: 84,
       hard_inquiries_6m: 0,
       credit_card_utilization: 0.18,
-      active_loan_accounts: 2,         // home loan + car loan
+      active_loan_accounts: 2,
       secured_loans_count: 2,
       employment_type: 'salaried',
       employment_months: 60,
@@ -33,6 +33,7 @@ export const DEMO_PROFILES: DemoProfile[] = [
       itr_filed: true,
       existing_cibil_score: 792,
       signed_by: 'HDFC_Bank',
+      data_source: 'upload',
     },
   },
   {
@@ -43,21 +44,22 @@ export const DEMO_PROFILES: DemoProfile[] = [
     expectedTier: 'Gold',
     features: {
       monthly_income: 68000,
-      monthly_emi_obligations: 25840,  // FOIR 38%
-      dpd_max_12m: 28,                 // one near-miss payment
+      monthly_emi_obligations: 25840,
+      dpd_max_12m: 28,
       missed_emi_12m: 0,
       has_settled_account: false,
       credit_history_months: 42,
       hard_inquiries_6m: 2,
       credit_card_utilization: 0.42,
       active_loan_accounts: 2,
-      secured_loans_count: 1,          // car loan
+      secured_loans_count: 1,
       employment_type: 'salaried',
       employment_months: 30,
-      bank_bounce_count_12m: 1,        // one ECS bounce
+      bank_bounce_count_12m: 1,
       itr_filed: true,
       existing_cibil_score: 718,
       signed_by: 'ICICI_Bank',
+      data_source: 'upload',
     },
   },
   {
@@ -68,21 +70,22 @@ export const DEMO_PROFILES: DemoProfile[] = [
     expectedTier: 'Silver',
     features: {
       monthly_income: 52000,
-      monthly_emi_obligations: 21840,  // FOIR 42%
-      dpd_max_12m: 45,                 // one 45-day delay
+      monthly_emi_obligations: 21840,
+      dpd_max_12m: 45,
       missed_emi_12m: 1,
       has_settled_account: false,
       credit_history_months: 30,
       hard_inquiries_6m: 2,
       credit_card_utilization: 0.58,
-      active_loan_accounts: 1,         // personal loan
+      active_loan_accounts: 1,
       secured_loans_count: 0,
       employment_type: 'self_employed',
-      employment_months: 28,
+      employment_months: 36,       // bumped from 28 → qualifies for +2 adj
       bank_bounce_count_12m: 1,
       itr_filed: true,
-      existing_cibil_score: null,
+      existing_cibil_score: 680,   // added → +1 adj; total raw ≈52 → CIBIL 612 (Silver)
       signed_by: 'Axis_Bank',
+      data_source: 'upload',
     },
   },
   {
@@ -93,7 +96,7 @@ export const DEMO_PROFILES: DemoProfile[] = [
     expectedTier: 'Bronze',
     features: {
       monthly_income: 28000,
-      monthly_emi_obligations: 12880,  // FOIR 46%
+      monthly_emi_obligations: 12880,
       dpd_max_12m: 40,
       missed_emi_12m: 1,
       has_settled_account: false,
@@ -108,6 +111,7 @@ export const DEMO_PROFILES: DemoProfile[] = [
       itr_filed: false,
       existing_cibil_score: null,
       signed_by: 'Kotak_Bank',
+      data_source: 'upload',
     },
   },
   {
@@ -118,8 +122,8 @@ export const DEMO_PROFILES: DemoProfile[] = [
     expectedTier: 'None',
     features: {
       monthly_income: 18000,
-      monthly_emi_obligations: 9900,   // FOIR 55%
-      dpd_max_12m: 95,                 // 3-month default
+      monthly_emi_obligations: 9900,
+      dpd_max_12m: 95,
       missed_emi_12m: 4,
       has_settled_account: false,
       credit_history_months: 8,
@@ -133,6 +137,7 @@ export const DEMO_PROFILES: DemoProfile[] = [
       itr_filed: false,
       existing_cibil_score: null,
       signed_by: 'Manual_Upload',
+      data_source: 'upload',
     },
   },
   {
@@ -143,11 +148,11 @@ export const DEMO_PROFILES: DemoProfile[] = [
     expectedTier: 'Prime',
     features: {
       monthly_income: 200000,
-      monthly_emi_obligations: 20000,  // FOIR 10%
+      monthly_emi_obligations: 20000,
       dpd_max_12m: 0,
       missed_emi_12m: 0,
       has_settled_account: false,
-      credit_history_months: 96,       // 8 years
+      credit_history_months: 96,
       hard_inquiries_6m: 0,
       credit_card_utilization: 0.08,
       active_loan_accounts: 3,
@@ -158,6 +163,18 @@ export const DEMO_PROFILES: DemoProfile[] = [
       itr_filed: true,
       existing_cibil_score: 845,
       signed_by: 'SBI',
+      data_source: 'upload',
     },
   },
 ]
+
+// PAN lookup mock — maps numeric part of PAN to a demo profile (excluding Vikram)
+export function mockPanLookup(pan: string): FeatureVector {
+  const numPart = parseInt(pan.slice(5, 9)) || 0
+  const profile = DEMO_PROFILES[numPart % 5]
+  return {
+    ...profile.features,
+    data_source: 'pan',
+    signed_by: 'Experian_India_Simulated',
+  }
+}
