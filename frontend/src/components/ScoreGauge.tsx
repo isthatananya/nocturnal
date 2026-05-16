@@ -5,7 +5,7 @@ const TIER_STROKE: Record<TierLabel, string> = {
   Bronze: '#d97706',
   Silver: '#94a3b8',
   Gold:   '#eab308',
-  Prime:  '#6366f1',
+  Prime:  '#e5e5e7',
 }
 
 const SCORE_MIN = 300
@@ -52,8 +52,8 @@ export default function ScoreGauge({ score, tier, size = 180 }: Props) {
         )}
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-4xl font-bold text-slate-100">{score}</span>
-        <span className="text-xs text-slate-500 mt-0.5">out of 900</span>
+        <span className="text-4xl font-bold text-zinc-100">{score}</span>
+        <span className="text-xs text-zinc-500 mt-0.5">out of 900</span>
         <span className="text-sm font-medium mt-1" style={{ color }}>{tier}</span>
       </div>
     </div>

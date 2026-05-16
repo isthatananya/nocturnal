@@ -9,14 +9,14 @@ const SCORE_MIN = 300
 const SCORE_MAX = 900
 
 const TIER_THRESHOLDS = [
-  { score: 780, label: 'Prime',  color: '#6366f1' },
+  { score: 780, label: 'Prime',  color: '#e5e5e7' },
   { score: 690, label: 'Gold',   color: '#eab308' },
   { score: 600, label: 'Silver', color: '#94a3b8' },
   { score: 510, label: 'Bronze', color: '#d97706' },
 ]
 
 function scoreColor(score: number): string {
-  if (score >= 780) return '#6366f1'
+  if (score >= 780) return '#e5e5e7'
   if (score >= 690) return '#eab308'
   if (score >= 600) return '#94a3b8'
   if (score >= 510) return '#d97706'
@@ -82,8 +82,8 @@ export default function ScoreHistoryChart({ reports }: Props) {
       >
         <defs>
           <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#6366f1" stopOpacity="0.18" />
-            <stop offset="100%" stopColor="#6366f1" stopOpacity="0" />
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.10" />
+            <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
           </linearGradient>
           <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
             {data.map((r, i) => (
@@ -123,7 +123,7 @@ export default function ScoreHistoryChart({ reports }: Props) {
             <g key={i}>
               <rect x={x - 20} y={PAD.top} width={40} height={cH} fill="transparent" onMouseEnter={() => setHovered(i)} />
               <circle cx={x} cy={y} r={isHov ? 5 : 3.5}
-                fill={scoreColor(r.score)} stroke="#070711" strokeWidth="2"
+                fill={scoreColor(r.score)} stroke="#000000" strokeWidth="2"
                 style={{ transition: 'r 0.15s' }} />
               {isHov && (
                 <line x1={x} y1={PAD.top} x2={x} y2={PAD.top + cH}

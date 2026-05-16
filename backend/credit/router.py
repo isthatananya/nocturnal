@@ -26,10 +26,9 @@ async def score_user(
     redis: Redis = Depends(get_redis),
 ):
     cache_key = f"report:latest:{user['id']}"
-    cached_raw = await redis.get(cache_key)
-    if cached_raw:
-        return {**json.loads(cached_raw), "cached": True}
 
+    # Always recompute — each POST is a fresh submission with (potentially) new data.
+    # The cache is written below so the dashboard GET can read it quickly.
     result = compute_score(
         monthly_income=body.monthly_income,
         monthly_emi_obligations=body.monthly_emi_obligations,

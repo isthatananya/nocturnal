@@ -29,8 +29,8 @@ export default class ErrorBoundary extends Component<Props, State> {
           <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto">
             <span className="text-2xl">⚠</span>
           </div>
-          <h2 className="text-lg font-semibold text-slate-100">Something went wrong</h2>
-          <p className="text-sm text-slate-400 font-mono break-words">
+          <h2 className="text-lg font-semibold text-zinc-100">Something went wrong</h2>
+          <p className="text-sm text-zinc-400 font-mono break-words">
             {this.state.error?.message ?? 'An unexpected error occurred.'}
           </p>
           <div className="flex gap-3 justify-center pt-2">

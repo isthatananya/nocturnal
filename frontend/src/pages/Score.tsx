@@ -27,17 +27,17 @@ function foirPct(f: FeatureVector) {
 }
 
 function PreviewRow({ label, value, flag }: { label: string; value: string; flag?: 'good' | 'warn' | 'bad' }) {
-  const color = flag === 'good' ? 'text-emerald-400' : flag === 'bad' ? 'text-red-400' : flag === 'warn' ? 'text-amber-400' : 'text-slate-100'
+  const color = flag === 'good' ? 'text-emerald-400' : flag === 'bad' ? 'text-red-400' : flag === 'warn' ? 'text-amber-400' : 'text-zinc-100'
   return (
     <div className="flex justify-between px-5 py-3 text-sm">
-      <span className="text-slate-400">{label}</span>
+      <span className="text-zinc-400">{label}</span>
       <span className={`font-medium ${color}`}>{value}</span>
     </div>
   )
 }
 
 function SectionHeader({ children }: { children: string }) {
-  return <p className="px-5 py-2.5 text-xs font-semibold text-slate-500 uppercase tracking-wider bg-white/2">{children}</p>
+  return <p className="px-5 py-2.5 text-xs font-semibold text-zinc-500 uppercase tracking-wider bg-white/2">{children}</p>
 }
 
 // ── empty form state ──────────────────────────────────────────────────────────
@@ -194,16 +194,16 @@ export default function Score() {
 
   if (step === 'scoring' || panLoading) {
     return (
-      <div className="min-h-screen bg-midnight flex items-center justify-center">
+      <div className="page min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-6">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-16 h-16 rounded-2xl bg-white/6 flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-white/20 border-t-transparent rounded-full animate-spin" />
           </div>
           <div className="text-center">
-            <p className="font-semibold text-slate-100">
+            <p className="font-semibold text-zinc-100">
               {panLoading ? 'Fetching bureau data…' : 'Computing your score'}
             </p>
-            <p className="text-slate-500 text-sm mt-1">
+            <p className="text-zinc-500 text-sm mt-1">
               {panLoading ? 'Connecting to Experian India (simulated)' : 'Running CIBIL-aligned India credit model'}
             </p>
           </div>
@@ -217,9 +217,9 @@ export default function Score() {
   if (step === 'preview' && features) {
     const isForm = features.data_source === 'form'
     return (
-      <div className="min-h-screen bg-midnight text-slate-100">
-        <header className="border-b border-white/5 px-8 py-4 flex items-center gap-4">
-          <button onClick={() => { setStep(mode); setFormStep(1) }} className="p-2 rounded-lg hover:bg-white/5 text-slate-400"><ArrowLeft size={18} /></button>
+      <div className="page min-h-screen text-zinc-100">
+        <header className="app-header flex items-center gap-3">
+          <button onClick={() => { setStep(mode); setFormStep(1) }} className="p-2 rounded-lg hover:bg-white/5 text-zinc-400"><ArrowLeft size={18} /></button>
           <span className="font-semibold">Confirm your data</span>
           {isForm && (
             <span className="ml-auto flex items-center gap-1.5 text-xs text-amber-400 bg-amber-400/8 border border-amber-400/20 rounded-full px-3 py-1">
@@ -228,14 +228,14 @@ export default function Score() {
           )}
         </header>
         <main className="max-w-2xl mx-auto px-8 py-10">
-          <p className="text-slate-400 text-sm mb-5">Only these derived features are sent. Your raw data stays local.</p>
+          <p className="text-zinc-400 text-sm mb-5">Only these derived features are sent. Your raw data stays local.</p>
 
           {selectedDemo !== null && (
             <div className="flex items-start gap-3 bg-amber-400/5 border border-amber-400/20 rounded-xl px-4 py-3 mb-5">
               <div>
                 <span className="text-amber-400 font-medium text-sm">{DEMO_PROFILES[selectedDemo].name}</span>
-                <span className="text-slate-400 text-sm"> · {DEMO_PROFILES[selectedDemo].role}, {DEMO_PROFILES[selectedDemo].city}</span>
-                <p className="text-slate-500 text-xs mt-0.5">{DEMO_PROFILES[selectedDemo].scenario}</p>
+                <span className="text-zinc-400 text-sm"> · {DEMO_PROFILES[selectedDemo].role}, {DEMO_PROFILES[selectedDemo].city}</span>
+                <p className="text-zinc-500 text-xs mt-0.5">{DEMO_PROFILES[selectedDemo].scenario}</p>
               </div>
             </div>
           )}
@@ -295,42 +295,42 @@ export default function Score() {
 
   if (step === 'select') {
     return (
-      <div className="min-h-screen bg-midnight text-slate-100">
-        <header className="border-b border-white/5 px-8 py-4 flex items-center gap-4">
-          <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-slate-400"><ArrowLeft size={18} /></Link>
+      <div className="page min-h-screen text-zinc-100">
+        <header className="app-header flex items-center gap-3">
+          <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-zinc-400"><ArrowLeft size={18} /></Link>
           <span className="font-semibold">Credit Assessment</span>
         </header>
         <main className="max-w-2xl mx-auto px-8 py-12">
           <h1 className="text-2xl font-bold mb-2">How would you like to proceed?</h1>
-          <p className="text-slate-400 text-sm mb-8">Choose your data source — PAN and upload are eligible for loan approval. Form entries are for simulation only.</p>
+          <p className="text-zinc-400 text-sm mb-8">Choose your data source — PAN and upload are eligible for loan approval. Form entries are for simulation only.</p>
 
           <div className="space-y-4">
             <button onClick={() => enterMode('upload')} className="group w-full glass-hover rounded-2xl p-6 text-left flex items-center gap-5">
-              <div className="w-12 h-12 rounded-xl bg-indigo-500/15 flex items-center justify-center shrink-0 group-hover:bg-indigo-500/25 transition-colors">
-                <Upload size={22} className="text-indigo-400" />
+              <div className="w-12 h-12 rounded-xl bg-white/8 flex items-center justify-center shrink-0 group-hover:bg-white/12 transition-colors">
+                <Upload size={22} className="text-white/55" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold text-slate-100">Upload bank statement / CSV</p>
+                  <p className="font-semibold text-zinc-100">Upload bank statement / CSV</p>
                   <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full px-2 py-0.5">Loan eligible</span>
                 </div>
-                <p className="text-slate-400 text-sm mt-0.5">CSV / JSON export from your bank. Supports all 6 demo profiles.</p>
+                <p className="text-zinc-400 text-sm mt-0.5">CSV / JSON export from your bank. Supports all 6 demo profiles.</p>
               </div>
-              <ChevronRight size={18} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
+              <ChevronRight size={18} className="text-zinc-500 group-hover:text-zinc-400 transition-colors" />
             </button>
 
             <button onClick={() => enterMode('pan')} className="group w-full glass-hover rounded-2xl p-6 text-left flex items-center gap-5">
-              <div className="w-12 h-12 rounded-xl bg-violet-500/15 flex items-center justify-center shrink-0 group-hover:bg-violet-500/25 transition-colors">
-                <CreditCard size={22} className="text-violet-400" />
+              <div className="w-12 h-12 rounded-xl bg-white/6 flex items-center justify-center shrink-0 group-hover:bg-white/10 transition-colors">
+                <CreditCard size={22} className="text-white/60" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold text-slate-100">PAN Card lookup</p>
+                  <p className="font-semibold text-zinc-100">PAN Card lookup</p>
                   <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full px-2 py-0.5">Loan eligible</span>
                 </div>
-                <p className="text-slate-400 text-sm mt-0.5">Enter your PAN number — bureau data is fetched automatically. One step, instant result.</p>
+                <p className="text-zinc-400 text-sm mt-0.5">Enter your PAN number — bureau data is fetched automatically. One step, instant result.</p>
               </div>
-              <ChevronRight size={18} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
+              <ChevronRight size={18} className="text-zinc-500 group-hover:text-zinc-400 transition-colors" />
             </button>
 
             <button onClick={() => enterMode('form')} className="group w-full glass-hover rounded-2xl p-6 text-left flex items-center gap-5">
@@ -339,12 +339,12 @@ export default function Score() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold text-slate-100">Fill out manually</p>
+                  <p className="font-semibold text-zinc-100">Fill out manually</p>
                   <span className="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full px-2 py-0.5">Simulation only</span>
                 </div>
-                <p className="text-slate-400 text-sm mt-0.5">Enter your financial details step by step. Great for exploring eligibility — no loan approval.</p>
+                <p className="text-zinc-400 text-sm mt-0.5">Enter your financial details step by step. Great for exploring eligibility — no loan approval.</p>
               </div>
-              <ChevronRight size={18} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
+              <ChevronRight size={18} className="text-zinc-500 group-hover:text-zinc-400 transition-colors" />
             </button>
           </div>
         </main>
@@ -356,16 +356,16 @@ export default function Score() {
 
   if (step === 'upload') {
     return (
-      <div className="min-h-screen bg-midnight text-slate-100">
-        <header className="border-b border-white/5 px-8 py-4 flex items-center gap-4">
-          <button onClick={() => setStep('select')} className="p-2 rounded-lg hover:bg-white/5 text-slate-400"><ArrowLeft size={18} /></button>
+      <div className="page min-h-screen text-zinc-100">
+        <header className="app-header flex items-center gap-3">
+          <button onClick={() => setStep('select')} className="p-2 rounded-lg hover:bg-white/5 text-zinc-400"><ArrowLeft size={18} /></button>
           <span className="font-semibold">Upload Data</span>
         </header>
         <main className="max-w-2xl mx-auto px-8 py-12">
           <div className="mb-8">
             <h1 className="text-2xl font-bold mb-2">Upload your financial data</h1>
-            <p className="text-slate-400 text-sm">India credit profile · 15 factors · CIBIL-aligned model · Score 300–900</p>
-            <button onClick={downloadTemplate} className="flex items-center gap-2 text-xs text-indigo-400 hover:text-indigo-300 transition-colors mt-3">
+            <p className="text-zinc-400 text-sm">India credit profile · 15 factors · CIBIL-aligned model · Score 300–900</p>
+            <button onClick={downloadTemplate} className="flex items-center gap-2 text-xs text-white/55 hover:text-white/70 transition-colors mt-3">
               <Download size={13} /> Download CSV template
             </button>
           </div>
@@ -374,22 +374,22 @@ export default function Score() {
           {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
 
           <div className="mt-8">
-            <p className="text-slate-500 text-sm mb-3 text-center">or try a demo profile</p>
+            <p className="text-zinc-500 text-sm mb-3 text-center">or try a demo profile</p>
             <div className="grid grid-cols-2 gap-3">
               {DEMO_PROFILES.map((p, i) => (
                 <button key={p.name} onClick={() => loadDemo(i)} className="glass-hover rounded-xl p-4 text-left">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-sm font-medium text-slate-200">{p.name}</p>
+                    <p className="text-sm font-medium text-zinc-200">{p.name}</p>
                     <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${
-                      p.expectedTier === 'Prime'  ? 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30' :
+                      p.expectedTier === 'Prime'  ? 'text-white/55 bg-white/6 border-white/12' :
                       p.expectedTier === 'Gold'   ? 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30' :
-                      p.expectedTier === 'Silver' ? 'text-slate-300 bg-slate-300/10 border-slate-300/30' :
+                      p.expectedTier === 'Silver' ? 'text-zinc-300 bg-zinc-300/10 border-zinc-300/30' :
                       p.expectedTier === 'Bronze' ? 'text-amber-500 bg-amber-500/10 border-amber-500/30' :
-                                                    'text-slate-500 bg-slate-500/10 border-slate-500/30'
+                                                    'text-zinc-500 bg-zinc-500/10 border-zinc-500/30'
                     }`}>{p.expectedTier}</span>
                   </div>
-                  <p className="text-xs text-slate-500">{p.role}</p>
-                  <p className="text-xs text-slate-600">{p.city}</p>
+                  <p className="text-xs text-zinc-500">{p.role}</p>
+                  <p className="text-xs text-zinc-500">{p.city}</p>
                 </button>
               ))}
             </div>
@@ -403,15 +403,15 @@ export default function Score() {
 
   if (step === 'pan') {
     return (
-      <div className="min-h-screen bg-midnight text-slate-100">
-        <header className="border-b border-white/5 px-8 py-4 flex items-center gap-4">
-          <button onClick={() => setStep('select')} className="p-2 rounded-lg hover:bg-white/5 text-slate-400"><ArrowLeft size={18} /></button>
+      <div className="page min-h-screen text-zinc-100">
+        <header className="app-header flex items-center gap-3">
+          <button onClick={() => setStep('select')} className="p-2 rounded-lg hover:bg-white/5 text-zinc-400"><ArrowLeft size={18} /></button>
           <span className="font-semibold">PAN Card Lookup</span>
         </header>
         <main className="max-w-md mx-auto px-8 py-16 space-y-6">
           <div>
             <h1 className="text-2xl font-bold mb-2">Enter your PAN number</h1>
-            <p className="text-slate-400 text-sm">We'll fetch your credit bureau data instantly. Format: ABCDE1234F</p>
+            <p className="text-zinc-400 text-sm">We'll fetch your credit bureau data instantly. Format: ABCDE1234F</p>
           </div>
 
           <div className="glass rounded-2xl p-6 space-y-4">
@@ -434,8 +434,8 @@ export default function Score() {
             </Button>
           </div>
 
-          <div className="glass rounded-xl p-4 text-xs text-slate-500 space-y-1">
-            <p className="font-medium text-slate-400">Demo PAN numbers to try</p>
+          <div className="glass rounded-xl p-4 text-xs text-zinc-500 space-y-1">
+            <p className="font-medium text-zinc-400">Demo PAN numbers to try</p>
             {[
               ['PRIYA0001A', 'Prime (~900)'],
               ['RAHUL0002B', 'Gold (~720)'],
@@ -444,7 +444,7 @@ export default function Score() {
               ['MEENA0005E', 'None (~312)'],
             ].map(([p, label]) => (
               <button key={p} onClick={() => { setPan(p); setError(null) }}
-                className="block w-full text-left hover:text-slate-300 transition-colors font-mono">
+                className="block w-full text-left hover:text-zinc-300 transition-colors font-mono">
                 {p} — {label}
               </button>
             ))}
@@ -459,10 +459,10 @@ export default function Score() {
   if (step === 'form') {
     const inputCls = 'input-field'
     return (
-      <div className="min-h-screen bg-midnight text-slate-100">
-        <header className="border-b border-white/5 px-8 py-4 flex items-center justify-between">
+      <div className="page min-h-screen text-zinc-100">
+        <header className="app-header">
           <div className="flex items-center gap-4">
-            <button onClick={() => formStep > 1 ? setFormStep(s => s - 1) : setStep('select')} className="p-2 rounded-lg hover:bg-white/5 text-slate-400">
+            <button onClick={() => formStep > 1 ? setFormStep(s => s - 1) : setStep('select')} className="p-2 rounded-lg hover:bg-white/5 text-zinc-400">
               <ArrowLeft size={18} />
             </button>
             <span className="font-semibold">Manual Form</span>
@@ -471,13 +471,13 @@ export default function Score() {
             <span className="text-xs text-amber-400 bg-amber-400/8 border border-amber-400/20 rounded-full px-3 py-1 flex items-center gap-1.5">
               <AlertTriangle size={11} /> Simulation only
             </span>
-            <span className="text-xs text-slate-500">Step {formStep} of 4</span>
+            <span className="text-xs text-zinc-500">Step {formStep} of 4</span>
           </div>
         </header>
 
         {/* Progress bar */}
         <div className="h-0.5 bg-white/5">
-          <div className="h-full bg-indigo-500 transition-all duration-300" style={{ width: `${(formStep / 4) * 100}%` }} />
+          <div className="h-full bg-white/80 transition-all duration-300" style={{ width: `${(formStep / 4) * 100}%` }} />
         </div>
 
         <main className="max-w-lg mx-auto px-8 py-10 space-y-5">
@@ -505,8 +505,8 @@ export default function Score() {
                 <input type="number" value={form.employment_months} onChange={e => updateForm('employment_months', e.target.value)} placeholder="e.g. 36" className={inputCls} min="0" />
               </div>
               <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" checked={form.itr_filed} onChange={e => updateForm('itr_filed', e.target.checked)} className="w-4 h-4 rounded accent-indigo-500" />
-                <span className="text-sm text-slate-300">ITR filed for last financial year</span>
+                <input type="checkbox" checked={form.itr_filed} onChange={e => updateForm('itr_filed', e.target.checked)} className="w-4 h-4 rounded accent-white" />
+                <span className="text-sm text-zinc-300">ITR filed for last financial year</span>
               </label>
             </>
           )}
@@ -517,7 +517,7 @@ export default function Score() {
               <div>
                 <label className="label">Max days overdue (DPD) in last 12 months</label>
                 <input type="number" value={form.dpd_max_12m} onChange={e => updateForm('dpd_max_12m', e.target.value)} placeholder="0 if clean" className={inputCls} min="0" max="365" />
-                <p className="text-xs text-slate-500 mt-1">0 = no delays. A 30-DPD means a payment was 30 days late.</p>
+                <p className="text-xs text-zinc-500 mt-1">0 = no delays. A 30-DPD means a payment was 30 days late.</p>
               </div>
               <div>
                 <label className="label">Missed EMI payments in last 12 months</label>
@@ -528,8 +528,8 @@ export default function Score() {
                 <input type="number" value={form.bank_bounce_count_12m} onChange={e => updateForm('bank_bounce_count_12m', e.target.value)} placeholder="0" className={inputCls} min="0" />
               </div>
               <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" checked={form.has_settled_account} onChange={e => updateForm('has_settled_account', e.target.checked)} className="w-4 h-4 rounded accent-indigo-500" />
-                <span className="text-sm text-slate-300">I have a settled or written-off loan account</span>
+                <input type="checkbox" checked={form.has_settled_account} onChange={e => updateForm('has_settled_account', e.target.checked)} className="w-4 h-4 rounded accent-white" />
+                <span className="text-sm text-zinc-300">I have a settled or written-off loan account</span>
               </label>
             </>
           )}
@@ -548,7 +548,7 @@ export default function Score() {
               <div>
                 <label className="label">Credit card utilization (%)</label>
                 <input type="number" value={form.credit_card_utilization} onChange={e => updateForm('credit_card_utilization', e.target.value)} placeholder="e.g. 35" className={inputCls} min="0" max="100" />
-                <p className="text-xs text-slate-500 mt-1">Balance as % of total credit limit. Below 30% is ideal.</p>
+                <p className="text-xs text-zinc-500 mt-1">Balance as % of total credit limit. Below 30% is ideal.</p>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -558,7 +558,7 @@ export default function Score() {
                 <div>
                   <label className="label">Of which are secured</label>
                   <input type="number" value={form.secured_loans_count} onChange={e => updateForm('secured_loans_count', e.target.value)} placeholder="0" className={inputCls} min="0" />
-                  <p className="text-xs text-slate-500 mt-1">Home / car / gold loans</p>
+                  <p className="text-xs text-zinc-500 mt-1">Home / car / gold loans</p>
                 </div>
               </div>
             </>
@@ -570,9 +570,9 @@ export default function Score() {
               <div>
                 <label className="label">Existing CIBIL score (self-reported, optional)</label>
                 <input type="number" value={form.existing_cibil_score} onChange={e => updateForm('existing_cibil_score', e.target.value)} placeholder="e.g. 720" className={inputCls} min="300" max="900" />
-                <p className="text-xs text-slate-500 mt-1">If you know your CIBIL score, it acts as a cross-reference signal.</p>
+                <p className="text-xs text-zinc-500 mt-1">If you know your CIBIL score, it acts as a cross-reference signal.</p>
               </div>
-              <div className="glass rounded-xl p-4 text-sm text-slate-400">
+              <div className="glass rounded-xl p-4 text-sm text-zinc-400">
                 <p className="font-medium text-amber-400 mb-1 text-xs uppercase tracking-wide">Simulation mode</p>
                 <p className="text-xs leading-relaxed">This report is for self-assessment only. Manual entries are not verified and cannot be used for loan applications. Upload bank data or use PAN lookup for a verified score.</p>
               </div>

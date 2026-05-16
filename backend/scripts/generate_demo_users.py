@@ -87,11 +87,11 @@ DEMO_USERS = [
         "profession": "Salaried Employee",
         "score_inputs": dict(
             monthly_income=28000, monthly_emi_obligations=14000,
-            dpd_max_12m=40, missed_emi_12m=2, has_settled_account=False,
+            dpd_max_12m=40, missed_emi_12m=1, has_settled_account=False,
             credit_history_months=24, hard_inquiries_6m=3,
             credit_card_utilization=0.55, active_loan_accounts=2, secured_loans_count=0,
             employment_type="salaried", employment_months=12,
-            bank_bounce_count_12m=2, itr_filed=False, existing_cibil_score=630,
+            bank_bounce_count_12m=2, itr_filed=False, existing_cibil_score=None,
         ),
     },
     {

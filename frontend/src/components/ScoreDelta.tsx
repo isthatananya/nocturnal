@@ -10,7 +10,7 @@ export default function ScoreDelta({ current, previous, className = '' }: Props)
   if (previous === null) return null
   const delta = current - previous
   if (delta === 0) return (
-    <span className={`inline-flex items-center gap-1 text-xs text-slate-500 ${className}`}>
+    <span className={`inline-flex items-center gap-1 text-xs text-zinc-500 ${className}`}>
       <Minus size={12} /> No change from last assessment
     </span>
   )

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { CheckCircle, ChevronRight, BarChart2, Landmark } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { Button } from '../components/ui/button'
+import DateInput from '../components/ui/DateInput'
 import { toast } from '../hooks/useToast'
 
 function calcAge(dob: string): number {
@@ -118,16 +119,16 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen bg-midnight flex items-center justify-center px-4">
+    <div className="page min-h-screen flex flex-col items-center justify-center px-4 py-12">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-violet-500/8 blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-white/4 blur-[100px]" />
       </div>
 
       <div className="w-full max-w-md">
         {/* Logo + dynamic heading */}
         <div className="text-center mb-8">
-          <Link to="/" className="text-2xl font-bold">ZK<span className="text-indigo-400">Credit</span></Link>
-          <p className="text-slate-400 mt-3 h-6 transition-all duration-300">
+          <Link to="/" className="text-2xl font-bold">ZK<span className="text-white/55">Credit</span></Link>
+          <p className="text-zinc-400 mt-3 h-6 transition-all duration-300">
             {step === 1 && firstName
               ? <span>Welcome, <span className="text-white font-medium">{firstName}</span> 👋</span>
               : step === 1
@@ -145,9 +146,9 @@ export default function Signup() {
               key={s}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 s < step
-                  ? 'bg-indigo-500 w-4'
+                  ? 'bg-white w-4'
                   : s === step
-                  ? 'bg-indigo-500 w-8'
+                  ? 'bg-white w-8'
                   : 'bg-white/10 w-4'
               }`}
             />
@@ -173,12 +174,10 @@ export default function Signup() {
 
             <div>
               <label className="label">Date of Birth</label>
-              <input
-                type="date"
+              <DateInput
                 value={dob}
-                onChange={e => setDob(e.target.value)}
+                onChange={setDob}
                 max={maxDobStr}
-                className="input-field"
                 required
               />
               {dob && calcAge(dob) < 16 && (
@@ -216,9 +215,9 @@ export default function Signup() {
               Continue <ChevronRight size={16} />
             </Button>
 
-            <p className="text-center text-sm text-slate-500">
+            <p className="text-center text-sm text-zinc-500">
               Already have an account?{' '}
-              <Link to="/auth/login" className="text-indigo-400 hover:text-indigo-300">Log in</Link>
+              <Link to="/auth/login" className="text-white/55 hover:text-white/70">Log in</Link>
             </p>
           </form>
         )}
@@ -236,8 +235,8 @@ export default function Signup() {
                     onClick={() => setProfession(p)}
                     className={`px-3 py-3 rounded-xl text-sm font-medium text-left transition-all duration-150 border ${
                       profession === p
-                        ? 'bg-indigo-500/20 border-indigo-500/60 text-indigo-300'
-                        : 'bg-white/4 border-white/8 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                        ? 'bg-white/10 border-white/25 text-white/70'
+                        : 'bg-white/4 border-white/8 text-zinc-400 hover:border-white/20 hover:text-zinc-200'
                     }`}
                   >
                     {p}
@@ -278,14 +277,14 @@ export default function Signup() {
               type="button"
               disabled={loading}
               onClick={() => handleGoal('score')}
-              className="group w-full flex items-center gap-4 p-5 rounded-2xl border border-white/8 bg-white/4 hover:bg-indigo-500/10 hover:border-indigo-500/40 transition-all duration-200 text-left disabled:opacity-50"
+              className="group w-full flex items-center gap-4 p-5 rounded-2xl border border-white/8 bg-white/4 hover:bg-white/6 hover:border-white/15 transition-all duration-200 text-left disabled:opacity-50"
             >
-              <div className="w-11 h-11 rounded-xl bg-indigo-500/15 flex items-center justify-center shrink-0 group-hover:bg-indigo-500/25 transition-colors">
-                <BarChart2 size={20} className="text-indigo-400" />
+              <div className="w-11 h-11 rounded-xl bg-white/8 flex items-center justify-center shrink-0 group-hover:bg-white/12 transition-colors">
+                <BarChart2 size={20} className="text-white/55" />
               </div>
               <div>
-                <div className="font-medium text-slate-100">Check Credit Score</div>
-                <div className="text-xs text-slate-400 mt-0.5">Upload statements, get a ZK-verified score</div>
+                <div className="font-medium text-zinc-100">Check Credit Score</div>
+                <div className="text-xs text-zinc-400 mt-0.5">Upload statements, get a ZK-verified score</div>
               </div>
             </button>
 
@@ -299,8 +298,8 @@ export default function Signup() {
                 <Landmark size={20} className="text-emerald-400" />
               </div>
               <div>
-                <div className="font-medium text-slate-100">Apply for a Loan</div>
-                <div className="text-xs text-slate-400 mt-0.5">Get instant loan eligibility with privacy</div>
+                <div className="font-medium text-zinc-100">Apply for a Loan</div>
+                <div className="text-xs text-zinc-400 mt-0.5">Get instant loan eligibility with privacy</div>
               </div>
             </button>
 
@@ -308,7 +307,7 @@ export default function Signup() {
               type="button"
               disabled={loading}
               onClick={() => setStep(2)}
-              className="w-full pt-1 text-sm text-slate-500 hover:text-slate-300 transition-colors disabled:opacity-40"
+              className="w-full pt-1 text-sm text-zinc-500 hover:text-zinc-300 transition-colors disabled:opacity-40"
             >
               ← Back
             </button>
@@ -317,7 +316,7 @@ export default function Signup() {
 
         <div className="mt-6 space-y-2">
           {guarantees.map(g => (
-            <div key={g} className="flex items-center gap-2 text-xs text-slate-500">
+            <div key={g} className="flex items-center gap-2 text-xs text-zinc-500">
               <CheckCircle size={13} className="text-emerald-500 shrink-0" />
               {g}
             </div>
