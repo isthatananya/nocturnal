@@ -146,20 +146,15 @@ export default function Dashboard() {
                         </div>
                       )}
 
-                      {latest.tier > 0 && !latest.loan_applied && latest.data_source !== 'form' && (
+                      {latest.tier > 0 && !latest.loan_applied && (
                         <motion.button
                           whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
                           transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                          onClick={() => nav('/loan/apply')}
+                          onClick={() => nav('/loan/apply', { state: { report: latest } })}
                           className="btn-primary w-full mt-3 flex items-center justify-center gap-2"
                         >
                           Apply for loan <ArrowRight size={15} />
                         </motion.button>
-                      )}
-                      {latest.tier > 0 && !latest.loan_applied && latest.data_source === 'form' && (
-                        <p className="text-xs text-amber-400/70 mt-3 text-center leading-relaxed">
-                          Simulation report — use Upload or PAN to apply for a loan.
-                        </p>
                       )}
                       {latest.loan_applied && (
                         <motion.button

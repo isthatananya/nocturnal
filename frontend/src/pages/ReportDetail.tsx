@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Download, Lock, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, X } from 'lucide-react'
+import { ArrowLeft, Download, Lock, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, X, ArrowRight, RefreshCw, Upload, ClipboardList, CreditCard } from 'lucide-react'
 import { jsPDF } from 'jspdf'
 import { credit } from '../lib/api'
 import { encryptReport } from '../lib/crypto'
@@ -52,9 +52,9 @@ export default function ReportDetail() {
 
     doc.setFontSize(11)
     const rows: [string, string][] = [
-      ['Credit Score', `${report.score} / 100`],
+      ['Credit Score', `${report.score} / 900`],
       ['Tier', report.tier_label],
-      ['Loan Limit', `${report.loan_limit.toLocaleString()} tDUST`],
+      ['Loan Limit', `₹${report.loan_limit.toLocaleString('en-IN')}`],
       ['Interest Rate', report.interest_rate ?? '—'],
       ['Term', report.term_months ? `${report.term_months} months` : '—'],
     ]
@@ -114,7 +114,7 @@ export default function ReportDetail() {
   }
 
   if (!report) return (
-    <div className="min-h-screen bg-midnight flex items-center justify-center">
+    <div className="page min-h-screen flex items-center justify-center">
       <div className="w-8 h-8 border-2 border-white/20 border-t-transparent rounded-full animate-spin" />
     </div>
   )
@@ -122,8 +122,10 @@ export default function ReportDetail() {
   const inputs = (report as any).inputs ?? undefined
   const analysis = analyseReport(report.breakdown, inputs)
 
+  const SOURCE_LABEL: Record<string, string> = { upload: 'Bank Upload', form: 'Manual Entry', pan: 'PAN Card' }
+
   return (
-    <div className="min-h-screen bg-midnight text-zinc-100">
+    <div className="page min-h-screen text-zinc-100">
       <header className="border-b border-white/5 px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link to="/reports" className="p-2 rounded-lg hover:bg-white/5 text-zinc-400">
@@ -154,14 +156,26 @@ export default function ReportDetail() {
           <p className="text-zinc-500 text-sm">{new Date(report.generated_at).toLocaleString()}</p>
         </div>
 
+        {/* ── Method tag ── */}
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-zinc-400 bg-white/5 border border-white/8 rounded-full px-3 py-1.5">
+            {SOURCE_LABEL[report.data_source] ?? report.data_source}
+          </span>
+          {report.data_source === 'form' && (
+            <span className="text-xs text-amber-400/70 bg-amber-500/[0.06] border border-amber-500/15 rounded-full px-3 py-1.5">
+              Simulation
+            </span>
+          )}
+        </div>
+
         {/* ── Loan terms ── */}
         <div className="glass rounded-2xl divide-y divide-white/5">
           {[
-            ['Loan limit', `${report.loan_limit.toLocaleString()} tDUST`],
+            ['Loan limit', report.tier > 0 ? `₹${report.loan_limit.toLocaleString('en-IN')}` : 'Not eligible'],
             ['Interest rate', report.interest_rate ?? '—'],
             ['Term', report.term_months ? `${report.term_months} months` : '—'],
             ['Loan applied', report.loan_applied ? 'Yes' : 'No'],
-            ['TX hash', report.loan_tx_hash ?? '—'],
+            ...(report.loan_tx_hash ? [['TX hash', report.loan_tx_hash]] : []),
           ].map(([k, v]) => (
             <div key={k} className="flex justify-between px-6 py-4 text-sm">
               <span className="text-zinc-400">{k}</span>
@@ -169,6 +183,16 @@ export default function ReportDetail() {
             </div>
           ))}
         </div>
+
+        {/* ── Apply for loan ── */}
+        {report.tier > 0 && !report.loan_applied && (
+          <button
+            onClick={() => nav('/loan/apply', { state: { report } })}
+            className="btn-primary w-full flex items-center justify-center gap-2"
+          >
+            Apply for loan <ArrowRight size={15} />
+          </button>
+        )}
 
         {/* ── Adjustment note ── */}
         <div className="flex items-start gap-2 text-xs text-zinc-500 px-1">
@@ -204,6 +228,35 @@ export default function ReportDetail() {
             </div>
           </section>
         )}
+
+        {/* ── Recalculate ── */}
+        <section>
+          <div className="flex items-center gap-2 mb-3">
+            <RefreshCw size={13} className="text-zinc-500" />
+            <h2 className="font-semibold text-zinc-400 text-sm">Calculate with a different method</h2>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: 'Bank Upload',  Icon: Upload,        mode: 'upload' },
+              { label: 'Manual Entry', Icon: ClipboardList, mode: 'form'   },
+              { label: 'PAN Card',     Icon: CreditCard,    mode: 'pan'    },
+            ].map(({ label, Icon, mode }) => (
+              <button
+                key={mode}
+                onClick={() => nav('/score', { state: { mode } })}
+                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border text-sm font-medium transition-colors
+                  ${report.data_source === mode
+                    ? 'border-white/20 bg-white/8 text-zinc-100'
+                    : 'border-white/8 bg-white/3 text-zinc-400 hover:border-white/15 hover:text-zinc-200'
+                  }`}
+              >
+                <Icon size={17} />
+                <span className="text-center leading-tight text-xs">{label}</span>
+                {report.data_source === mode && <span className="text-[10px] text-zinc-500">Current</span>}
+              </button>
+            ))}
+          </div>
+        </section>
       </main>
 
       {/* ── Encrypt modal ── */}
