@@ -194,7 +194,7 @@ export default function Score() {
 
   if (step === 'scoring' || panLoading) {
     return (
-      <div className="min-h-screen bg-midnight flex items-center justify-center">
+      <div className="page min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-6">
           <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
@@ -217,8 +217,8 @@ export default function Score() {
   if (step === 'preview' && features) {
     const isForm = features.data_source === 'form'
     return (
-      <div className="min-h-screen bg-midnight text-slate-100">
-        <header className="border-b border-white/5 px-8 py-4 flex items-center gap-4">
+      <div className="page min-h-screen text-slate-100">
+        <header className="app-header flex items-center gap-3">
           <button onClick={() => { setStep(mode); setFormStep(1) }} className="p-2 rounded-lg hover:bg-white/5 text-slate-400"><ArrowLeft size={18} /></button>
           <span className="font-semibold">Confirm your data</span>
           {isForm && (
@@ -295,8 +295,8 @@ export default function Score() {
 
   if (step === 'select') {
     return (
-      <div className="min-h-screen bg-midnight text-slate-100">
-        <header className="border-b border-white/5 px-8 py-4 flex items-center gap-4">
+      <div className="page min-h-screen text-slate-100">
+        <header className="app-header flex items-center gap-3">
           <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-slate-400"><ArrowLeft size={18} /></Link>
           <span className="font-semibold">Credit Assessment</span>
         </header>
@@ -356,8 +356,8 @@ export default function Score() {
 
   if (step === 'upload') {
     return (
-      <div className="min-h-screen bg-midnight text-slate-100">
-        <header className="border-b border-white/5 px-8 py-4 flex items-center gap-4">
+      <div className="page min-h-screen text-slate-100">
+        <header className="app-header flex items-center gap-3">
           <button onClick={() => setStep('select')} className="p-2 rounded-lg hover:bg-white/5 text-slate-400"><ArrowLeft size={18} /></button>
           <span className="font-semibold">Upload Data</span>
         </header>
@@ -403,8 +403,8 @@ export default function Score() {
 
   if (step === 'pan') {
     return (
-      <div className="min-h-screen bg-midnight text-slate-100">
-        <header className="border-b border-white/5 px-8 py-4 flex items-center gap-4">
+      <div className="page min-h-screen text-slate-100">
+        <header className="app-header flex items-center gap-3">
           <button onClick={() => setStep('select')} className="p-2 rounded-lg hover:bg-white/5 text-slate-400"><ArrowLeft size={18} /></button>
           <span className="font-semibold">PAN Card Lookup</span>
         </header>
@@ -459,8 +459,8 @@ export default function Score() {
   if (step === 'form') {
     const inputCls = 'input-field'
     return (
-      <div className="min-h-screen bg-midnight text-slate-100">
-        <header className="border-b border-white/5 px-8 py-4 flex items-center justify-between">
+      <div className="page min-h-screen text-slate-100">
+        <header className="app-header">
           <div className="flex items-center gap-4">
             <button onClick={() => formStep > 1 ? setFormStep(s => s - 1) : setStep('select')} className="p-2 rounded-lg hover:bg-white/5 text-slate-400">
               <ArrowLeft size={18} />

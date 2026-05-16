@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { ArrowLeft, CheckCircle, Clock, Unlink } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useWallet } from '../context/WalletContext'
@@ -56,18 +57,21 @@ export default function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-midnight text-slate-100">
-      <header className="border-b border-white/5 px-8 py-4 flex items-center gap-4">
-        <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-slate-400">
-          <ArrowLeft size={18} />
-        </Link>
-        <span className="font-semibold">Settings</span>
+    <div className="page min-h-screen text-slate-100">
+      <header className="app-header">
+        <div className="flex items-center gap-3">
+          <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-slate-500 hover:text-slate-200 transition-colors">
+            <ArrowLeft size={17} />
+          </Link>
+          <span className="font-semibold tracking-tight">Settings</span>
+        </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-8 py-12 space-y-6">
+      <main className="max-w-2xl mx-auto px-6 py-10 space-y-5">
+        <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
 
         {/* ── Account info ── */}
-        <div className="glass rounded-2xl divide-y divide-white/5">
+        <div className="glass rounded-2xl divide-y divide-white/5" style={{marginTop:0}}>
           <div className="px-6 py-5">
             <p className="text-xs text-slate-500 uppercase tracking-wide font-medium mb-4">Account</p>
             <div className="space-y-3 text-sm">
@@ -210,6 +214,7 @@ export default function Settings() {
             Credit scores are computed from derived features only. Report data is stored encrypted — only you can decrypt it.
           </p>
         </div>
+        </motion.div>
       </main>
     </div>
   )

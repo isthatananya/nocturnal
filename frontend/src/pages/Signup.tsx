@@ -118,7 +118,7 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen bg-midnight flex items-center justify-center px-4">
+    <div className="page min-h-screen flex items-center justify-center px-4">
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-violet-500/8 blur-[100px]" />
       </div>
