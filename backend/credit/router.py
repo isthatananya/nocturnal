@@ -1,22 +1,78 @@
 import json
+import logging
 import uuid
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
 from redis.asyncio import Redis
 
+from core.crypto import (
+    CryptoError,
+    ciphertext_fingerprint,
+    decrypt_payload,
+    encrypt_payload,
+)
 from core.deps import get_current_user, rate_limit_score
 from core.redis import get_redis
 from credit.schemas import ScoreRequest, ScoreResponse
 from credit.scoring import compute_score
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+
+
+_OUTER_FIELDS = frozenset({
+    "report_id",
+    "user_id",
+    "generated_at",
+    "data_source",
+    "encrypted_at_rest",
+    "encrypted_at_rest_fp",
+    "ciphertext",
+})
 
 
 def _assert_owner(report: dict, user_id: str) -> None:
     """Raise 403 if the report doesn't belong to this user."""
     if report.get("user_id") != user_id:
         raise HTTPException(403, "Access denied")
+
+
+def _seal(payload: dict, user_id: str) -> dict:
+    """Wrap a plaintext report into the at-rest envelope."""
+    outer = {k: payload[k] for k in ("report_id", "user_id", "generated_at", "data_source") if k in payload}
+    inner = {k: v for k, v in payload.items() if k not in outer}
+    blob = encrypt_payload(json.dumps(inner).encode("utf-8"), user_id)
+    return {
+        **outer,
+        "encrypted_at_rest": True,
+        "encrypted_at_rest_fp": ciphertext_fingerprint(blob),
+        "ciphertext": blob,
+    }
+
+
+def _open(record: dict, user_id: str) -> dict:
+    """Decrypt an envelope; pass through legacy plaintext records."""
+    if not record.get("encrypted_at_rest"):
+        return record
+    blob = record.get("ciphertext")
+    if not blob:
+        logger.warning("encrypted_at_rest=True but no ciphertext for %s", record.get("report_id"))
+        return record
+    try:
+        inner = json.loads(decrypt_payload(blob, user_id))
+    except CryptoError:
+        logger.exception("decryption failed for report %s", record.get("report_id"))
+        raise HTTPException(500, "Report unreadable — server key may have rotated")
+    return {
+        **inner,
+        "report_id": record["report_id"],
+        "user_id": record["user_id"],
+        "generated_at": record.get("generated_at"),
+        "data_source": record.get("data_source") or inner.get("data_source"),
+        "encrypted_at_rest": True,
+        "encrypted_at_rest_fp": record.get("encrypted_at_rest_fp"),
+    }
 
 
 @router.post("/score", response_model=ScoreResponse)
@@ -67,8 +123,8 @@ async def score_user(
             "inquiry_pts": result.inquiry_pts,
             "adjustment": result.adjustment,
         },
-        # Encrypted input blob — the server stores this opaque ciphertext but cannot decrypt it.
-        # Decryption requires the device key stored only in the user's browser localStorage.
+        # Client-side opaque blob — server cannot decrypt this (device key lives in the browser).
+        # Sits inside the server's at-rest envelope below for defense in depth.
         "encrypted_inputs": body.encrypted_inputs,
         "data_source": body.data_source,
         "generated_at": now,
@@ -77,12 +133,17 @@ async def score_user(
         "loan_tx_hash": None,
     }
 
-    raw = json.dumps(payload)
+    sealed = _seal(payload, user["id"])
+    raw = json.dumps(sealed)
     await redis.setex(cache_key, 604800, raw)
     await redis.lpush(f"report:history:{user['id']}", report_id)
     await redis.set(f"report:data:{report_id}", raw)
 
-    return payload
+    return {
+        **payload,
+        "encrypted_at_rest": True,
+        "encrypted_at_rest_fp": sealed["encrypted_at_rest_fp"],
+    }
 
 
 @router.get("/reports")
@@ -92,7 +153,13 @@ async def list_reports(user=Depends(get_current_user), redis: Redis = Depends(ge
     for rid in ids:
         raw = await redis.get(f"report:data:{rid}")
         if raw:
-            reports.append(json.loads(raw))
+            record = json.loads(raw)
+            try:
+                reports.append(_open(record, user["id"]))
+            except HTTPException:
+                # Skip records that fail to decrypt (key rotation, corruption) so the
+                # history page still renders the rest.
+                continue
     return reports
 
 
@@ -101,9 +168,9 @@ async def get_report(report_id: str, user=Depends(get_current_user), redis: Redi
     raw = await redis.get(f"report:data:{report_id}")
     if not raw:
         raise HTTPException(404, "Report not found")
-    report = json.loads(raw)
-    _assert_owner(report, user["id"])
-    return report
+    record = json.loads(raw)
+    _assert_owner(record, user["id"])
+    return _open(record, user["id"])
 
 
 @router.patch("/reports/{report_id}/loan")
@@ -117,10 +184,13 @@ async def mark_loan_applied(
     if not raw:
         raise HTTPException(404, "Report not found")
 
-    report = json.loads(raw)
-    _assert_owner(report, user["id"])
+    record = json.loads(raw)
+    _assert_owner(record, user["id"])
+    report = _open(record, user["id"])
 
     report["loan_applied"] = True
     report["loan_tx_hash"] = body.get("tx_hash")
-    await redis.set(f"report:data:{report_id}", json.dumps(report))
+
+    sealed = _seal(report, user["id"])
+    await redis.set(f"report:data:{report_id}", json.dumps(sealed))
     return {"ok": True}

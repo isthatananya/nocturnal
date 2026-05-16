@@ -23,6 +23,7 @@ services:
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./backend:/app
+      - /app/.venv
     depends_on:
       - redis
 
@@ -35,11 +36,13 @@ services:
     env_file: .env
     environment:
       - API_PROXY_TARGET=http://backend:8000
+      - PROOF_PROXY_TARGET=http://proof-server:6300
     volumes:
       - ./frontend:/app
       - /app/node_modules
     depends_on:
       - backend
+      - proof-server
 
 volumes:
   redis-data:

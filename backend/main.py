@@ -1,8 +1,11 @@
 from contextlib import asynccontextmanager
 
+from pathlib import Path
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from core.config import settings
@@ -66,6 +69,11 @@ app.add_middleware(CSRFMiddleware)
 
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(credit_router, prefix="/api", tags=["credit"])
+
+# Single source of truth for demo CSVs. Frontend dropzone fetches /dataset/upload/tier_*.csv.
+_DATASETS_DIR = Path(__file__).resolve().parent / "datasets"
+if _DATASETS_DIR.is_dir():
+    app.mount("/dataset", StaticFiles(directory=_DATASETS_DIR), name="datasets")
 
 
 @app.get("/health")

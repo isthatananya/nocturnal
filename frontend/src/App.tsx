@@ -16,6 +16,7 @@ import LoanActive from './pages/LoanActive'
 import Reports from './pages/Reports'
 import ReportDetail from './pages/ReportDetail'
 import Settings from './pages/Settings'
+import Verify from './pages/Verify'
 
 function Spinner() {
   return (
@@ -67,6 +68,7 @@ export default function App() {
           <Route path="/reports"      element={<Wrap><Reports /></Wrap>} />
           <Route path="/reports/:id"  element={<Wrap><ReportDetail /></Wrap>} />
           <Route path="/settings"     element={<Wrap><Settings /></Wrap>} />
+          <Route path="/verify"       element={<Wrap><Verify /></Wrap>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

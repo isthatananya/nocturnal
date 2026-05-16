@@ -4,12 +4,16 @@ import { motion } from 'framer-motion'
 import { ExternalLink } from 'lucide-react'
 import AppNav from '../components/AppNav'
 import type { Report } from '../types'
-import { applyForLoan } from '../lib/midnight'
+import { applyForLoan, MidnightApiError, MidnightError, type MidnightErrorCode } from '../lib/midnight'
 import { credit } from '../lib/api'
 import { useWallet } from '../context/WalletContext'
 import LoanSlider from '../components/LoanSlider'
 import ProofProgress, { type ProofStep } from '../components/ProofProgress'
+import MidnightErrorPanel from '../components/MidnightErrorPanel'
+import ProofServerBadge from '../components/ProofServerBadge'
 import { SlideUp } from '../components/ui/motion'
+
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === '1'
 
 function aprToBps(apr: string | null): number {
   return apr ? Math.round(parseFloat(apr) * 100) : 0
@@ -31,7 +35,7 @@ export default function LoanApply() {
   const [amount, setAmount] = useState(0)
   const [proofStep, setProofStep] = useState<ProofStep>('idle')
   const [txHash, setTxHash] = useState<string | null>(null)
-  const [proofError, setProofError] = useState<string | null>(null)
+  const [proofError, setProofError] = useState<MidnightErrorCode | null>(null)
 
   useEffect(() => {
     if (!report) { nav('/score'); return }
@@ -41,11 +45,34 @@ export default function LoanApply() {
   }, [nav, report])
 
   const handleApply = async () => {
-    if (!report || !address) return
+    if (!report) return
     setProofError(null)
-    try {
+
+    // Demo mode bypass — used only when VITE_DEMO_MODE=1 on demo machines without Lace.
+    if (DEMO_MODE && !address) {
       setProofStep('witness')
       await new Promise(r => setTimeout(r, 800))
+      setProofStep('proving')
+      await new Promise(r => setTimeout(r, 600))
+      setProofStep('signing')
+      await new Promise(r => setTimeout(r, 600))
+      setProofStep('submitting')
+      await new Promise(r => setTimeout(r, 800))
+      const mockHash = `mid1${Math.random().toString(36).slice(2, 18)}`
+      setProofStep('done')
+      setTxHash(mockHash)
+      await credit.markLoanApplied(report.report_id, mockHash).catch(() => {})
+      return
+    }
+
+    if (!address) {
+      setProofError(MidnightError.WALLET_NOT_INSTALLED)
+      return
+    }
+
+    try {
+      setProofStep('witness')
+      await new Promise(r => setTimeout(r, 400))
       setProofStep('proving')
       const hash = await applyForLoan({
         walletAddress: address,
@@ -56,21 +83,18 @@ export default function LoanApply() {
         termMonths: report.term_months ?? 0,
       })
       setProofStep('signing')
-      await new Promise(r => setTimeout(r, 600))
+      await new Promise(r => setTimeout(r, 400))
       setProofStep('submitting')
-      await new Promise(r => setTimeout(r, 800))
+      await new Promise(r => setTimeout(r, 600))
       setProofStep('done')
       setTxHash(hash)
       await credit.markLoanApplied(report.report_id, hash)
-    } catch {
-      setProofStep('signing')
-      await new Promise(r => setTimeout(r, 800))
-      setProofStep('submitting')
-      await new Promise(r => setTimeout(r, 1000))
-      const mockHash = `mid1${Math.random().toString(36).slice(2, 18)}`
-      setProofStep('done')
-      setTxHash(mockHash)
-      await credit.markLoanApplied(report.report_id, mockHash).catch(() => {})
+    } catch (e) {
+      const code: MidnightErrorCode = e instanceof MidnightApiError
+        ? e.code
+        : MidnightError.TX_FAILED
+      setProofStep('idle')
+      setProofError(code)
     }
   }
 
@@ -128,12 +152,19 @@ export default function LoanApply() {
   return (
     <div className="page min-h-screen text-zinc-100">
       <AppNav back title="Apply for Loan" />
+      <div className="fixed bottom-4 right-4 z-30">
+        <ProofServerBadge />
+      </div>
 
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-6">
-        {proofStep !== 'idle' ? (
+        {proofError ? (
+          <SlideUp className="space-y-4">
+            <MidnightErrorPanel code={proofError} onRetry={() => setProofError(null)} />
+          </SlideUp>
+        ) : proofStep !== 'idle' ? (
           <SlideUp className="space-y-6">
             <h2 className="text-xl font-bold tracking-tight">Generating your ZK proof</h2>
-            <ProofProgress current={proofStep} error={proofError} />
+            <ProofProgress current={proofStep} error={null} />
           </SlideUp>
         ) : (
           <>
@@ -189,25 +220,30 @@ export default function LoanApply() {
             >
               {!address ? (
                 <>
-                  {!installed && (
+                  {!installed && !DEMO_MODE && (
                     <div className="text-sm text-amber-400/80 bg-amber-400/[0.05] border border-amber-400/15 rounded-xl px-4 py-3">
-                      Lace wallet not detected. You can still apply — we'll simulate the transaction for the demo.
+                      Lace wallet not detected. <a href="https://www.lace.io/" target="_blank" rel="noopener noreferrer" className="underline">Install Lace</a> to apply for loans with a real ZK proof.
                     </div>
                   )}
-                  <motion.button
-                    whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-                    onClick={connect}
-                    className="btn-ghost w-full"
-                  >
-                    {installed ? 'Connect Lace to continue' : 'Proceed without wallet (demo)'}
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
-                    onClick={handleApply}
-                    className="btn-primary w-full"
-                  >
-                    Apply for ₹{amount.toLocaleString('en-IN')} (demo mode)
-                  </motion.button>
+                  {installed && (
+                    <motion.button
+                      whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
+                      onClick={connect}
+                      className="btn-primary w-full"
+                    >
+                      Connect Lace to continue
+                    </motion.button>
+                  )}
+                  {DEMO_MODE && (
+                    <motion.button
+                      whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
+                      onClick={handleApply}
+                      className="btn-ghost w-full"
+                      title="VITE_DEMO_MODE=1 — wallet bypass for demo machines"
+                    >
+                      Apply for ₹{amount.toLocaleString('en-IN')} (demo mode)
+                    </motion.button>
+                  )}
                 </>
               ) : (
                 <motion.button

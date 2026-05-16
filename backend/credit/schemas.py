@@ -66,3 +66,5 @@ class ScoreResponse(BaseModel):
     cached: bool = False
     loan_applied: bool = False
     loan_tx_hash: str | None = None
+    encrypted_at_rest: bool = False
+    encrypted_at_rest_fp: str | None = None
