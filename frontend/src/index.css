@@ -6,18 +6,20 @@
 
 /* ── CSS custom properties (Fey-aligned palette) ──────────────── */
 :root {
-  --bg:          #09090c;
-  --bg-2:        #0d0d11;
-  --bg-3:        #111116;
-  --bg-4:        #16161c;
-  --border:      rgba(255,255,255,0.07);
-  --border-2:    rgba(255,255,255,0.12);
-  --border-3:    rgba(255,255,255,0.20);
+  /* Fey-aligned: enough contrast headroom between layers */
+  --bg:          #08080e;   /* page background — very dark neutral */
+  --bg-2:        #0f0f17;   /* subtle raise, inputs */
+  --bg-3:        #161620;   /* cards / glass surfaces  */
+  --bg-4:        #1e1e2a;   /* elevated panels, hover states */
+  --bg-5:        #26263a;   /* tooltips, menus */
+  --border:      rgba(255,255,255,0.09);
+  --border-2:    rgba(255,255,255,0.16);
+  --border-3:    rgba(255,255,255,0.26);
   --text-1:      #ffffff;
-  --text-2:      #e4e4eb;
-  --text-3:      #a1a1aa;
-  --text-4:      #71717a;
-  --text-5:      #52525b;
+  --text-2:      #dde1ef;
+  --text-3:      #9498b0;
+  --text-4:      #63677e;
+  --text-5:      #42455a;
   --accent:      #6366f1;
   --accent-2:    #818cf8;
   --accent-glow: rgba(99,102,241,0.35);
@@ -26,6 +28,8 @@
 @layer base {
   html {
     background-color: var(--bg);
+    /* subtle grain — gives depth like Fey */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
     color: var(--text-2);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

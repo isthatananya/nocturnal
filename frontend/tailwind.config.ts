@@ -5,24 +5,20 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Fey-aligned: cool neutral dark, no purple tint
-        midnight:     '#09090c',
-        'midnight-2': '#0d0d11',
-        'midnight-3': '#111116',
-        // surfaces as concrete dark layers (not just transparency)
+        midnight:     '#08080e',
+        'midnight-2': '#0f0f17',
+        'midnight-3': '#161620',
         surface: {
-          DEFAULT: '#111116',
-          raised:  '#16161c',
-          overlay: '#1a1a22',
+          DEFAULT: '#161620',
+          raised:  '#1e1e2a',
+          overlay: '#26263a',
         },
-        // Zinc/slate text scale
         ink: {
           DEFAULT: '#ffffff',
-          2: '#e4e4eb',
-          3: '#a1a1aa',
-          4: '#71717a',
-          5: '#52525b',
-          6: '#3f3f46',
+          2: '#dde1ef',
+          3: '#9498b0',
+          4: '#63677e',
+          5: '#42455a',
         },
         indigo: {
           300: '#a5b4fc',
