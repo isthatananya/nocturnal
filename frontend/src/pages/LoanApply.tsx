@@ -75,7 +75,7 @@ export default function LoanApply() {
   /* ── Success screen ─────────────────────────────────── */
   if (proofStep === 'done' && txHash) {
     return (
-      <div className="page min-h-screen flex items-center justify-center px-4">
+      <div className="page min-h-screen flex flex-col items-center justify-center px-4 py-12">
         <div className="absolute inset-0 -z-10 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-emerald-500/[0.06] blur-[100px]" />
         </div>

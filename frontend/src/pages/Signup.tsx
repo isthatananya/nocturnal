@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { CheckCircle, ChevronRight, BarChart2, Landmark } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { Button } from '../components/ui/button'
+import DateInput from '../components/ui/DateInput'
 import { toast } from '../hooks/useToast'
 
 function calcAge(dob: string): number {
@@ -118,7 +119,7 @@ export default function Signup() {
   }
 
   return (
-    <div className="page min-h-screen flex items-center justify-center px-4">
+    <div className="page min-h-screen flex flex-col items-center justify-center px-4 py-12">
       <div className="absolute inset-0 -z-10">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-white/4 blur-[100px]" />
       </div>
@@ -173,12 +174,10 @@ export default function Signup() {
 
             <div>
               <label className="label">Date of Birth</label>
-              <input
-                type="date"
+              <DateInput
                 value={dob}
-                onChange={e => setDob(e.target.value)}
+                onChange={setDob}
                 max={maxDobStr}
-                className="input-field"
                 required
               />
               {dob && calcAge(dob) < 16 && (

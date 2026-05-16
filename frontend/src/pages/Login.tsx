@@ -28,7 +28,7 @@ export default function Login() {
   }
 
   return (
-    <div className="page min-h-screen flex items-center justify-center px-4">
+    <div className="page min-h-screen flex flex-col items-center justify-center px-4 py-12">
       {/* background */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-white/[0.025] blur-[120px]" />
