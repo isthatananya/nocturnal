@@ -1,0 +1,5 @@
+monthly_income,monthly_emi_obligations,dpd_max_12m,missed_emi_12m,has_settled_account,credit_history_months,hard_inquiries_6m,credit_card_utilization,active_loan_accounts,secured_loans_count,employment_type,employment_months,bank_bounce_count_12m,itr_filed,existing_cibil_score,signed_by
+75000,32000,0,0,false,60,2,0.35,2,1,salaried,48,1,true,,HDFC_Bank
+90000,42000,0,0,false,72,2,0.28,2,1,business_owner,48,1,true,,ICICI_Bank
+85000,36000,30,0,false,84,2,0.35,2,1,salaried,48,1,true,,Kotak_Bank
+95000,40000,28,0,false,54,1,0.35,2,1,salaried,48,1,true,,Axis_Bank

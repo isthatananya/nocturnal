@@ -1,5 +1,32 @@
 // AES-256-GCM client-side encryption for report blobs.
 // The server stores { iv, salt, ciphertext } — it cannot decrypt.
+//
+// Device key: a random 32-byte value generated once and stored in localStorage.
+// Financial inputs are encrypted with this key before being sent to the server,
+// so the server stores an opaque ciphertext it cannot read.
+
+export function getOrCreateDeviceKey(): string {
+  let key = localStorage.getItem('zkc_device_key')
+  if (!key) {
+    key = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('')
+    localStorage.setItem('zkc_device_key', key)
+  }
+  return key
+}
+
+export async function encryptInputs(inputs: object): Promise<string> {
+  return encryptReport(inputs, getOrCreateDeviceKey())
+}
+
+export async function decryptInputs(blob: string): Promise<object | null> {
+  try {
+    return await decryptReport(blob, getOrCreateDeviceKey())
+  } catch {
+    return null
+  }
+}
 
 async function deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
   const keyMaterial = await crypto.subtle.importKey(

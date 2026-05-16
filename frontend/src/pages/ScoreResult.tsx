@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, Download, RefreshCw, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, Upload, ClipboardList, CreditCard } from 'lucide-react'
-import type { Report } from '../types'
+import { ArrowRight, Download, RefreshCw, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, Upload, ClipboardList, CreditCard, Lock } from 'lucide-react'
+import type { Report, FeatureVector } from '../types'
 import ScoreGauge from '../components/ScoreGauge'
 import TierBadge from '../components/TierBadge'
 import ScoreDelta from '../components/ScoreDelta'
 import ScoreHistoryChart from '../components/ScoreHistoryChart'
 import FactorCard from '../components/FactorCard'
+import ZKPrivacyCard from '../components/ZKPrivacyCard'
 import { analyseReport } from '../lib/scoreAnalysis'
+import { decryptInputs } from '../lib/crypto'
 import { credit } from '../lib/api'
 import AppNav from '../components/AppNav'
 import { SlideUp, Stagger, StaggerItem } from '../components/ui/motion'
@@ -29,6 +31,7 @@ export default function ScoreResult() {
   })
   const [history, setHistory] = useState<Report[]>([])
   const [prevScore, setPrevScore] = useState<number | null>(null)
+  const [decryptedInputs, setDecryptedInputs] = useState<Partial<FeatureVector> | null>(null)
 
   useEffect(() => {
     if (!report) { nav('/score'); return }
@@ -36,6 +39,9 @@ export default function ScoreResult() {
       setHistory(all)
       setPrevScore(all.find(h => h.report_id !== report.report_id)?.score ?? null)
     }).catch(() => {})
+    if (report.encrypted_inputs) {
+      decryptInputs(report.encrypted_inputs).then(d => setDecryptedInputs(d as Partial<FeatureVector> | null))
+    }
   }, [nav, report])
 
   const exportJSON = () => {
@@ -48,8 +54,7 @@ export default function ScoreResult() {
   }
 
   if (!report) return null
-  const inputs = (report as any).inputs ?? undefined
-  const analysis = analyseReport(report.breakdown, inputs)
+  const analysis = analyseReport(report.breakdown, decryptedInputs ?? undefined)
 
   const SOURCE_META: Record<string, { label: string; Icon: typeof Upload }> = {
     upload: { label: 'Bank Upload',   Icon: Upload },
@@ -77,6 +82,11 @@ export default function ScoreResult() {
             <SrcIcon size={11} className="shrink-0" />
             {src.label}
           </span>
+          {report.encrypted_inputs && (
+            <span className="flex items-center gap-1.5 text-xs text-emerald-400/80 bg-emerald-500/[0.06] border border-emerald-500/15 rounded-full px-3 py-1.5">
+              <Lock size={10} className="shrink-0" /> Encrypted
+            </span>
+          )}
           {report.data_source === 'form' && (
             <span className="text-xs text-amber-400/70 bg-amber-500/[0.06] border border-amber-500/15 rounded-full px-3 py-1.5">
               Simulation
@@ -125,7 +135,7 @@ export default function ScoreResult() {
                     <motion.button
                       whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
                       transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-                      onClick={() => nav('/loan/apply')}
+                      onClick={() => nav('/loan/apply', { state: { report } })}
                       className="btn-primary w-full mt-2 flex items-center justify-center gap-2"
                     >
                       Apply for loan <ArrowRight size={15} />
@@ -152,6 +162,9 @@ export default function ScoreResult() {
             </div>
           </div>
         </SlideUp>
+
+        {/* ── ZK Privacy Card ───────────────────────────── */}
+        <ZKPrivacyCard report={report} />
 
         {/* ── Strengths ─────────────────────────────────── */}
         {analysis.strengths.length > 0 && (

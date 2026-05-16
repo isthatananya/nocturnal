@@ -38,6 +38,7 @@ class ScoreRequest(BaseModel):
 
     signed_by: str = Field(default="unknown", description="Data source identifier")
     data_source: str = Field(default="upload", description="upload | form | pan")
+    encrypted_inputs: str | None = Field(default=None, description="AES-256-GCM encrypted feature blob from the client")
 
 
 class Breakdown(BaseModel):
@@ -61,6 +62,7 @@ class ScoreResponse(BaseModel):
     breakdown: Breakdown
     generated_at: str
     data_source: str = "upload"
+    encrypted_inputs: str | None = None
     cached: bool = False
     loan_applied: bool = False
     loan_tx_hash: str | None = None

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { FeatureVector, Report, User } from '../types'
+import { encryptInputs } from './crypto'
 
 const http = axios.create({
   baseURL: '/api',
@@ -28,8 +29,10 @@ export const auth = {
 }
 
 export const credit = {
-  score: (features: FeatureVector) =>
-    http.post<Report>('/score', features).then(r => r.data),
+  score: async (features: FeatureVector): Promise<Report> => {
+    const encrypted_inputs = await encryptInputs(features)
+    return http.post<Report>('/score', { ...features, encrypted_inputs }).then(r => r.data)
+  },
 
   reports: () =>
     http.get<Report[]>('/reports').then(r => r.data),

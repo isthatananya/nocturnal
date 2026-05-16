@@ -380,6 +380,28 @@ export default function Score() {
           <FileDropzone onFile={handleFile} />
           {error && <p className="text-red-400 text-sm mt-4">{error}</p>}
 
+          <div className="mt-5">
+            <p className="text-xs text-zinc-500 mb-2">Download sample datasets by tier</p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { tier: 'prime',  label: 'Prime',  color: 'text-white/60 border-white/15' },
+                { tier: 'gold',   label: 'Gold',   color: 'text-yellow-400/70 border-yellow-400/25' },
+                { tier: 'silver', label: 'Silver', color: 'text-zinc-300/70 border-zinc-300/25' },
+                { tier: 'bronze', label: 'Bronze', color: 'text-amber-500/70 border-amber-500/25' },
+                { tier: 'none',   label: 'None',   color: 'text-zinc-500 border-zinc-500/25' },
+              ].map(({ tier, label, color }) => (
+                <a
+                  key={tier}
+                  href={`/dataset/upload/tier_${tier}.csv`}
+                  download
+                  className={`flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg border bg-white/3 hover:bg-white/6 transition-colors ${color}`}
+                >
+                  <Download size={11} /> {label}
+                </a>
+              ))}
+            </div>
+          </div>
+
           <div className="mt-8">
             <p className="text-zinc-500 text-sm mb-3 text-center">or try a demo profile</p>
             <div className="grid grid-cols-2 gap-3">
@@ -444,11 +466,11 @@ export default function Score() {
           <div className="glass rounded-xl p-4 text-xs text-zinc-500 space-y-1">
             <p className="font-medium text-zinc-400">Demo PAN numbers to try</p>
             {[
-              ['PRIYA0001A', 'Prime (~900)'],
-              ['RAHUL0002B', 'Gold (~720)'],
-              ['ANITA0003C', 'Silver (~612)'],
-              ['SURESH004D', 'Bronze (~510)'],
-              ['MEENA0005E', 'None (~312)'],
+              ['ZKPAN0016P', 'Prime (~900) · idx 16'],
+              ['ZKPAN0012G', 'Gold (~750) · idx 12'],
+              ['ZKPAN0008S', 'Silver (~642) · idx 8'],
+              ['ZKPAN0004B', 'Bronze (~540) · idx 4'],
+              ['ZKPAN0000N', 'None (~318) · idx 0'],
             ].map(([p, label]) => (
               <button key={p} onClick={() => { setPan(p); setError(null) }}
                 className="block w-full text-left hover:text-zinc-300 transition-colors font-mono">

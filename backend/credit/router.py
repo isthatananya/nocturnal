@@ -67,24 +67,9 @@ async def score_user(
             "inquiry_pts": result.inquiry_pts,
             "adjustment": result.adjustment,
         },
-        # Input snapshot — stored so the frontend can generate precise advice
-        "inputs": {
-            "monthly_income": body.monthly_income,
-            "monthly_emi_obligations": body.monthly_emi_obligations,
-            "dpd_max_12m": body.dpd_max_12m,
-            "missed_emi_12m": body.missed_emi_12m,
-            "has_settled_account": body.has_settled_account,
-            "credit_history_months": body.credit_history_months,
-            "hard_inquiries_6m": body.hard_inquiries_6m,
-            "credit_card_utilization": body.credit_card_utilization,
-            "active_loan_accounts": body.active_loan_accounts,
-            "secured_loans_count": body.secured_loans_count,
-            "employment_type": body.employment_type,
-            "employment_months": body.employment_months,
-            "bank_bounce_count_12m": body.bank_bounce_count_12m,
-            "itr_filed": body.itr_filed,
-            "existing_cibil_score": body.existing_cibil_score,
-        },
+        # Encrypted input blob — the server stores this opaque ciphertext but cannot decrypt it.
+        # Decryption requires the device key stored only in the user's browser localStorage.
+        "encrypted_inputs": body.encrypted_inputs,
         "data_source": body.data_source,
         "generated_at": now,
         "cached": False,

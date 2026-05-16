@@ -6,26 +6,26 @@ export type ProofStep = 'idle' | 'witness' | 'proving' | 'signing' | 'submitting
 const STEPS: { step: ProofStep; label: string; tooltip: string; icon: typeof Shield }[] = [
   {
     step: 'witness',
-    label: 'Preparing witness',
-    tooltip: 'Your credit tier is being packaged as a private input. No one — not even ZKCredit — can see it.',
+    label: 'Building witness from credit tier commitment',
+    tooltip: 'Your credit tier is encoded as a private witness. The exact score, income, and history remain hidden — only the tier threshold is committed.',
     icon: Lock,
   },
   {
     step: 'proving',
-    label: 'Generating ZK proof',
-    tooltip: 'A mathematical proof is being created that says "this user qualifies" — without revealing why.',
+    label: 'Generating ZK-SNARK proof (Midnight compact)',
+    tooltip: 'A zero-knowledge proof is computed locally in your browser. It proves tier eligibility without revealing any underlying credit data.',
     icon: Shield,
   },
   {
     step: 'signing',
-    label: 'Awaiting wallet signature',
-    tooltip: 'Sign to authorize the proof transaction in Lace.',
+    label: 'Signing proof with Lace wallet',
+    tooltip: 'Sign the proof transaction in your Lace wallet to authorise the on-chain submission.',
     icon: Loader,
   },
   {
     step: 'submitting',
-    label: 'Submitting to Midnight',
-    tooltip: 'Your proof is being verified on-chain.',
+    label: 'Submitting to Midnight preprod smart contract',
+    tooltip: 'The Midnight contract verifies the ZK proof on-chain. If valid, the loan commitment is recorded without any credit data touching the ledger.',
     icon: Send,
   },
 ]

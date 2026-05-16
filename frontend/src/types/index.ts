@@ -27,6 +27,7 @@ export interface Report {
   cached: boolean
   loan_applied: boolean
   loan_tx_hash: string | null
+  encrypted_inputs?: string   // AES-256-GCM blob; decryptable only on originating device
 }
 
 export interface User {

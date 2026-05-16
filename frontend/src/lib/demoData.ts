@@ -1,4 +1,5 @@
 import type { FeatureVector } from '../types'
+import panProfileData from '../data/pan_profiles.json'
 
 export interface DemoProfile {
   name: string
@@ -168,13 +169,10 @@ export const DEMO_PROFILES: DemoProfile[] = [
   },
 ]
 
-// PAN lookup mock — maps numeric part of PAN to a demo profile (excluding Vikram)
+// PAN lookup — maps 4-digit numeric part of PAN to one of 20 tier-distributed profiles.
+// Indices 0-3: None, 4-7: Bronze, 8-11: Silver, 12-15: Gold, 16-19: Prime.
 export function mockPanLookup(pan: string): FeatureVector {
-  const numPart = parseInt(pan.slice(5, 9)) || 0
-  const profile = DEMO_PROFILES[numPart % 5]
-  return {
-    ...profile.features,
-    data_source: 'pan',
-    signed_by: 'Experian_India_Simulated',
-  }
+  const idx = (parseInt(pan.slice(5, 9)) || 0) % 20
+  const profile = panProfileData.profiles[idx] as FeatureVector
+  return { ...profile, data_source: 'pan', signed_by: 'Experian_India_Simulated' }
 }
