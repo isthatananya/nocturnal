@@ -45,9 +45,9 @@ pure circuit maxLoanForTier(tier: Uint<8>): Uint<64> {
 }
 
 pure circuit rateForTier(tier: Uint<8>): Uint<16> {
-  if tier >= 4 { return 700;  }  // 7%
-  if tier >= 3 { return 1100; }  // 11%
-  if tier >= 2 { return 1600; }  // 16%
+  if tier >= 4 { return 1050; }  // 10.5%
+  if tier >= 3 { return 1400; }  // 14%
+  if tier >= 2 { return 1800; }  // 18%
   return 2400;                    // 24% (Bronze)
 }
 
