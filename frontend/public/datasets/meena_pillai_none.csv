@@ -1,0 +1,2 @@
+monthly_income,monthly_emi_obligations,dpd_max_12m,missed_emi_12m,has_settled_account,credit_history_months,hard_inquiries_6m,credit_card_utilization,active_loan_accounts,secured_loans_count,employment_type,employment_months,bank_bounce_count_12m,itr_filed,existing_cibil_score,signed_by
+18000,9900,95,4,false,8,5,0.88,1,0,self_employed,6,4,false,,Manual_Upload
