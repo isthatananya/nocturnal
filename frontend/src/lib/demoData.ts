@@ -100,7 +100,7 @@ export const DEMO_PROFILES: DemoProfile[] = [
       dpd_max_12m: 40,
       missed_emi_12m: 1,
       has_settled_account: false,
-      credit_history_months: 18,
+      credit_history_months: 24,
       hard_inquiries_6m: 3,
       credit_card_utilization: 0.72,
       active_loan_accounts: 2,
