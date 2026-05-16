@@ -27,6 +27,7 @@ const comparison = [
 
 /* ── Mock product preview card ──────────────────────────── */
 function ProductPreview() {
+  const nav = useNavigate()
   return (
     <motion.div
       animate={{ y: [0, -10, 0] }}
@@ -73,7 +74,7 @@ function ProductPreview() {
           </div>
         ))}
 
-        <button className="btn-primary w-full mt-5 text-sm py-2.5">
+        <button onClick={() => nav("/auth/signup")} className="btn-primary w-full mt-5 text-sm py-2.5">
           Apply for loan <ArrowRight size={14} />
         </button>
       </div>

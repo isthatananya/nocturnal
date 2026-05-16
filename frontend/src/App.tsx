@@ -32,6 +32,13 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+function GuestOnly({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth()
+  if (loading) return <Spinner />
+  if (user) return <Navigate to="/dashboard" replace />
+  return <>{children}</>
+}
+
 function Wrap({ children }: { children: React.ReactNode }) {
   return (
     <RequireAuth>
@@ -48,9 +55,9 @@ export default function App() {
     <>
       <AnimatePresence mode="wait">
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
-          <Route path="/auth/login"  element={<PageTransition><Login /></PageTransition>} />
-          <Route path="/auth/signup" element={<PageTransition><Signup /></PageTransition>} />
+          <Route path="/" element={<GuestOnly><PageTransition><Landing /></PageTransition></GuestOnly>} />
+          <Route path="/auth/login"  element={<GuestOnly><PageTransition><Login /></PageTransition></GuestOnly>} />
+          <Route path="/auth/signup" element={<GuestOnly><PageTransition><Signup /></PageTransition></GuestOnly>} />
 
           <Route path="/dashboard"    element={<Wrap><Dashboard /></Wrap>} />
           <Route path="/score"        element={<Wrap><Score /></Wrap>} />
