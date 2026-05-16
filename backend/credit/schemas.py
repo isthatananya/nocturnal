@@ -37,6 +37,7 @@ class ScoreRequest(BaseModel):
                                               description="Self-reported CIBIL score (optional)")
 
     signed_by: str = Field(default="unknown", description="Data source identifier")
+    data_source: str = Field(default="upload", description="upload | form | pan")
 
 
 class Breakdown(BaseModel):
@@ -59,6 +60,7 @@ class ScoreResponse(BaseModel):
     term_months: int | None
     breakdown: Breakdown
     generated_at: str
+    data_source: str = "upload"
     cached: bool = False
     loan_applied: bool = False
     loan_tx_hash: str | None = None

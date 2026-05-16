@@ -1,37 +1,50 @@
 from dataclasses import dataclass
 
-# India-specific credit scoring model
-# Aligned with CIBIL/Experian India methodology
-# Total base score: 100 pts + adjustments, clamped to 0-100
+# India-specific credit scoring model — CIBIL-aligned (300-900 display scale)
+#
+# Internal raw score: 0-100 pts from five factors + adjustment
+# Display score:      300 + raw * 6  → range 300-900
+#
+# Tier thresholds (on 300-900 scale):
+#   Prime  780+   ≡ raw ≥80   — ₹10 lakh, 10.5% APR
+#   Gold   690-779 ≡ raw 65-79 — ₹5 lakh,  14%   APR
+#   Silver 600-689 ≡ raw 50-64 — ₹1 lakh,  18%   APR
+#   Bronze 510-599 ≡ raw 35-49 — ₹25,000,  24%   APR
+#   None   300-509 ≡ raw <35   — no loan
 
-# (min, max_exclusive, tier_id, label, loan_limit_tDUST, apr, term_months)
+# (cibil_lo, cibil_hi_exclusive, tier_id, label, loan_limit_inr, apr, term_months)
 _TIERS = [
-    (80, 101, 4, "Prime",  20000, "10.5%", 60),
-    (65,  80, 3, "Gold",   7500,  "14%",   36),
-    (50,  65, 2, "Silver", 2000,  "18%",   24),
-    (35,  50, 1, "Bronze", 500,   "24%",   12),
-    (0,   35, 0, "None",   0,     None,    None),
+    (780, 901, 4, "Prime",  1000000, "10.5%", 60),
+    (690, 780, 3, "Gold",    500000, "14%",   36),
+    (600, 690, 2, "Silver",  100000, "18%",   24),
+    (510, 600, 1, "Bronze",   25000, "24%",   12),
+    (300, 510, 0, "None",         0,  None,  None),
 ]
+
+
+def _to_cibil(raw: int) -> int:
+    """Map raw 0-100 score to 300-900 display scale."""
+    return 300 + int(max(0, min(100, raw)) * 6)
 
 
 @dataclass
 class ScoreResult:
-    score: int
+    score: int          # CIBIL-scale 300-900
     tier: int
     tier_label: str
-    loan_limit: int
+    loan_limit: int     # INR
     interest_rate: str | None
     term_months: int | None
-    payment_pts: int      # max 35 — payment history (DPD, missed EMIs, settled accounts)
-    foir_pts: int         # max 25 — Fixed Obligation-to-Income Ratio
-    history_pts: int      # max 15 — credit history age
-    credit_mix_pts: int   # max 15 — utilization + loan mix
-    inquiry_pts: int      # max 10 — hard inquiries in last 6 months
-    adjustment: int       # bonus/penalty from employment, bounces, ITR, CIBIL
+    payment_pts: int    # max 35
+    foir_pts: int       # max 25
+    history_pts: int    # max 15
+    credit_mix_pts: int # max 15
+    inquiry_pts: int    # max 10
+    adjustment: int
 
 
 def _payment_pts(dpd_max: int, missed: int, settled: bool) -> int:
-    """Payment history — 35 pts max. Biggest single factor in India."""
+    """Payment history — 35 pts max."""
     if settled:
         return 0
     if dpd_max > 90 or missed >= 5:
@@ -41,84 +54,54 @@ def _payment_pts(dpd_max: int, missed: int, settled: bool) -> int:
     if dpd_max > 30 or missed >= 1:
         return max(0, 18 - missed * 3)
     if dpd_max > 0:
-        return 28   # late but under 30 DPD, no misses
-    return 35       # perfect record
+        return 28
+    return 35
 
 
 def _foir_pts(monthly_emi: float, monthly_income: float) -> int:
-    """FOIR (Fixed Obligation to Income Ratio) — 25 pts max.
-    Indian lenders typically cap FOIR at 50-55% for salaried applicants.
-    """
+    """FOIR (Fixed Obligation to Income Ratio) — 25 pts max."""
     ratio = monthly_emi / monthly_income if monthly_income > 0 else 1.0
-    if ratio <= 0.25:
-        return 25
-    if ratio <= 0.35:
-        return 20
-    if ratio <= 0.45:
-        return 14
-    if ratio <= 0.55:
-        return 7
+    if ratio <= 0.25: return 25
+    if ratio <= 0.35: return 20
+    if ratio <= 0.45: return 14
+    if ratio <= 0.55: return 7
     return 0
 
 
 def _history_pts(months: int) -> int:
     """Age of oldest credit account — 15 pts max."""
-    if months >= 84:   # 7+ years
-        return 15
-    if months >= 60:   # 5-6 years
-        return 13
-    if months >= 36:   # 3-4 years
-        return 10
-    if months >= 24:   # 2 years
-        return 7
-    if months >= 12:   # 1 year
-        return 4
-    if months >= 6:    # 6-11 months
-        return 2
+    if months >= 84: return 15
+    if months >= 60: return 13
+    if months >= 36: return 10
+    if months >= 24: return 7
+    if months >= 12: return 4
+    if months >= 6:  return 2
     return 0
 
 
 def _credit_mix_pts(cc_util: float, active_loans: int, secured_loans: int) -> int:
-    """Credit utilization + loan mix — 15 pts max.
-    Ideal: ≤30% utilization with a mix of secured and unsecured loans.
-    """
-    if cc_util <= 0.20:
-        util = 6
-    elif cc_util <= 0.30:
-        util = 5
-    elif cc_util <= 0.50:
-        util = 3
-    elif cc_util <= 0.75:
-        util = 1
-    else:
-        util = 0
+    """Credit utilization + loan mix — 15 pts max."""
+    if cc_util <= 0.20:   util = 6
+    elif cc_util <= 0.30: util = 5
+    elif cc_util <= 0.50: util = 3
+    elif cc_util <= 0.75: util = 1
+    else:                 util = 0
 
-    if 1 <= active_loans <= 3 and secured_loans > 0:
-        mix = 9   # optimal: moderate leverage with secured anchor
-    elif 1 <= active_loans <= 3:
-        mix = 7   # active but unsecured only
-    elif active_loans == 0:
-        mix = 4   # thin file — no active credit
-    elif active_loans <= 5:
-        mix = 5   # moderate over-leverage
-    else:
-        mix = 2   # heavily leveraged
+    if 1 <= active_loans <= 3 and secured_loans > 0: mix = 9
+    elif 1 <= active_loans <= 3:                     mix = 7
+    elif active_loans == 0:                          mix = 4
+    elif active_loans <= 5:                          mix = 5
+    else:                                            mix = 2
 
     return min(util + mix, 15)
 
 
 def _inquiry_pts(hard_inquiries_6m: int) -> int:
-    """Hard inquiries in last 6 months — 10 pts max.
-    Multiple applications in a short window is a strong distress signal.
-    """
-    if hard_inquiries_6m == 0:
-        return 10
-    if hard_inquiries_6m == 1:
-        return 8
-    if hard_inquiries_6m == 2:
-        return 6
-    if hard_inquiries_6m == 3:
-        return 3
+    """Hard inquiries in last 6 months — 10 pts max."""
+    if hard_inquiries_6m == 0: return 10
+    if hard_inquiries_6m == 1: return 8
+    if hard_inquiries_6m == 2: return 6
+    if hard_inquiries_6m == 3: return 3
     return 0
 
 
@@ -132,42 +115,27 @@ def _calc_adjustment(
     adj = 0
     etype = employment_type.lower()
 
-    # Employment stability
     if etype == "salaried":
-        if employment_months >= 36:
-            adj += 4
-        elif employment_months >= 24:
-            adj += 2
-        elif employment_months >= 12:
-            adj += 1
+        if employment_months >= 36:   adj += 4
+        elif employment_months >= 24: adj += 2
+        elif employment_months >= 12: adj += 1
     elif etype in ("self_employed", "business_owner"):
-        if employment_months >= 36:
-            adj += 2
-        elif employment_months >= 24:
-            adj += 1
+        if employment_months >= 36:   adj += 2
+        elif employment_months >= 24: adj += 1
     elif etype == "unemployed":
         adj -= 8
 
-    # Banking behaviour (ECS/NACH bounce rate)
-    if bank_bounce_count == 0:
-        adj += 1
-    elif bank_bounce_count <= 2:
-        adj -= 3
-    else:
-        adj -= 7
+    if bank_bounce_count == 0:   adj += 1
+    elif bank_bounce_count <= 2: adj -= 3
+    else:                        adj -= 7
 
-    # Tax compliance — signals formal income
     if itr_filed:
         adj += 2
 
-    # CIBIL cross-reference (optional self-reported)
     if existing_cibil_score is not None:
-        if existing_cibil_score >= 750:
-            adj += 3
-        elif existing_cibil_score >= 700:
-            adj += 1
-        elif existing_cibil_score < 600:
-            adj -= 3
+        if existing_cibil_score >= 750:   adj += 3
+        elif existing_cibil_score >= 700: adj += 1
+        elif existing_cibil_score < 600:  adj -= 3
 
     return adj
 
@@ -199,15 +167,16 @@ def compute_score(
         bank_bounce_count_12m, itr_filed, existing_cibil_score,
     )
 
-    total = max(0, min(100, pay + foir + hist + mix + inq + adj))
+    raw_total = max(0, min(100, pay + foir + hist + mix + inq + adj))
+    cibil = _to_cibil(raw_total)
 
     for lo, hi, tier_id, label, limit, rate, term in _TIERS:
-        if lo <= total < hi:
+        if lo <= cibil < hi:
             return ScoreResult(
-                score=total, tier=tier_id, tier_label=label,
+                score=cibil, tier=tier_id, tier_label=label,
                 loan_limit=limit, interest_rate=rate, term_months=term,
                 payment_pts=pay, foir_pts=foir, history_pts=hist,
                 credit_mix_pts=mix, inquiry_pts=inq, adjustment=adj,
             )
 
-    return ScoreResult(total, 0, "None", 0, None, None, pay, foir, hist, mix, inq, adj)
+    return ScoreResult(cibil, 0, "None", 0, None, None, pay, foir, hist, mix, inq, adj)
