@@ -4,32 +4,27 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── CSS custom properties (Fey-aligned palette) ──────────────── */
+/* ── Design tokens — Apple-style monochrome ─────────────────── */
 :root {
-  /* Fey-aligned: enough contrast headroom between layers */
-  --bg:          #08080e;   /* page background — very dark neutral */
-  --bg-2:        #0f0f17;   /* subtle raise, inputs */
-  --bg-3:        #161620;   /* cards / glass surfaces  */
-  --bg-4:        #1e1e2a;   /* elevated panels, hover states */
-  --bg-5:        #26263a;   /* tooltips, menus */
-  --border:      rgba(255,255,255,0.09);
-  --border-2:    rgba(255,255,255,0.16);
-  --border-3:    rgba(255,255,255,0.26);
-  --text-1:      #ffffff;
-  --text-2:      #dde1ef;
-  --text-3:      #9498b0;
-  --text-4:      #63677e;
-  --text-5:      #42455a;
-  --accent:      #6366f1;
-  --accent-2:    #818cf8;
-  --accent-glow: rgba(99,102,241,0.35);
+  --bg:       #000000;   /* true black */
+  --bg-2:     #0a0a0a;   /* inputs */
+  --bg-3:     #111111;   /* card surfaces */
+  --bg-4:     #1a1a1a;   /* hover / elevated */
+  --bg-5:     #222222;   /* tooltips, menus */
+  --border:   rgba(255,255,255,0.08);
+  --border-2: rgba(255,255,255,0.14);
+  --border-3: rgba(255,255,255,0.24);
+  --text-1:   #f5f5f7;   /* Apple off-white */
+  --text-2:   #d2d2d7;
+  --text-3:   #86868b;
+  --text-4:   #6e6e73;
+  --text-5:   #3d3d3f;
+  --accent:   #f5f5f7;   /* white — primary interactive */
 }
 
 @layer base {
   html {
     background-color: var(--bg);
-    /* subtle grain — gives depth like Fey */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
     color: var(--text-2);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -45,67 +40,62 @@
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: rgba(99,102,241,0.22) transparent;
+    scrollbar-color: rgba(255,255,255,0.12) transparent;
   }
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(99,102,241,0.25); border-radius: 2px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.42); }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
 
-  ::selection { background: rgba(99,102,241,0.25); color: #fff; }
+  ::selection { background: rgba(255,255,255,0.15); color: #fff; }
 }
 
 @layer components {
 
-  /* ── Glass / card surface ──────────────────────────────────── */
-  /* Fey uses concrete dark elevated surfaces, not full transparency */
+  /* ── Elevated card surface ──────────────────────────────── */
   .glass {
     background: var(--bg-3);
     border: 1px solid var(--border);
-    box-shadow: 0 1px 0 rgba(255,255,255,0.04) inset, 0 2px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 2px 20px rgba(0,0,0,0.5);
   }
 
   .glass-hover {
     @apply glass cursor-pointer;
-    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.2s ease, transform 0.2s ease;
   }
   .glass-hover:hover {
     background: var(--bg-4);
     border-color: var(--border-2);
-    box-shadow: 0 1px 0 rgba(255,255,255,0.07) inset, 0 6px 32px rgba(0,0,0,0.55);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 6px 32px rgba(0,0,0,0.6);
     transform: translateY(-1px);
   }
   .glass-hover:active { transform: scale(0.99); }
 
-  /* ── Primary button ──────────────────────────────────────────── */
-  /* Fey-style: gradient with precise border + controlled glow */
+  /* ── Primary button — Apple white pill ──────────────────── */
   .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-2 font-semibold text-white
-           rounded-xl px-6 py-3 select-none cursor-pointer outline-none;
-    background: linear-gradient(150deg, #6d70f5 0%, #5254cc 100%);
-    border: 1px solid rgba(129,140,248,0.3);
-    box-shadow: 0 0 0 0 transparent, 0 4px 16px rgba(99,102,241,0.25),
-                inset 0 1px 0 rgba(255,255,255,0.13);
-    transition: background 0.18s ease, box-shadow 0.18s ease,
-                border-color 0.18s ease, transform 0.14s ease;
+    @apply relative inline-flex items-center justify-center gap-2 font-semibold rounded-xl
+           px-6 py-3 select-none cursor-pointer outline-none;
+    background: #f5f5f7;
+    color: #000000;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
     letter-spacing: -0.01em;
   }
   .btn-primary:hover {
-    background: linear-gradient(150deg, #818cf8 0%, #6366f1 100%);
-    border-color: rgba(165,180,252,0.45);
-    box-shadow: 0 0 0 0 transparent, 0 6px 24px rgba(99,102,241,0.42),
-                inset 0 1px 0 rgba(255,255,255,0.18);
+    background: #ffffff;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
     transform: translateY(-1px);
   }
   .btn-primary:active {
     transform: translateY(0) scale(0.975);
-    box-shadow: 0 2px 8px rgba(99,102,241,0.18), inset 0 1px 0 rgba(255,255,255,0.08);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
   }
   .btn-primary:disabled {
-    opacity: 0.4; cursor: not-allowed; transform: none; pointer-events: none;
+    opacity: 0.35; cursor: not-allowed; transform: none; pointer-events: none;
   }
   .btn-primary:focus-visible {
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.45), 0 4px 16px rgba(99,102,241,0.25);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.25), 0 2px 8px rgba(0,0,0,0.3);
   }
 
   /* ── Ghost button ─────────────────────────────────────────── */
@@ -116,7 +106,7 @@
     background: transparent;
     border: 1px solid var(--border);
     letter-spacing: -0.01em;
-    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, transform 0.14s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
   }
   .btn-ghost:hover {
     background: var(--bg-4);
@@ -125,7 +115,7 @@
     transform: translateY(-1px);
   }
   .btn-ghost:active { transform: scale(0.975); }
-  .btn-ghost:focus-visible { box-shadow: 0 0 0 3px rgba(99,102,241,0.35); }
+  .btn-ghost:focus-visible { box-shadow: 0 0 0 3px rgba(255,255,255,0.18); }
 
   /* ── Input fields ─────────────────────────────────────────── */
   .input-field {
@@ -133,7 +123,7 @@
     background: var(--bg-2);
     border: 1px solid var(--border);
     color: var(--text-1);
-    transition: background 0.18s, border-color 0.18s, box-shadow 0.18s;
+    transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
     letter-spacing: -0.01em;
   }
   .input-field::placeholder { color: var(--text-5); }
@@ -142,9 +132,9 @@
     border-color: var(--border-2);
   }
   .input-field:focus {
-    background: rgba(99,102,241,0.06);
-    border-color: rgba(99,102,241,0.5);
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(255,255,255,0.28);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
   }
 
   .label {
@@ -171,33 +161,33 @@
     border-radius: 8px;
   }
 
-  /* ── App header (sticky nav) ─────────────────────────────── */
+  /* ── App header ─────────────────────────────────────────── */
   .app-header {
     @apply sticky top-0 z-40 flex items-center justify-between px-6 py-4;
-    background: rgba(9,9,12,0.82);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    background: rgba(0,0,0,0.82);
+    backdrop-filter: blur(24px) saturate(1.4);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
     border-bottom: 1px solid var(--border);
   }
 
-  /* ── Gradient text (brand heading) ─────────────────────────── */
+  /* ── Gradient text ─────────────────────────────────────────── */
   .gradient-text {
     @apply text-transparent bg-clip-text;
-    background-image: linear-gradient(135deg, #818cf8 0%, #a78bfa 60%, #818cf8 100%);
+    background-image: linear-gradient(135deg, #f5f5f7 0%, #86868b 50%, #f5f5f7 100%);
     background-size: 200%;
   }
 
-  /* ── Glow dot (live/active indicator) ────────────────────── */
+  /* ── Glow dot ────────────────────────────────────────────── */
   .glow-dot {
-    @apply w-1.5 h-1.5 rounded-full bg-indigo-400 inline-block shrink-0;
-    box-shadow: 0 0 5px 2px rgba(99,102,241,0.55);
+    @apply w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block shrink-0;
+    box-shadow: 0 0 5px 2px rgba(52,211,153,0.50);
     animation: pulse 2s ease-in-out infinite;
   }
 
   /* ── Section eyebrow label ────────────────────────────────── */
   .eyebrow {
     @apply text-xs font-bold tracking-widest uppercase;
-    color: var(--accent-2);
+    color: var(--text-4);
   }
 
   /* ── Page wrapper ─────────────────────────────────────────── */
@@ -209,7 +199,6 @@
 
 @layer utilities {
   .text-balance { text-wrap: balance; }
-  /* Precise text colors using CSS vars */
   .text-ink   { color: var(--text-1); }
   .text-ink-2 { color: var(--text-2); }
   .text-ink-3 { color: var(--text-3); }

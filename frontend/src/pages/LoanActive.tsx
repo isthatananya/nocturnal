@@ -22,7 +22,7 @@ export default function LoanActive() {
 
   if (!loan) return (
     <div className="page min-h-screen flex items-center justify-center">
-      <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+      <div className="w-5 h-5 border-2 border-white/20 border-t-transparent rounded-full animate-spin" />
     </div>
   )
 
@@ -85,7 +85,7 @@ export default function LoanActive() {
           >
             <p className="text-slate-600 text-xs mb-2">On-chain transaction</p>
             <div className="flex items-center justify-between gap-3">
-              <p className="text-xs font-mono text-indigo-400 truncate">{loan.loan_tx_hash}</p>
+              <p className="text-xs font-mono text-white/55 truncate">{loan.loan_tx_hash}</p>
               <a href={`https://explorer.preprod.midnight.network/tx/${loan.loan_tx_hash}`}
                 target="_blank" rel="noopener noreferrer"
                 className="shrink-0 p-1.5 rounded-lg hover:bg-white/5 text-slate-600 hover:text-slate-300 transition-colors">

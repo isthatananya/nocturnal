@@ -51,13 +51,13 @@ export default function ProofProgress({ current, error }: Props) {
 
         return (
           <div key={step} className={`flex items-start gap-4 p-4 rounded-xl border transition-all duration-300 ${
-            active ? 'border-indigo-500/40 bg-indigo-500/5' :
+            active ? 'border-white/12 bg-white/4' :
             done  ? 'border-white/5 bg-white/2 opacity-60' :
                     'border-white/5 opacity-30'
           }`}>
             <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
               done   ? 'bg-emerald-500/20 text-emerald-400' :
-              active ? 'bg-indigo-500/20 text-indigo-400' :
+              active ? 'bg-white/8 text-white/60' :
                        'bg-white/5 text-slate-600'
             }`}>
               {done

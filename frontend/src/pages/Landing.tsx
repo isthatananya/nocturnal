@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Shield, Zap, Lock, ArrowRight, CheckCircle, ChevronRight } from 'lucide-react'
 
-const ease = [0.16, 1, 0.3, 1]
+const ease = [0.25, 0.46, 0.45, 0.94]
 
 const steps = [
   { n: '01', title: 'Upload locally', body: "Drop your bank CSV or enter a PAN. Data is parsed in your browser — nothing touches a server." },
@@ -37,7 +37,7 @@ function ProductPreview() {
         {/* header */}
         <div className="flex items-center justify-between mb-5">
           <span className="text-xs font-semibold text-slate-500 tracking-wide uppercase">Credit Score</span>
-          <span className="chip border-indigo-500/30 text-indigo-400 bg-indigo-500/8">
+          <span className="chip border-white/12 text-white/55 bg-white/5">
             <span className="glow-dot" />Prime
           </span>
         </div>
@@ -52,8 +52,8 @@ function ProductPreview() {
               strokeDasharray="157" strokeDashoffset="20" />
             <defs>
               <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#818cf8" />
-                <stop offset="100%" stopColor="#a78bfa" />
+                <stop offset="0%" stopColor="#f5f5f7" />
+                <stop offset="100%" stopColor="#86868b" />
               </linearGradient>
             </defs>
             <text x="65" y="68" textAnchor="middle" fontSize="22" fontWeight="700" fill="#f1f5f9">792</text>
@@ -126,7 +126,7 @@ export default function Landing() {
         {/* background glow — Fey-style: minimal single radial, not loud */}
         <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-[500px] bg-hero-glow opacity-80" />
-          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-indigo-600/[0.06] blur-[100px]" />
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-white/[0.025] blur-[100px]" />
         </div>
 
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
@@ -136,8 +136,8 @@ export default function Landing() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease }}
-              className="inline-flex items-center gap-2 text-xs font-semibold text-indigo-300
-                         border border-indigo-500/25 bg-indigo-500/8 rounded-full px-4 py-1.5 mb-8"
+              className="inline-flex items-center gap-2 text-xs font-semibold text-white/70
+                         border border-white/12 bg-white/5 rounded-full px-4 py-1.5 mb-8"
             >
               <span className="glow-dot" />
               Built on Midnight · Zero-Knowledge Privacy
@@ -172,16 +172,16 @@ export default function Landing() {
               className="flex items-center gap-3 flex-wrap"
             >
               <motion.button
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                transition={{ type: 'spring', stiffness: 380, damping: 18 }}
+                whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 32 }}
                 onClick={() => nav('/auth/signup')}
                 className="btn-primary text-base px-7 py-3.5"
               >
                 Check my credit <ArrowRight size={16} />
               </motion.button>
               <motion.button
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                transition={{ type: 'spring', stiffness: 380, damping: 18 }}
+                whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 32 }}
                 onClick={() => nav('/auth/login')}
                 className="btn-ghost text-base px-7 py-3.5"
               >
@@ -237,10 +237,10 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.55, delay: i * 0.07, ease }}
-              whileHover={{ y: -3 }}
+              whileHover={{ y: -4, scale: 1.005 }}
               className="glass rounded-2xl p-6 transition-shadow hover:shadow-card-hover"
             >
-              <span className="text-5xl font-black text-indigo-500/15 leading-none">{s.n}</span>
+              <span className="text-5xl font-black text-white/10 leading-none">{s.n}</span>
               <h3 className="font-semibold text-slate-100 mt-3 mb-2 text-sm">{s.title}</h3>
               <p className="text-slate-500 text-sm leading-relaxed">{s.body}</p>
             </motion.div>
@@ -269,15 +269,15 @@ export default function Landing() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-60px' }}
               transition={{ duration: 0.55, delay: i * 0.09, ease }}
-              whileHover={{ y: -4 }}
+              whileHover={{ y: -5, scale: 1.008 }}
               className="glass rounded-2xl p-8 group cursor-default"
               style={{ transition: 'box-shadow 0.25s ease' }}
             >
-              <div className="w-11 h-11 rounded-xl bg-indigo-500/10 border border-indigo-500/20
+              <div className="w-11 h-11 rounded-xl bg-white/6 border border-white/10
                               flex items-center justify-center mb-5
-                              group-hover:bg-indigo-500/18 group-hover:border-indigo-500/35
+                              group-hover:bg-white/8 group-hover:border-white/18
                               transition-all duration-300">
-                <f.icon size={20} className="text-indigo-400" />
+                <f.icon size={20} className="text-white/55" />
               </div>
               <h3 className="font-semibold text-slate-100 mb-2">{f.title}</h3>
               <p className="text-slate-500 text-sm leading-relaxed">{f.body}</p>
@@ -309,7 +309,7 @@ export default function Landing() {
           <div className="grid grid-cols-3 text-xs text-slate-500 px-6 py-4 border-b border-white/5 font-semibold tracking-wide uppercase">
             <span />
             <span className="text-center">Traditional DeFi</span>
-            <span className="text-center text-indigo-400">ZKCredit</span>
+            <span className="text-center text-white/55">ZKCredit</span>
           </div>
           {comparison.map(([label, bad, good]) => (
             <div key={label} className="grid grid-cols-3 px-6 py-4 last:border-0 transition-colors"
@@ -327,8 +327,8 @@ export default function Landing() {
       {/* ── CTA ─────────────────────────────────────────── */}
       <section className="py-32 px-8 relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-gradient-radial from-indigo-500/[0.12] via-transparent to-transparent" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-indigo-600/[0.08] blur-[100px]" />
+          <div className="absolute inset-0 bg-gradient-radial from-white/[0.03] via-transparent to-transparent" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-white/[0.02] blur-[100px]" />
         </div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -342,8 +342,8 @@ export default function Landing() {
           </h2>
           <p className="text-slate-400 text-lg mb-10">No collateral. No data exposure. Just math.</p>
           <motion.button
-            whileHover={{ scale: 1.025 }} whileTap={{ scale: 0.97 }}
-            transition={{ type: 'spring', stiffness: 380, damping: 18 }}
+            whileHover={{ scale: 1.022, y: -1 }} whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 32 }}
             onClick={() => nav('/auth/signup')}
             className="btn-primary text-base px-10 py-4"
           >
@@ -354,7 +354,7 @@ export default function Landing() {
 
       {/* ── Footer ──────────────────────────────────────── */}
       <footer className="border-t border-white/5 px-8 py-8 flex items-center justify-between text-slate-600 text-sm max-w-5xl mx-auto">
-        <span className="font-semibold text-slate-500">ZK<span className="text-indigo-500/70">Credit</span></span>
+        <span className="font-semibold text-slate-500">ZK<span className="text-white/40">Credit</span></span>
         <span>Built on Midnight · Hackathon May 2026</span>
       </footer>
     </div>

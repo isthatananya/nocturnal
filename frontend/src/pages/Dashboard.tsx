@@ -149,7 +149,7 @@ export default function Dashboard() {
                       {latest.tier > 0 && !latest.loan_applied && latest.data_source !== 'form' && (
                         <motion.button
                           whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
-                          transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                          transition={{ type: 'spring', stiffness: 500, damping: 32 }}
                           onClick={() => nav('/loan/apply')}
                           className="btn-primary w-full mt-3 flex items-center justify-center gap-2"
                         >
@@ -164,7 +164,7 @@ export default function Dashboard() {
                       {latest.loan_applied && (
                         <motion.button
                           whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
-                          transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                          transition={{ type: 'spring', stiffness: 500, damping: 32 }}
                           onClick={() => nav('/loan/active')}
                           className="btn-ghost w-full mt-3 flex items-center justify-center gap-2"
                         >
@@ -181,9 +181,9 @@ export default function Dashboard() {
                 </>
               ) : (
                 <div className="flex flex-col items-center justify-center py-10 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20
+                  <div className="w-14 h-14 rounded-2xl bg-white/6 border border-white/10
                                   flex items-center justify-center mb-5">
-                    <Zap size={24} className="text-indigo-400" />
+                    <Zap size={24} className="text-white/55" />
                   </div>
                   {stale ? (
                     <>
@@ -198,7 +198,7 @@ export default function Dashboard() {
                   )}
                   <motion.button
                     whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 32 }}
                     onClick={() => nav('/score')}
                     className="btn-primary flex items-center gap-2"
                   >
@@ -227,7 +227,7 @@ export default function Dashboard() {
               <StaggerItem>
                 <motion.button
                   whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 32 }}
                   onClick={() => nav('/reports')}
                   className="btn-ghost w-full flex items-center justify-center gap-2 text-sm"
                 >
@@ -253,7 +253,7 @@ export default function Dashboard() {
               <ScoreHistoryChart reports={history} />
               <div className="flex items-center gap-5 mt-4 pt-4 border-t border-white/5 text-xs text-slate-600">
                 {[
-                  { label: 'Prime', color: '#6366f1' },
+                  { label: 'Prime', color: '#e5e5e7' },
                   { label: 'Gold', color: '#eab308' },
                   { label: 'Silver', color: '#94a3b8' },
                   { label: 'Bronze', color: '#d97706' },
@@ -278,7 +278,7 @@ export default function Dashboard() {
           >
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-slate-200 tracking-tight">Recent reports</h2>
-              <Link to="/reports" className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors">View all</Link>
+              <Link to="/reports" className="text-sm text-white/55 hover:text-white/70 transition-colors">View all</Link>
             </div>
             <div className="space-y-2">
               {history.slice(1, 4).map(r => <ReportCard key={r.report_id} report={r} />)}

@@ -5,39 +5,42 @@ export default {
   theme: {
     extend: {
       colors: {
-        midnight:     '#08080e',
-        'midnight-2': '#0f0f17',
-        'midnight-3': '#161620',
+        // Neutral near-black surfaces — Apple-style
+        midnight:     '#000000',
+        'midnight-2': '#0a0a0a',
+        'midnight-3': '#111111',
         surface: {
-          DEFAULT: '#161620',
-          raised:  '#1e1e2a',
-          overlay: '#26263a',
+          DEFAULT: '#111111',
+          raised:  '#1a1a1a',
+          overlay: '#222222',
         },
         ink: {
-          DEFAULT: '#ffffff',
-          2: '#dde1ef',
-          3: '#9498b0',
-          4: '#63677e',
-          5: '#42455a',
+          DEFAULT: '#f5f5f7',
+          2: '#d2d2d7',
+          3: '#86868b',
+          4: '#6e6e73',
+          5: '#48484a',
         },
+        // Remap "indigo" to neutral white-range so existing classes still work
         indigo: {
-          300: '#a5b4fc',
-          400: '#818cf8',
-          500: '#6366f1',
-          600: '#4f46e5',
-          700: '#4338ca',
+          300: '#e5e5e7',
+          400: '#ababab',
+          500: '#f5f5f7',
+          600: '#d2d2d7',
+          700: '#a1a1a1',
         },
+        // Remap violet → teal only for semantic status (PAN card)
         violet: {
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488',
         },
         tier: {
-          none:   '#71717a',
+          none:   '#6e6e73',
           bronze: '#d97706',
           silver: '#94a3b8',
           gold:   '#eab308',
-          prime:  '#6366f1',
+          prime:  '#f5f5f7',  // white for prime
         },
       },
       fontFamily: {
@@ -45,37 +48,30 @@ export default {
         mono: ['JetBrains Mono', 'monospace'],
       },
       boxShadow: {
-        'glow-xs': '0 0 10px rgba(99,102,241,0.18)',
-        'glow-sm': '0 0 20px rgba(99,102,241,0.28)',
-        'glow':    '0 0 36px rgba(99,102,241,0.4)',
-        'glow-lg': '0 0 60px rgba(99,102,241,0.55)',
-        // Card shadows more concrete — Fey uses real depth not just transparency
-        'card':       '0 1px 0 rgba(255,255,255,0.05) inset, 0 2px 16px rgba(0,0,0,0.5)',
-        'card-hover': '0 1px 0 rgba(255,255,255,0.08) inset, 0 8px 32px rgba(0,0,0,0.6)',
-        'lifted':     '0 1px 0 rgba(255,255,255,0.07) inset, 0 20px 56px rgba(0,0,0,0.65)',
-        'menu':       '0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.07)',
+        'glow-xs': '0 0 10px rgba(255,255,255,0.06)',
+        'glow-sm': '0 0 20px rgba(255,255,255,0.09)',
+        'glow':    '0 0 36px rgba(255,255,255,0.12)',
+        'glow-lg': '0 0 60px rgba(255,255,255,0.18)',
+        'card':       '0 1px 0 rgba(255,255,255,0.04) inset, 0 2px 16px rgba(0,0,0,0.6)',
+        'card-hover': '0 1px 0 rgba(255,255,255,0.07) inset, 0 8px 32px rgba(0,0,0,0.7)',
+        'lifted':     '0 1px 0 rgba(255,255,255,0.06) inset, 0 20px 56px rgba(0,0,0,0.7)',
+        'menu':       '0 4px 24px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.07)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':  'conic-gradient(var(--tw-gradient-stops))',
-        // Fey-style: subtle top radial glow, not full background
-        'hero-glow': 'radial-gradient(ellipse 70% 40% at 50% 0%, rgba(99,102,241,0.13) 0%, transparent 100%)',
-        'shimmer': 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.055) 50%, transparent 60%)',
+        'hero-glow': 'radial-gradient(ellipse 70% 40% at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 100%)',
+        'shimmer': 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%)',
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite',
-        'glow-pulse': 'glowPulse 2.5s ease-in-out infinite alternate',
         'shimmer':    'shimmer 2.2s linear infinite',
         'float':      'float 6s ease-in-out infinite',
         'fade-in':    'fadeIn 0.5s ease-out both',
-        'slide-up':   'slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both',
-        'scale-in':   'scaleIn 0.4s cubic-bezier(0.16,1,0.3,1) both',
+        'slide-up':   'slideUp 0.6s cubic-bezier(0.25,0.46,0.45,0.94) both',
+        'scale-in':   'scaleIn 0.4s cubic-bezier(0.25,0.46,0.45,0.94) both',
       },
       keyframes: {
-        glowPulse: {
-          '0%':   { boxShadow: '0 0 16px rgba(99,102,241,0.2)' },
-          '100%': { boxShadow: '0 0 44px rgba(99,102,241,0.6)' },
-        },
         shimmer: {
           '0%':   { backgroundPosition: '-200% 0' },
           '100%': { backgroundPosition: '200% 0' },

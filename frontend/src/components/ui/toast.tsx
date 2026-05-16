@@ -24,7 +24,7 @@ const toastVariants: Record<string, string> = {
   default: 'border-white/10 bg-slate-900/90',
   success: 'border-emerald-500/30 bg-emerald-950/80',
   error:   'border-red-500/30 bg-red-950/80',
-  info:    'border-indigo-500/30 bg-indigo-950/80',
+  info:    'border-white/12 bg-zinc-900/90',
 }
 
 interface ToastProps extends React.ComponentPropsWithoutRef<typeof ToastPrimitive.Root> {

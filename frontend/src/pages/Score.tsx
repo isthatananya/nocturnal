@@ -196,8 +196,8 @@ export default function Score() {
     return (
       <div className="page min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center gap-6">
-          <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+          <div className="w-16 h-16 rounded-2xl bg-white/6 flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-white/20 border-t-transparent rounded-full animate-spin" />
           </div>
           <div className="text-center">
             <p className="font-semibold text-slate-100">
@@ -306,8 +306,8 @@ export default function Score() {
 
           <div className="space-y-4">
             <button onClick={() => enterMode('upload')} className="group w-full glass-hover rounded-2xl p-6 text-left flex items-center gap-5">
-              <div className="w-12 h-12 rounded-xl bg-indigo-500/15 flex items-center justify-center shrink-0 group-hover:bg-indigo-500/25 transition-colors">
-                <Upload size={22} className="text-indigo-400" />
+              <div className="w-12 h-12 rounded-xl bg-white/8 flex items-center justify-center shrink-0 group-hover:bg-white/12 transition-colors">
+                <Upload size={22} className="text-white/55" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
@@ -320,8 +320,8 @@ export default function Score() {
             </button>
 
             <button onClick={() => enterMode('pan')} className="group w-full glass-hover rounded-2xl p-6 text-left flex items-center gap-5">
-              <div className="w-12 h-12 rounded-xl bg-violet-500/15 flex items-center justify-center shrink-0 group-hover:bg-violet-500/25 transition-colors">
-                <CreditCard size={22} className="text-violet-400" />
+              <div className="w-12 h-12 rounded-xl bg-white/6 flex items-center justify-center shrink-0 group-hover:bg-white/10 transition-colors">
+                <CreditCard size={22} className="text-white/60" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
@@ -365,7 +365,7 @@ export default function Score() {
           <div className="mb-8">
             <h1 className="text-2xl font-bold mb-2">Upload your financial data</h1>
             <p className="text-slate-400 text-sm">India credit profile · 15 factors · CIBIL-aligned model · Score 300–900</p>
-            <button onClick={downloadTemplate} className="flex items-center gap-2 text-xs text-indigo-400 hover:text-indigo-300 transition-colors mt-3">
+            <button onClick={downloadTemplate} className="flex items-center gap-2 text-xs text-white/55 hover:text-white/70 transition-colors mt-3">
               <Download size={13} /> Download CSV template
             </button>
           </div>
@@ -381,7 +381,7 @@ export default function Score() {
                   <div className="flex items-center justify-between mb-1">
                     <p className="text-sm font-medium text-slate-200">{p.name}</p>
                     <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${
-                      p.expectedTier === 'Prime'  ? 'text-indigo-400 bg-indigo-500/10 border-indigo-500/30' :
+                      p.expectedTier === 'Prime'  ? 'text-white/55 bg-white/6 border-white/12' :
                       p.expectedTier === 'Gold'   ? 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30' :
                       p.expectedTier === 'Silver' ? 'text-slate-300 bg-slate-300/10 border-slate-300/30' :
                       p.expectedTier === 'Bronze' ? 'text-amber-500 bg-amber-500/10 border-amber-500/30' :
@@ -477,7 +477,7 @@ export default function Score() {
 
         {/* Progress bar */}
         <div className="h-0.5 bg-white/5">
-          <div className="h-full bg-indigo-500 transition-all duration-300" style={{ width: `${(formStep / 4) * 100}%` }} />
+          <div className="h-full bg-white/80 transition-all duration-300" style={{ width: `${(formStep / 4) * 100}%` }} />
         </div>
 
         <main className="max-w-lg mx-auto px-8 py-10 space-y-5">
@@ -505,7 +505,7 @@ export default function Score() {
                 <input type="number" value={form.employment_months} onChange={e => updateForm('employment_months', e.target.value)} placeholder="e.g. 36" className={inputCls} min="0" />
               </div>
               <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" checked={form.itr_filed} onChange={e => updateForm('itr_filed', e.target.checked)} className="w-4 h-4 rounded accent-indigo-500" />
+                <input type="checkbox" checked={form.itr_filed} onChange={e => updateForm('itr_filed', e.target.checked)} className="w-4 h-4 rounded accent-white" />
                 <span className="text-sm text-slate-300">ITR filed for last financial year</span>
               </label>
             </>
@@ -528,7 +528,7 @@ export default function Score() {
                 <input type="number" value={form.bank_bounce_count_12m} onChange={e => updateForm('bank_bounce_count_12m', e.target.value)} placeholder="0" className={inputCls} min="0" />
               </div>
               <label className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" checked={form.has_settled_account} onChange={e => updateForm('has_settled_account', e.target.checked)} className="w-4 h-4 rounded accent-indigo-500" />
+                <input type="checkbox" checked={form.has_settled_account} onChange={e => updateForm('has_settled_account', e.target.checked)} className="w-4 h-4 rounded accent-white" />
                 <span className="text-sm text-slate-300">I have a settled or written-off loan account</span>
               </label>
             </>

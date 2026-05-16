@@ -35,7 +35,7 @@ export default function FactorCard({ f }: { f: FactorDetail }) {
 
       {f.tip && (
         <div className="flex items-start gap-2 mt-3 pt-3 border-t border-white/5">
-          <Lightbulb size={13} className="text-indigo-400 mt-0.5 shrink-0" />
+          <Lightbulb size={13} className="text-blue-400 mt-0.5 shrink-0" />
           <p className="text-xs text-slate-400 leading-relaxed">{f.tip}</p>
         </div>
       )}

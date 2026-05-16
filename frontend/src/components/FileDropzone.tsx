@@ -31,13 +31,13 @@ export default function FileDropzone({ onFile, accept = '.csv,.json', disabled }
       onDrop={handleDrop}
       className={`relative rounded-2xl border-2 border-dashed p-12 flex flex-col items-center gap-4 cursor-pointer transition-all duration-200 ${
         disabled ? 'opacity-50 cursor-not-allowed' :
-        dragging  ? 'border-indigo-500 bg-indigo-500/5' :
+        dragging  ? 'border-white/30 bg-white/5' :
                     'border-white/10 hover:border-white/25 hover:bg-white/2'
       }`}
     >
       <input ref={inputRef} type="file" accept={accept} onChange={handleChange} className="hidden" disabled={disabled} />
-      <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center">
-        {dragging ? <FileText size={24} className="text-indigo-400" /> : <Upload size={24} className="text-indigo-400" />}
+      <div className="w-14 h-14 rounded-2xl bg-white/6 flex items-center justify-center">
+        {dragging ? <FileText size={24} className="text-white/55" /> : <Upload size={24} className="text-white/55" />}
       </div>
       <div className="text-center">
         <p className="text-slate-200 font-medium">Drop your financial data here</p>

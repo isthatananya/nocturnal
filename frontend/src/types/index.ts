@@ -75,7 +75,7 @@ export const TIER_COLORS: Record<TierLabel, string> = {
   Bronze: 'text-amber-500',
   Silver: 'text-slate-300',
   Gold:   'text-yellow-400',
-  Prime:  'text-indigo-400',
+  Prime:  'text-white',
 }
 
 export const TIER_BG: Record<TierLabel, string> = {
@@ -83,5 +83,5 @@ export const TIER_BG: Record<TierLabel, string> = {
   Bronze: 'bg-amber-500/10 border-amber-500/30',
   Silver: 'bg-slate-300/10 border-slate-300/30',
   Gold:   'bg-yellow-400/10 border-yellow-400/30',
-  Prime:  'bg-indigo-500/10 border-indigo-500/30',
+  Prime:  'bg-white/8 border-white/20',
 }

@@ -42,7 +42,7 @@ export default function LoanSlider({ max, value, onChange, interestRate, termMon
           onChange={e => onChange(Number(e.target.value))}
           className="w-full appearance-none h-2 rounded-full outline-none cursor-pointer"
           style={{
-            background: `linear-gradient(to right, #6366f1 ${pct}%, rgba(255,255,255,0.08) ${pct}%)`,
+            background: `linear-gradient(to right, #f5f5f7 ${pct}%, rgba(255,255,255,0.08) ${pct}%)`,
           }}
         />
       </div>

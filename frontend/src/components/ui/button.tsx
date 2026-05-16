@@ -4,14 +4,14 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../../lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-midnight',
+  'inline-flex items-center justify-center gap-2 font-medium transition-all duration-150 disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-black',
   {
     variants: {
       variant: {
-        primary: 'bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl [box-shadow:0_0_20px_rgba(99,102,241,0.3)] hover:[box-shadow:0_0_32px_rgba(99,102,241,0.5)]',
-        ghost:   'bg-transparent hover:bg-white/5 text-slate-300 hover:text-white border border-white/10 hover:border-white/20 rounded-xl',
-        danger:  'bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 hover:border-red-500/40 rounded-xl',
-        link:    'text-indigo-400 hover:text-indigo-300 underline-offset-4 hover:underline p-0 h-auto',
+        primary: 'bg-white hover:bg-zinc-100 active:scale-[0.975] text-black rounded-xl [box-shadow:0_2px_8px_rgba(0,0,0,0.4)] hover:[box-shadow:0_4px_16px_rgba(0,0,0,0.5)]',
+        ghost:   'bg-transparent hover:bg-white/6 active:scale-[0.975] text-zinc-400 hover:text-white border border-white/8 hover:border-white/16 rounded-xl',
+        danger:  'bg-red-500/10 hover:bg-red-500/18 text-red-400 border border-red-500/20 hover:border-red-500/35 rounded-xl',
+        link:    'text-white/60 hover:text-white underline-offset-4 hover:underline p-0 h-auto',
       },
       size: {
         sm:   'h-8 px-3 text-sm rounded-lg',

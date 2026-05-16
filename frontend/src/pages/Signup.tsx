@@ -120,13 +120,13 @@ export default function Signup() {
   return (
     <div className="page min-h-screen flex items-center justify-center px-4">
       <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-violet-500/8 blur-[100px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-white/4 blur-[100px]" />
       </div>
 
       <div className="w-full max-w-md">
         {/* Logo + dynamic heading */}
         <div className="text-center mb-8">
-          <Link to="/" className="text-2xl font-bold">ZK<span className="text-indigo-400">Credit</span></Link>
+          <Link to="/" className="text-2xl font-bold">ZK<span className="text-white/55">Credit</span></Link>
           <p className="text-slate-400 mt-3 h-6 transition-all duration-300">
             {step === 1 && firstName
               ? <span>Welcome, <span className="text-white font-medium">{firstName}</span> 👋</span>
@@ -145,9 +145,9 @@ export default function Signup() {
               key={s}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 s < step
-                  ? 'bg-indigo-500 w-4'
+                  ? 'bg-white w-4'
                   : s === step
-                  ? 'bg-indigo-500 w-8'
+                  ? 'bg-white w-8'
                   : 'bg-white/10 w-4'
               }`}
             />
@@ -218,7 +218,7 @@ export default function Signup() {
 
             <p className="text-center text-sm text-slate-500">
               Already have an account?{' '}
-              <Link to="/auth/login" className="text-indigo-400 hover:text-indigo-300">Log in</Link>
+              <Link to="/auth/login" className="text-white/55 hover:text-white/70">Log in</Link>
             </p>
           </form>
         )}
@@ -236,7 +236,7 @@ export default function Signup() {
                     onClick={() => setProfession(p)}
                     className={`px-3 py-3 rounded-xl text-sm font-medium text-left transition-all duration-150 border ${
                       profession === p
-                        ? 'bg-indigo-500/20 border-indigo-500/60 text-indigo-300'
+                        ? 'bg-white/10 border-white/25 text-white/70'
                         : 'bg-white/4 border-white/8 text-slate-400 hover:border-white/20 hover:text-slate-200'
                     }`}
                   >
@@ -278,10 +278,10 @@ export default function Signup() {
               type="button"
               disabled={loading}
               onClick={() => handleGoal('score')}
-              className="group w-full flex items-center gap-4 p-5 rounded-2xl border border-white/8 bg-white/4 hover:bg-indigo-500/10 hover:border-indigo-500/40 transition-all duration-200 text-left disabled:opacity-50"
+              className="group w-full flex items-center gap-4 p-5 rounded-2xl border border-white/8 bg-white/4 hover:bg-white/6 hover:border-white/15 transition-all duration-200 text-left disabled:opacity-50"
             >
-              <div className="w-11 h-11 rounded-xl bg-indigo-500/15 flex items-center justify-center shrink-0 group-hover:bg-indigo-500/25 transition-colors">
-                <BarChart2 size={20} className="text-indigo-400" />
+              <div className="w-11 h-11 rounded-xl bg-white/8 flex items-center justify-center shrink-0 group-hover:bg-white/12 transition-colors">
+                <BarChart2 size={20} className="text-white/55" />
               </div>
               <div>
                 <div className="font-medium text-slate-100">Check Credit Score</div>

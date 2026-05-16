@@ -203,7 +203,7 @@ export default function ScoreResult() {
               <ScoreHistoryChart reports={history} />
               <div className="flex items-center gap-5 mt-4 pt-4 border-t border-white/5 text-xs text-slate-600">
                 {[
-                  { label: 'Prime', color: '#6366f1' }, { label: 'Gold', color: '#eab308' },
+                  { label: 'Prime', color: '#e5e5e7' }, { label: 'Gold', color: '#eab308' },
                   { label: 'Silver', color: '#94a3b8' }, { label: 'Bronze', color: '#d97706' },
                   { label: 'None', color: '#ef4444' },
                 ].map(t => (

@@ -5,7 +5,7 @@ const TIER_STROKE: Record<TierLabel, string> = {
   Bronze: '#d97706',
   Silver: '#94a3b8',
   Gold:   '#eab308',
-  Prime:  '#6366f1',
+  Prime:  '#e5e5e7',
 }
 
 const SCORE_MIN = 300

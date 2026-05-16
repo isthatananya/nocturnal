@@ -35,7 +35,7 @@ export default function WalletBar() {
       <button
         onClick={connect}
         disabled={connecting}
-        className="flex items-center gap-2 text-sm text-indigo-400 border border-indigo-500/30 bg-indigo-500/5 rounded-xl px-3 py-1.5 hover:bg-indigo-500/10 transition-colors disabled:opacity-50"
+        className="flex items-center gap-2 text-sm text-white/55 border border-white/10 bg-white/4 rounded-xl px-3 py-1.5 hover:bg-white/6 transition-colors disabled:opacity-50"
       >
         <Wallet size={14} />
         {connecting ? 'Connecting...' : 'Connect Lace'}

@@ -5,7 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { Button } from '../components/ui/button'
 import { toast } from '../hooks/useToast'
 
-const ease = [0.16, 1, 0.3, 1]
+const ease = [0.25, 0.46, 0.45, 0.94]
 
 export default function Login() {
   const { login } = useAuth()
@@ -31,7 +31,7 @@ export default function Login() {
     <div className="page min-h-screen flex items-center justify-center px-4">
       {/* background */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-indigo-500/[0.07] blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-white/[0.025] blur-[120px]" />
       </div>
 
       <div className="w-full max-w-md">
@@ -83,8 +83,8 @@ export default function Login() {
             />
           </div>
 
-          <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 22 }}>
+          <motion.div whileHover={{ scale: 1.02, y: -1 }} whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 32 }}>
             <Button type="submit" loading={loading} className="w-full">
               {loading ? 'Signing in…' : 'Sign in'}
             </Button>
@@ -92,7 +92,7 @@ export default function Login() {
 
           <p className="text-center text-sm text-slate-500">
             No account?{' '}
-            <Link to="/auth/signup" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+            <Link to="/auth/signup" className="text-white/55 hover:text-white/70 font-medium transition-colors">
               Create one
             </Link>
           </p>

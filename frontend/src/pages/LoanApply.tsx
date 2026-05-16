@@ -99,7 +99,7 @@ export default function LoanApply() {
           </div>
           <div className="rounded-2xl border border-white/7 bg-surface p-4 text-left">
             <p className="text-xs text-slate-600 mb-2">Transaction hash</p>
-            <p className="text-xs font-mono text-indigo-400 break-all leading-relaxed">{txHash}</p>
+            <p className="text-xs font-mono text-white/55 break-all leading-relaxed">{txHash}</p>
           </div>
           <div className="flex gap-3">
             <motion.button
@@ -181,7 +181,7 @@ export default function LoanApply() {
                 'Funds are released — your score is never revealed to anyone',
               ].map((s, i) => (
                 <div key={i} className="flex gap-3 py-1.5 border-b border-white/5 last:border-0">
-                  <span className="text-indigo-400 font-mono text-xs shrink-0 mt-0.5">{i + 1}.</span>
+                  <span className="text-white/55 font-mono text-xs shrink-0 mt-0.5">{i + 1}.</span>
                   <span className="text-slate-400 leading-relaxed">{s}</span>
                 </div>
               ))}
