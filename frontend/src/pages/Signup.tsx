@@ -1,32 +1,114 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { CheckCircle } from 'lucide-react'
+import { CheckCircle, ChevronRight, BarChart2, Landmark } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { Button } from '../components/ui/button'
 import { toast } from '../hooks/useToast'
 
+function calcAge(dob: string): number {
+  const today = new Date()
+  const birth = new Date(dob)
+  let age = today.getFullYear() - birth.getFullYear()
+  if (
+    today.getMonth() < birth.getMonth() ||
+    (today.getMonth() === birth.getMonth() && today.getDate() < birth.getDate())
+  ) age--
+  return age
+}
+
+const PROFESSIONS = [
+  'Salaried Employee',
+  'Self-employed / Freelancer',
+  'Business Owner',
+  'Student',
+  'Homemaker',
+  'Others',
+]
+
+const guarantees = [
+  'Your data never leaves your browser',
+  'No credit bureau access required',
+  'ZK proof — not your raw score',
+]
+
 export default function Signup() {
   const { signup } = useAuth()
   const nav = useNavigate()
+
+  const [step, setStep] = useState(1)
+  const [name, setName] = useState('')
+  const [dob, setDob] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [profession, setProfession] = useState('')
+  const [customProfession, setCustomProfession] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const maxDob = new Date()
+  maxDob.setFullYear(maxDob.getFullYear() - 16)
+  const maxDobStr = maxDob.toISOString().split('T')[0]
+
+  const firstName = name.trim().split(' ')[0]
+
+  const validateStep1 = () => {
+    if (!name.trim()) {
+      toast('Name required', { description: 'Please enter your full name.', variant: 'error' })
+      return false
+    }
+    if (!dob) {
+      toast('Date of birth required', { description: 'Please enter your date of birth.', variant: 'error' })
+      return false
+    }
+    if (calcAge(dob) < 16) {
+      toast('Age restriction', { description: 'You must be at least 16 years old to register.', variant: 'error' })
+      return false
+    }
+    if (!email) {
+      toast('Email required', { description: 'Please enter your email.', variant: 'error' })
+      return false
+    }
     if (password.length < 8) {
       toast('Password too short', { description: 'Must be at least 8 characters.', variant: 'error' })
+      return false
+    }
+    return true
+  }
+
+  const handleStep1 = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (validateStep1()) setStep(2)
+  }
+
+  const handleStep2 = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!profession) {
+      toast('Select a profession', { description: 'Please choose what best describes you.', variant: 'error' })
       return
     }
+    if (profession === 'Others' && !customProfession.trim()) {
+      toast('Please specify your profession.', { variant: 'error' })
+      return
+    }
+    setStep(3)
+  }
+
+  const handleGoal = async (goal: 'score' | 'loan') => {
     setLoading(true)
+    const finalProfession = profession === 'Others' ? customProfession.trim() : profession
     try {
-      await signup(email, password)
-      toast('Account created', { description: 'Welcome to ZKCredit.', variant: 'success' })
-      nav('/dashboard')
+      await signup(email, password, name.trim(), dob, finalProfession)
+      toast('Account created', { description: `Welcome to ZKCredit, ${firstName}!`, variant: 'success' })
+      nav(goal === 'score' ? '/score' : '/loan/apply')
     } catch (err: unknown) {
       const status = (err as any)?.response?.status
+      const detail = (err as any)?.response?.data?.detail
       if (status === 409) {
         toast('Email already registered', { description: 'Try logging in instead.', variant: 'error' })
+        setStep(1)
+      } else if (status === 422 && detail) {
+        const msg = Array.isArray(detail) ? detail[0]?.msg : detail
+        toast('Validation error', { description: msg ?? 'Please check your inputs.', variant: 'error' })
+        setStep(1)
       } else {
         toast('Failed to create account', { description: 'Please try again.', variant: 'error' })
       }
@@ -35,12 +117,6 @@ export default function Signup() {
     }
   }
 
-  const guarantees = [
-    'Your data never leaves your browser',
-    'No credit bureau access required',
-    'ZK proof — not your raw score',
-  ]
-
   return (
     <div className="min-h-screen bg-midnight flex items-center justify-center px-4">
       <div className="absolute inset-0 -z-10">
@@ -48,47 +124,196 @@ export default function Signup() {
       </div>
 
       <div className="w-full max-w-md">
-        <div className="text-center mb-10">
+        {/* Logo + dynamic heading */}
+        <div className="text-center mb-8">
           <Link to="/" className="text-2xl font-bold">ZK<span className="text-indigo-400">Credit</span></Link>
-          <p className="text-slate-400 mt-3">Create your account</p>
+          <p className="text-slate-400 mt-3 h-6 transition-all duration-300">
+            {step === 1 && firstName
+              ? <span>Welcome, <span className="text-white font-medium">{firstName}</span> 👋</span>
+              : step === 1
+              ? 'Create your account'
+              : step === 2
+              ? <span>Nice to meet you, <span className="text-white font-medium">{firstName}</span>!</span>
+              : 'What brings you to ZKCredit?'}
+          </p>
         </div>
 
-        <form onSubmit={submit} className="glass rounded-3xl p-8 space-y-5">
-          <div>
-            <label className="label">Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="input-field"
-              required
-              autoComplete="email"
+        {/* Progress dots */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          {[1, 2, 3].map(s => (
+            <div
+              key={s}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                s < step
+                  ? 'bg-indigo-500 w-4'
+                  : s === step
+                  ? 'bg-indigo-500 w-8'
+                  : 'bg-white/10 w-4'
+              }`}
             />
+          ))}
+        </div>
+
+        {/* ── Step 1: Basic info ── */}
+        {step === 1 && (
+          <form onSubmit={handleStep1} className="glass rounded-3xl p-8 space-y-5">
+            <div>
+              <label className="label">Full Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                placeholder="Jane Doe"
+                className="input-field"
+                required
+                autoComplete="name"
+                autoFocus
+              />
+            </div>
+
+            <div>
+              <label className="label">Date of Birth</label>
+              <input
+                type="date"
+                value={dob}
+                onChange={e => setDob(e.target.value)}
+                max={maxDobStr}
+                className="input-field"
+                required
+              />
+              {dob && calcAge(dob) < 16 && (
+                <p className="mt-1.5 text-xs text-red-400">You must be at least 16 years old.</p>
+              )}
+            </div>
+
+            <div>
+              <label className="label">Email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="input-field"
+                required
+                autoComplete="email"
+              />
+            </div>
+
+            <div>
+              <label className="label">Password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Min. 8 characters"
+                className="input-field"
+                required
+                autoComplete="new-password"
+              />
+            </div>
+
+            <Button type="submit" className="w-full mt-2">
+              Continue <ChevronRight size={16} />
+            </Button>
+
+            <p className="text-center text-sm text-slate-500">
+              Already have an account?{' '}
+              <Link to="/auth/login" className="text-indigo-400 hover:text-indigo-300">Log in</Link>
+            </p>
+          </form>
+        )}
+
+        {/* ── Step 2: Profession ── */}
+        {step === 2 && (
+          <form onSubmit={handleStep2} className="glass rounded-3xl p-8 space-y-5">
+            <div>
+              <label className="label">What best describes you?</label>
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                {PROFESSIONS.map(p => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setProfession(p)}
+                    className={`px-3 py-3 rounded-xl text-sm font-medium text-left transition-all duration-150 border ${
+                      profession === p
+                        ? 'bg-indigo-500/20 border-indigo-500/60 text-indigo-300'
+                        : 'bg-white/4 border-white/8 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {profession === 'Others' && (
+              <div>
+                <label className="label">Please specify</label>
+                <input
+                  type="text"
+                  value={customProfession}
+                  onChange={e => setCustomProfession(e.target.value)}
+                  placeholder="Your profession"
+                  className="input-field"
+                  autoFocus
+                />
+              </div>
+            )}
+
+            <div className="flex gap-3">
+              <Button type="button" variant="ghost" className="flex-1" onClick={() => setStep(1)}>
+                Back
+              </Button>
+              <Button type="submit" className="flex-1">
+                Continue <ChevronRight size={16} />
+              </Button>
+            </div>
+          </form>
+        )}
+
+        {/* ── Step 3: Goal ── */}
+        {step === 3 && (
+          <div className="glass rounded-3xl p-8 space-y-3">
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleGoal('score')}
+              className="group w-full flex items-center gap-4 p-5 rounded-2xl border border-white/8 bg-white/4 hover:bg-indigo-500/10 hover:border-indigo-500/40 transition-all duration-200 text-left disabled:opacity-50"
+            >
+              <div className="w-11 h-11 rounded-xl bg-indigo-500/15 flex items-center justify-center shrink-0 group-hover:bg-indigo-500/25 transition-colors">
+                <BarChart2 size={20} className="text-indigo-400" />
+              </div>
+              <div>
+                <div className="font-medium text-slate-100">Check Credit Score</div>
+                <div className="text-xs text-slate-400 mt-0.5">Upload statements, get a ZK-verified score</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleGoal('loan')}
+              className="group w-full flex items-center gap-4 p-5 rounded-2xl border border-white/8 bg-white/4 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-all duration-200 text-left disabled:opacity-50"
+            >
+              <div className="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/25 transition-colors">
+                <Landmark size={20} className="text-emerald-400" />
+              </div>
+              <div>
+                <div className="font-medium text-slate-100">Apply for a Loan</div>
+                <div className="text-xs text-slate-400 mt-0.5">Get instant loan eligibility with privacy</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => setStep(2)}
+              className="w-full pt-1 text-sm text-slate-500 hover:text-slate-300 transition-colors disabled:opacity-40"
+            >
+              ← Back
+            </button>
           </div>
-
-          <div>
-            <label className="label">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="Min. 8 characters"
-              className="input-field"
-              required
-              autoComplete="new-password"
-            />
-          </div>
-
-          <Button type="submit" loading={loading} className="w-full mt-2">
-            {loading ? 'Creating account...' : 'Create account'}
-          </Button>
-
-          <p className="text-center text-sm text-slate-500">
-            Already have an account?{' '}
-            <Link to="/auth/login" className="text-indigo-400 hover:text-indigo-300">Log in</Link>
-          </p>
-        </form>
+        )}
 
         <div className="mt-6 space-y-2">
           {guarantees.map(g => (
