@@ -45,7 +45,7 @@ export default function Login() {
           <Link to="/" className="text-2xl font-bold tracking-tight">
             ZK<span className="gradient-text">Credit</span>
           </Link>
-          <p className="text-slate-500 text-sm mt-2">Welcome back</p>
+          <p className="text-zinc-500 text-sm mt-2">Welcome back</p>
         </motion.div>
 
         {/* form card */}
@@ -90,7 +90,7 @@ export default function Login() {
             </Button>
           </motion.div>
 
-          <p className="text-center text-sm text-slate-500">
+          <p className="text-center text-sm text-zinc-500">
             No account?{' '}
             <Link to="/auth/signup" className="text-white/55 hover:text-white/70 font-medium transition-colors">
               Create one
@@ -103,7 +103,7 @@ export default function Login() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-center text-xs text-slate-600 mt-6"
+          className="text-center text-xs text-zinc-500 mt-6"
         >
           Demo accounts: priya@zkcredit.demo · rahul@zkcredit.demo · password: demo1234
         </motion.p>

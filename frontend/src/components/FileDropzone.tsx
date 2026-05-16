@@ -40,8 +40,8 @@ export default function FileDropzone({ onFile, accept = '.csv,.json', disabled }
         {dragging ? <FileText size={24} className="text-white/55" /> : <Upload size={24} className="text-white/55" />}
       </div>
       <div className="text-center">
-        <p className="text-slate-200 font-medium">Drop your financial data here</p>
-        <p className="text-slate-500 text-sm mt-1">CSV or JSON · parsed entirely in your browser</p>
+        <p className="text-zinc-200 font-medium">Drop your financial data here</p>
+        <p className="text-zinc-500 text-sm mt-1">CSV or JSON · parsed entirely in your browser</p>
       </div>
       <div className="flex items-center gap-2 text-xs text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded-full px-3 py-1">
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />

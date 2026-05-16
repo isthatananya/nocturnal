@@ -36,17 +36,17 @@ export default function ReportCard({ report }: { report: Report }) {
           )}
         </div>
         <div className="flex items-center gap-4 text-sm">
-          <span className="text-slate-100 font-bold text-lg tabular-nums">
-            {report.score}<span className="text-slate-600 text-sm font-normal">/900</span>
+          <span className="text-zinc-100 font-bold text-lg tabular-nums">
+            {report.score}<span className="text-zinc-600 text-sm font-normal">/900</span>
           </span>
-          <span className="text-slate-500">₹{report.loan_limit.toLocaleString('en-IN')}</span>
+          <span className="text-zinc-500">₹{report.loan_limit.toLocaleString('en-IN')}</span>
         </div>
-        <div className="flex items-center gap-1 text-xs text-slate-600 mt-1">
+        <div className="flex items-center gap-1 text-xs text-zinc-600 mt-1">
           <Clock size={10} />
           <span>{timeAgo(report.generated_at)}</span>
         </div>
       </div>
-      <ArrowRight size={15} className="text-slate-600 shrink-0" />
+      <ArrowRight size={15} className="text-zinc-600 shrink-0" />
     </motion.button>
   )
 }

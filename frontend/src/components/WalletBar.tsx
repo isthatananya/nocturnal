@@ -12,7 +12,7 @@ export default function WalletBar() {
     return (
       <div className="flex items-center gap-2 glass px-3 py-1.5 rounded-xl text-sm">
         <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse-slow" />
-        <span className="text-slate-300 font-mono text-xs">{truncate(address)}</span>
+        <span className="text-zinc-300 font-mono text-xs">{truncate(address)}</span>
       </div>
     )
   }

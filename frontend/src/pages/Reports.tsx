@@ -15,15 +15,15 @@ export default function Reports() {
   }, [])
 
   return (
-    <div className="page min-h-screen text-slate-100">
+    <div className="page min-h-screen text-zinc-100">
       <header className="app-header">
         <div className="flex items-center gap-3">
-          <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-slate-500 hover:text-slate-200 transition-colors">
+          <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors">
             <ArrowLeft size={17} />
           </Link>
           <span className="font-semibold tracking-tight">Report History</span>
         </div>
-        <span className="text-xs text-slate-600">{reports.length > 0 ? `${reports.length} assessments` : ''}</span>
+        <span className="text-xs text-zinc-600">{reports.length > 0 ? `${reports.length} assessments` : ''}</span>
       </header>
 
       <main className="max-w-2xl mx-auto px-6 py-10">
@@ -39,12 +39,12 @@ export default function Reports() {
             animate={{ opacity: 1, y: 0 }}
             className="flex flex-col items-center justify-center py-24 text-center"
           >
-            <div className="w-14 h-14 rounded-2xl bg-slate-500/10 border border-white/5
+            <div className="w-14 h-14 rounded-2xl bg-zinc-500/10 border border-white/5
                             flex items-center justify-center mb-5">
-              <FileText size={22} className="text-slate-600" />
+              <FileText size={22} className="text-zinc-600" />
             </div>
-            <p className="text-slate-400 font-medium mb-1">No reports yet</p>
-            <p className="text-slate-600 text-sm mb-6">Run your first credit assessment to get started.</p>
+            <p className="text-zinc-400 font-medium mb-1">No reports yet</p>
+            <p className="text-zinc-600 text-sm mb-6">Run your first credit assessment to get started.</p>
             <Link to="/score" className="btn-primary text-sm">
               Check my credit
             </Link>

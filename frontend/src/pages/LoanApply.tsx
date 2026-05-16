@@ -94,11 +94,11 @@ export default function LoanApply() {
             <span className="text-3xl">✓</span>
           </motion.div>
           <div>
-            <h2 className="text-2xl font-bold text-slate-100 tracking-tight">Loan approved</h2>
-            <p className="text-slate-500 text-sm mt-2">₹{amount.toLocaleString('en-IN')} · Midnight blockchain</p>
+            <h2 className="text-2xl font-bold text-zinc-100 tracking-tight">Loan approved</h2>
+            <p className="text-zinc-500 text-sm mt-2">₹{amount.toLocaleString('en-IN')} · Midnight blockchain</p>
           </div>
           <div className="rounded-2xl border border-white/7 bg-surface p-4 text-left">
-            <p className="text-xs text-slate-600 mb-2">Transaction hash</p>
+            <p className="text-xs text-zinc-600 mb-2">Transaction hash</p>
             <p className="text-xs font-mono text-white/55 break-all leading-relaxed">{txHash}</p>
           </div>
           <div className="flex gap-3">
@@ -122,10 +122,10 @@ export default function LoanApply() {
 
   /* ── Main screen ────────────────────────────────────── */
   return (
-    <div className="page min-h-screen text-slate-100">
+    <div className="page min-h-screen text-zinc-100">
       <header className="app-header">
         <div className="flex items-center gap-3">
-          <Link to="/score/result" className="p-2 rounded-lg hover:bg-white/5 text-slate-500 hover:text-slate-200 transition-colors">
+          <Link to="/score/result" className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors">
             <ArrowLeft size={17} />
           </Link>
           <span className="font-semibold tracking-tight">Apply for Loan</span>
@@ -146,7 +146,7 @@ export default function LoanApply() {
             <SlideUp>
               <div>
                 <h1 className="text-2xl font-bold mb-1 tracking-tight">Choose your loan amount</h1>
-                <p className="text-slate-500 text-sm">
+                <p className="text-zinc-500 text-sm">
                   You qualify for up to ₹{report.loan_limit.toLocaleString('en-IN')} based on your {report.tier_label} tier.
                 </p>
               </div>
@@ -173,7 +173,7 @@ export default function LoanApply() {
               transition={{ duration: 0.5, delay: 0.14, ease }}
               className="glass rounded-2xl p-6 space-y-3 text-sm"
             >
-              <p className="text-slate-500 font-medium text-xs tracking-wide uppercase">What happens next</p>
+              <p className="text-zinc-500 font-medium text-xs tracking-wide uppercase">What happens next</p>
               {[
                 'A ZK proof of your credit tier is generated locally in your browser',
                 'You sign the transaction in your Lace wallet',
@@ -182,7 +182,7 @@ export default function LoanApply() {
               ].map((s, i) => (
                 <div key={i} className="flex gap-3 py-1.5 border-b border-white/5 last:border-0">
                   <span className="text-white/55 font-mono text-xs shrink-0 mt-0.5">{i + 1}.</span>
-                  <span className="text-slate-400 leading-relaxed">{s}</span>
+                  <span className="text-zinc-400 leading-relaxed">{s}</span>
                 </div>
               ))}
             </motion.div>

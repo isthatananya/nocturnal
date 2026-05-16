@@ -27,10 +27,10 @@ export default function LoanActive() {
   )
 
   return (
-    <div className="page min-h-screen text-slate-100">
+    <div className="page min-h-screen text-zinc-100">
       <header className="app-header">
         <div className="flex items-center gap-3">
-          <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-slate-500 hover:text-slate-200 transition-colors">
+          <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors">
             <ArrowLeft size={17} />
           </Link>
           <span className="font-semibold tracking-tight">Active Loan</span>
@@ -54,7 +54,7 @@ export default function LoanActive() {
             >
               ₹{loan.loan_limit.toLocaleString('en-IN')}
             </motion.p>
-            <p className="text-slate-600 text-sm">disbursed on Midnight blockchain</p>
+            <p className="text-zinc-600 text-sm">disbursed on Midnight blockchain</p>
           </div>
         </SlideUp>
 
@@ -68,8 +68,8 @@ export default function LoanActive() {
           ].map(([k, v]) => (
             <StaggerItem key={k}>
               <div className="glass rounded-2xl p-4">
-                <p className="text-slate-600 text-xs mb-1">{k}</p>
-                <p className="text-slate-100 font-semibold">{v}</p>
+                <p className="text-zinc-600 text-xs mb-1">{k}</p>
+                <p className="text-zinc-100 font-semibold">{v}</p>
               </div>
             </StaggerItem>
           ))}
@@ -83,12 +83,12 @@ export default function LoanActive() {
             transition={{ duration: 0.5, delay: 0.3, ease }}
             className="glass rounded-2xl p-5"
           >
-            <p className="text-slate-600 text-xs mb-2">On-chain transaction</p>
+            <p className="text-zinc-600 text-xs mb-2">On-chain transaction</p>
             <div className="flex items-center justify-between gap-3">
               <p className="text-xs font-mono text-white/55 truncate">{loan.loan_tx_hash}</p>
               <a href={`https://explorer.preprod.midnight.network/tx/${loan.loan_tx_hash}`}
                 target="_blank" rel="noopener noreferrer"
-                className="shrink-0 p-1.5 rounded-lg hover:bg-white/5 text-slate-600 hover:text-slate-300 transition-colors">
+                className="shrink-0 p-1.5 rounded-lg hover:bg-white/5 text-zinc-600 hover:text-zinc-300 transition-colors">
                 <ExternalLink size={13} />
               </a>
             </div>
@@ -102,8 +102,8 @@ export default function LoanActive() {
           transition={{ duration: 0.5, delay: 0.35, ease }}
           className="glass rounded-2xl p-6"
         >
-          <p className="text-slate-600 text-xs mb-3 font-medium tracking-wide uppercase">Repayment</p>
-          <p className="text-slate-500 text-sm mb-4">On-chain repayment coming in V2 — track manually for now.</p>
+          <p className="text-zinc-600 text-xs mb-3 font-medium tracking-wide uppercase">Repayment</p>
+          <p className="text-zinc-500 text-sm mb-4">On-chain repayment coming in V2 — track manually for now.</p>
           <button disabled className="btn-ghost w-full opacity-35 cursor-not-allowed">Repay loan</button>
         </motion.div>
       </main>

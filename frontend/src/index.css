@@ -4,27 +4,30 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design tokens — Apple-style monochrome ─────────────────── */
+/* ── Design tokens — Apple monochrome ───────────────────────── */
 :root {
-  --bg:       #000000;   /* true black */
-  --bg-2:     #0a0a0a;   /* inputs */
-  --bg-3:     #111111;   /* card surfaces */
-  --bg-4:     #1a1a1a;   /* hover / elevated */
-  --bg-5:     #222222;   /* tooltips, menus */
-  --border:   rgba(255,255,255,0.08);
-  --border-2: rgba(255,255,255,0.14);
-  --border-3: rgba(255,255,255,0.24);
-  --text-1:   #f5f5f7;   /* Apple off-white */
-  --text-2:   #d2d2d7;
-  --text-3:   #86868b;
-  --text-4:   #6e6e73;
-  --text-5:   #3d3d3f;
-  --accent:   #f5f5f7;   /* white — primary interactive */
+  --bg:       #000000;
+  --bg-2:     #0d0d0d;   /* inputs — just barely off-black */
+  --bg-3:     #1c1c1e;   /* Apple's dark card surface (#1c1c1e) */
+  --bg-4:     #2c2c2e;   /* hover state */
+  --bg-5:     #3a3a3c;   /* tooltips, menus */
+  --border:   rgba(255,255,255,0.09);
+  --border-2: rgba(255,255,255,0.16);
+  --border-3: rgba(255,255,255,0.28);
+  --text-1:   #f5f5f7;   /* Apple primary text */
+  --text-2:   #d1d1d6;   /* Apple secondary */
+  --text-3:   #98989d;   /* Apple tertiary */
+  --text-4:   #6c6c70;   /* labels */
+  --text-5:   #636366;   /* placeholders — bright enough to read */
+  --accent:   #f5f5f7;
 }
 
 @layer base {
   html {
     background-color: var(--bg);
+    /* Subtle top radial gives the glass cards something to blur */
+    background-image:
+      radial-gradient(ellipse 100% 55% at 50% -5%, rgba(255,255,255,0.045) 0%, transparent 70%);
     color: var(--text-2);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -45,82 +48,91 @@
   ::-webkit-scrollbar { width: 4px; height: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.14); border-radius: 2px; }
-  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.26); }
 
-  ::selection { background: rgba(255,255,255,0.15); color: #fff; }
+  ::selection { background: rgba(255,255,255,0.18); color: #fff; }
 }
 
 @layer components {
 
-  /* ── Elevated card surface ──────────────────────────────── */
+  /* ── Apple-style glass card ─────────────────────────────── */
+  /* Semi-transparent so the top-page radial bleeds through */
   .glass {
-    background: var(--bg-3);
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset, 0 2px 20px rgba(0,0,0,0.5);
+    background: rgba(28,28,30,0.72);
+    backdrop-filter: blur(32px) saturate(1.5);
+    -webkit-backdrop-filter: blur(32px) saturate(1.5);
+    border: 1px solid rgba(255,255,255,0.09);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.06) inset,
+      0 4px 24px rgba(0,0,0,0.55);
   }
 
   .glass-hover {
     @apply glass cursor-pointer;
-    transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.22s ease, transform 0.2s ease;
   }
   .glass-hover:hover {
-    background: var(--bg-4);
-    border-color: var(--border-2);
-    box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 6px 32px rgba(0,0,0,0.6);
-    transform: translateY(-1px);
+    background: rgba(44,44,46,0.82);
+    border-color: rgba(255,255,255,0.15);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.09) inset,
+      0 8px 40px rgba(0,0,0,0.65);
+    transform: translateY(-2px);
   }
-  .glass-hover:active { transform: scale(0.99); }
+  .glass-hover:active { transform: scale(0.992); }
 
   /* ── Primary button — Apple white pill ──────────────────── */
   .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-2 font-semibold rounded-xl
+    @apply relative inline-flex items-center justify-center gap-2 font-semibold rounded-2xl
            px-6 py-3 select-none cursor-pointer outline-none;
     background: #f5f5f7;
     color: #000000;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.35);
     transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
     letter-spacing: -0.01em;
   }
   .btn-primary:hover {
     background: #ffffff;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     transform: translateY(-1px);
   }
   .btn-primary:active {
-    transform: translateY(0) scale(0.975);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+    transform: translateY(0) scale(0.976);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
   }
   .btn-primary:disabled {
-    opacity: 0.35; cursor: not-allowed; transform: none; pointer-events: none;
+    opacity: 0.32; cursor: not-allowed; transform: none; pointer-events: none;
   }
   .btn-primary:focus-visible {
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.25), 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.28), 0 2px 8px rgba(0,0,0,0.35);
   }
 
   /* ── Ghost button ─────────────────────────────────────────── */
   .btn-ghost {
-    @apply relative inline-flex items-center justify-center gap-2 font-medium rounded-xl
+    @apply relative inline-flex items-center justify-center gap-2 font-medium rounded-2xl
            px-6 py-3 select-none cursor-pointer outline-none;
     color: var(--text-3);
-    background: transparent;
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--border);
     letter-spacing: -0.01em;
     transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.12s ease;
   }
   .btn-ghost:hover {
-    background: var(--bg-4);
+    background: rgba(255,255,255,0.08);
     border-color: var(--border-2);
     color: var(--text-1);
     transform: translateY(-1px);
   }
-  .btn-ghost:active { transform: scale(0.975); }
+  .btn-ghost:active { transform: scale(0.976); }
   .btn-ghost:focus-visible { box-shadow: 0 0 0 3px rgba(255,255,255,0.18); }
 
   /* ── Input fields ─────────────────────────────────────────── */
   .input-field {
     @apply w-full rounded-xl px-4 py-3 outline-none;
-    background: var(--bg-2);
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--border);
     color: var(--text-1);
     transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
@@ -128,18 +140,18 @@
   }
   .input-field::placeholder { color: var(--text-5); }
   .input-field:hover {
-    background: var(--bg-3);
+    background: rgba(255,255,255,0.07);
     border-color: var(--border-2);
   }
   .input-field:focus {
-    background: rgba(255,255,255,0.04);
-    border-color: rgba(255,255,255,0.28);
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.30);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.07);
   }
 
   .label {
     @apply text-sm font-medium mb-1.5 block;
-    color: var(--text-4);
+    color: var(--text-3);
     letter-spacing: -0.01em;
   }
 
@@ -152,9 +164,9 @@
   .skeleton {
     background: linear-gradient(
       105deg,
-      var(--bg-3) 0%,
-      var(--bg-4) 50%,
-      var(--bg-3) 100%
+      rgba(255,255,255,0.04) 0%,
+      rgba(255,255,255,0.08) 50%,
+      rgba(255,255,255,0.04) 100%
     );
     background-size: 200% 100%;
     animation: shimmer 2s linear infinite;
@@ -164,16 +176,16 @@
   /* ── App header ─────────────────────────────────────────── */
   .app-header {
     @apply sticky top-0 z-40 flex items-center justify-between px-6 py-4;
-    background: rgba(0,0,0,0.82);
-    backdrop-filter: blur(24px) saturate(1.4);
-    -webkit-backdrop-filter: blur(24px) saturate(1.4);
-    border-bottom: 1px solid var(--border);
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(32px) saturate(1.6);
+    -webkit-backdrop-filter: blur(32px) saturate(1.6);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
   }
 
   /* ── Gradient text ─────────────────────────────────────────── */
   .gradient-text {
     @apply text-transparent bg-clip-text;
-    background-image: linear-gradient(135deg, #f5f5f7 0%, #86868b 50%, #f5f5f7 100%);
+    background-image: linear-gradient(135deg, #ffffff 0%, #98989d 50%, #ffffff 100%);
     background-size: 200%;
   }
 
@@ -186,7 +198,7 @@
 
   /* ── Section eyebrow label ────────────────────────────────── */
   .eyebrow {
-    @apply text-xs font-bold tracking-widest uppercase;
+    @apply text-xs font-semibold tracking-widest uppercase;
     color: var(--text-4);
   }
 
@@ -204,4 +216,25 @@
   .text-ink-3 { color: var(--text-3); }
   .text-ink-4 { color: var(--text-4); }
   .text-ink-5 { color: var(--text-5); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes float {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
 }

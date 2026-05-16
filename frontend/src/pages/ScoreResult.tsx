@@ -45,11 +45,11 @@ export default function ScoreResult() {
   const analysis = analyseReport(report.breakdown, inputs)
 
   return (
-    <div className="page min-h-screen text-slate-100">
+    <div className="page min-h-screen text-zinc-100">
 
       {/* header */}
       <header className="app-header">
-        <Link to="/dashboard" className="text-slate-500 hover:text-slate-200 transition-colors text-sm font-medium flex items-center gap-1.5">
+        <Link to="/dashboard" className="text-zinc-500 hover:text-zinc-200 transition-colors text-sm font-medium flex items-center gap-1.5">
           ← Dashboard
         </Link>
         <div className="flex items-center gap-4">
@@ -57,7 +57,7 @@ export default function ScoreResult() {
           <motion.button
             whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
             onClick={exportJSON}
-            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-200 transition-colors"
+            className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-200 transition-colors"
           >
             <Download size={14} /> Export
           </motion.button>
@@ -102,19 +102,19 @@ export default function ScoreResult() {
                       </div>
                     )}
                     <div className="flex justify-between text-sm py-2 border-b border-white/5">
-                      <span className="text-slate-500">Max loan</span>
-                      <span className="text-slate-100 font-bold text-lg">₹{report.loan_limit.toLocaleString('en-IN')}</span>
+                      <span className="text-zinc-500">Max loan</span>
+                      <span className="text-zinc-100 font-bold text-lg">₹{report.loan_limit.toLocaleString('en-IN')}</span>
                     </div>
                     {report.interest_rate && (
                       <div className="flex justify-between text-sm py-2 border-b border-white/5">
-                        <span className="text-slate-500">Interest rate</span>
-                        <span className="text-slate-100 font-semibold">{report.interest_rate} APR</span>
+                        <span className="text-zinc-500">Interest rate</span>
+                        <span className="text-zinc-100 font-semibold">{report.interest_rate} APR</span>
                       </div>
                     )}
                     {report.term_months && (
                       <div className="flex justify-between text-sm py-2 border-b border-white/5">
-                        <span className="text-slate-500">Term</span>
-                        <span className="text-slate-100 font-semibold">{report.term_months} months</span>
+                        <span className="text-zinc-500">Term</span>
+                        <span className="text-zinc-100 font-semibold">{report.term_months} months</span>
                       </div>
                     )}
                     {report.data_source === 'form' ? (
@@ -135,14 +135,14 @@ export default function ScoreResult() {
                 ) : (
                   <div className="rounded-2xl border border-red-500/15 bg-red-500/[0.04] p-5 text-center">
                     <AlertTriangle size={20} className="text-red-400 mx-auto mb-2" />
-                    <p className="text-slate-300 text-sm font-medium mb-1">Below eligibility threshold</p>
-                    <p className="text-slate-500 text-xs">Need 510+ to qualify · Current: {report.score}</p>
-                    <p className="text-slate-600 text-xs mt-2">Follow the improvement tips below to qualify.</p>
+                    <p className="text-zinc-300 text-sm font-medium mb-1">Below eligibility threshold</p>
+                    <p className="text-zinc-500 text-xs">Need 510+ to qualify · Current: {report.score}</p>
+                    <p className="text-zinc-600 text-xs mt-2">Follow the improvement tips below to qualify.</p>
                   </div>
                 )}
 
                 {/* Adjustment note */}
-                <div className="flex items-start gap-2 text-xs text-slate-600 px-1">
+                <div className="flex items-start gap-2 text-xs text-zinc-600 px-1">
                   {report.breakdown.adjustment >= 0
                     ? <TrendingUp size={11} className="text-emerald-500/70 shrink-0 mt-0.5" />
                     : <TrendingDown size={11} className="text-red-400/70 shrink-0 mt-0.5" />
@@ -159,7 +159,7 @@ export default function ScoreResult() {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <CheckCircle size={14} className="text-emerald-400" />
-              <h2 className="font-semibold text-slate-200 tracking-tight">What's working in your favour</h2>
+              <h2 className="font-semibold text-zinc-200 tracking-tight">What's working in your favour</h2>
             </div>
             <Stagger className="grid gap-3">
               {analysis.strengths.map(f => (
@@ -176,7 +176,7 @@ export default function ScoreResult() {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <AlertTriangle size={14} className="text-amber-400" />
-              <h2 className="font-semibold text-slate-200 tracking-tight">Areas pulling your score down</h2>
+              <h2 className="font-semibold text-zinc-200 tracking-tight">Areas pulling your score down</h2>
             </div>
             <Stagger className="grid gap-3">
               {analysis.weaknesses.map(f => (
@@ -196,12 +196,12 @@ export default function ScoreResult() {
             transition={{ duration: 0.5, delay: 0.2, ease }}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-slate-200 tracking-tight">Score history</h2>
-              <span className="text-xs text-slate-600">{history.length} assessments</span>
+              <h2 className="font-semibold text-zinc-200 tracking-tight">Score history</h2>
+              <span className="text-xs text-zinc-600">{history.length} assessments</span>
             </div>
             <div className="glass rounded-2xl p-6">
               <ScoreHistoryChart reports={history} />
-              <div className="flex items-center gap-5 mt-4 pt-4 border-t border-white/5 text-xs text-slate-600">
+              <div className="flex items-center gap-5 mt-4 pt-4 border-t border-white/5 text-xs text-zinc-600">
                 {[
                   { label: 'Prime', color: '#e5e5e7' }, { label: 'Gold', color: '#eab308' },
                   { label: 'Silver', color: '#94a3b8' }, { label: 'Bronze', color: '#d97706' },

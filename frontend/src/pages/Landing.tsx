@@ -36,7 +36,7 @@ function ProductPreview() {
       <div className="rounded-3xl p-6 shadow-lifted select-none" style={{ background: 'var(--bg-3)', border: '1px solid var(--border)' }}>
         {/* header */}
         <div className="flex items-center justify-between mb-5">
-          <span className="text-xs font-semibold text-slate-500 tracking-wide uppercase">Credit Score</span>
+          <span className="text-xs font-semibold text-zinc-500 tracking-wide uppercase">Credit Score</span>
           <span className="chip border-white/12 text-white/55 bg-white/5">
             <span className="glow-dot" />Prime
           </span>
@@ -58,7 +58,7 @@ function ProductPreview() {
             </defs>
             <text x="65" y="68" textAnchor="middle" fontSize="22" fontWeight="700" fill="#f1f5f9">792</text>
           </svg>
-          <span className="text-xs text-slate-500 -mt-1">out of 900</span>
+          <span className="text-xs text-zinc-500 -mt-1">out of 900</span>
         </div>
 
         {/* stats */}
@@ -95,7 +95,7 @@ function ProductPreview() {
         className="absolute -left-6 bottom-16 rounded-2xl px-3 py-2 shadow-card"
         style={{ background: 'var(--bg-4)', border: '1px solid var(--border-2)' }}
       >
-        <span className="text-xs font-semibold" style={{ color: 'var(--accent-2)' }}>+47 pts since Jan</span>
+        <span className="text-xs font-semibold" style={{ color: 'var(--text-2)' }}>+47 pts since Jan</span>
       </motion.div>
     </motion.div>
   )
@@ -109,7 +109,7 @@ export default function Landing() {
 
       {/* ── Nav ─────────────────────────────────────────── */}
       <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-8 py-4"
-        style={{ background: 'rgba(5,5,15,0.75)', backdropFilter: 'blur(24px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        style={{ background: 'rgba(0,0,0,0.78)', backdropFilter: 'blur(24px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <span className="font-bold text-lg tracking-tight">
           ZK<span className="gradient-text">Credit</span>
         </span>
@@ -159,7 +159,7 @@ export default function Landing() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, delay: 0.16, ease }}
-              className="text-slate-400 text-lg leading-relaxed max-w-xl mb-10"
+              className="text-zinc-400 text-lg leading-relaxed max-w-xl mb-10"
             >
               A DeFi lending protocol that uses Zero-Knowledge Proofs to unlock undercollateralized loans —
               without ever exposing your financial data.
@@ -194,7 +194,7 @@ export default function Landing() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex items-center flex-wrap gap-6 mt-10 text-sm text-slate-500"
+              className="flex items-center flex-wrap gap-6 mt-10 text-sm text-zinc-500"
             >
               {['Data never transmitted', 'ZK proof on Midnight', 'Open-source contract'].map(t => (
                 <span key={t} className="flex items-center gap-1.5">
@@ -240,9 +240,9 @@ export default function Landing() {
               whileHover={{ y: -4, scale: 1.005 }}
               className="glass rounded-2xl p-6 transition-shadow hover:shadow-card-hover"
             >
-              <span className="text-5xl font-black text-white/10 leading-none">{s.n}</span>
-              <h3 className="font-semibold text-slate-100 mt-3 mb-2 text-sm">{s.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">{s.body}</p>
+              <span className="text-5xl font-black text-white/18 leading-none">{s.n}</span>
+              <h3 className="font-semibold text-zinc-100 mt-3 mb-2 text-sm">{s.title}</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed">{s.body}</p>
             </motion.div>
           ))}
         </div>
@@ -279,8 +279,8 @@ export default function Landing() {
                               transition-all duration-300">
                 <f.icon size={20} className="text-white/55" />
               </div>
-              <h3 className="font-semibold text-slate-100 mb-2">{f.title}</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">{f.body}</p>
+              <h3 className="font-semibold text-zinc-100 mb-2">{f.title}</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed">{f.body}</p>
             </motion.div>
           ))}
         </div>
@@ -306,7 +306,7 @@ export default function Landing() {
           transition={{ duration: 0.6, ease }}
           className="glass rounded-2xl overflow-hidden"
         >
-          <div className="grid grid-cols-3 text-xs text-slate-500 px-6 py-4 border-b border-white/5 font-semibold tracking-wide uppercase">
+          <div className="grid grid-cols-3 text-xs text-zinc-500 px-6 py-4 border-b border-white/5 font-semibold tracking-wide uppercase">
             <span />
             <span className="text-center">Traditional DeFi</span>
             <span className="text-center text-white/55">ZKCredit</span>
@@ -340,7 +340,7 @@ export default function Landing() {
           <h2 className="text-4xl font-bold tracking-tight mb-4">
             Ready to prove your creditworthiness?
           </h2>
-          <p className="text-slate-400 text-lg mb-10">No collateral. No data exposure. Just math.</p>
+          <p className="text-zinc-400 text-lg mb-10">No collateral. No data exposure. Just math.</p>
           <motion.button
             whileHover={{ scale: 1.022, y: -1 }} whileTap={{ scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 500, damping: 32 }}
@@ -353,8 +353,8 @@ export default function Landing() {
       </section>
 
       {/* ── Footer ──────────────────────────────────────── */}
-      <footer className="border-t border-white/5 px-8 py-8 flex items-center justify-between text-slate-600 text-sm max-w-5xl mx-auto">
-        <span className="font-semibold text-slate-500">ZK<span className="text-white/40">Credit</span></span>
+      <footer className="border-t border-white/5 px-8 py-8 flex items-center justify-between text-zinc-600 text-sm max-w-5xl mx-auto">
+        <span className="font-semibold text-zinc-500">ZK<span className="text-white/40">Credit</span></span>
         <span>Built on Midnight · Hackathon May 2026</span>
       </footer>
     </div>

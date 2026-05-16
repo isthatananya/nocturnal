@@ -26,10 +26,10 @@ export default function LoanSlider({ max, value, onChange, interestRate, termMon
     <div className="space-y-4">
       <div className="flex items-end justify-between">
         <div>
-          <p className="text-4xl font-bold text-slate-100">{INR(value)}</p>
-          <p className="text-sm text-slate-500 mt-0.5">requested loan amount</p>
+          <p className="text-4xl font-bold text-zinc-100">{INR(value)}</p>
+          <p className="text-sm text-zinc-500 mt-0.5">requested loan amount</p>
         </div>
-        <p className="text-slate-500 text-sm">Max: {INR(max)}</p>
+        <p className="text-zinc-500 text-sm">Max: {INR(max)}</p>
       </div>
 
       <div className="relative">
@@ -49,16 +49,16 @@ export default function LoanSlider({ max, value, onChange, interestRate, termMon
 
       <div className="flex gap-4">
         <div className="glass rounded-xl px-4 py-3 flex-1 text-center">
-          <p className="text-slate-500 text-xs">APR</p>
-          <p className="text-slate-100 font-semibold">{interestRate ?? '—'}</p>
+          <p className="text-zinc-500 text-xs">APR</p>
+          <p className="text-zinc-100 font-semibold">{interestRate ?? '—'}</p>
         </div>
         <div className="glass rounded-xl px-4 py-3 flex-1 text-center">
-          <p className="text-slate-500 text-xs">Term</p>
-          <p className="text-slate-100 font-semibold">{termMonths ? `${termMonths} mo` : '—'}</p>
+          <p className="text-zinc-500 text-xs">Term</p>
+          <p className="text-zinc-100 font-semibold">{termMonths ? `${termMonths} mo` : '—'}</p>
         </div>
         <div className="glass rounded-xl px-4 py-3 flex-1 text-center">
-          <p className="text-slate-500 text-xs">Est. EMI/mo</p>
-          <p className="text-slate-100 font-semibold">{emi ? INR(emi) : '—'}</p>
+          <p className="text-zinc-500 text-xs">Est. EMI/mo</p>
+          <p className="text-zinc-100 font-semibold">{emi ? INR(emi) : '—'}</p>
         </div>
       </div>
     </div>

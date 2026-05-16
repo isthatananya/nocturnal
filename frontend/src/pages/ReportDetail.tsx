@@ -123,23 +123,23 @@ export default function ReportDetail() {
   const analysis = analyseReport(report.breakdown, inputs)
 
   return (
-    <div className="min-h-screen bg-midnight text-slate-100">
+    <div className="min-h-screen bg-midnight text-zinc-100">
       <header className="border-b border-white/5 px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link to="/reports" className="p-2 rounded-lg hover:bg-white/5 text-slate-400">
+          <Link to="/reports" className="p-2 rounded-lg hover:bg-white/5 text-zinc-400">
             <ArrowLeft size={18} />
           </Link>
           <span className="font-semibold">Report</span>
-          <span className="text-xs font-mono text-slate-500">{report.report_id}</span>
+          <span className="text-xs font-mono text-zinc-500">{report.report_id}</span>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={exportPDF} className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
+          <button onClick={exportPDF} className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
             <Download size={14} /> PDF
           </button>
-          <button onClick={() => setEncryptModal(true)} className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
+          <button onClick={() => setEncryptModal(true)} className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
             <Lock size={14} /> Encrypted
           </button>
-          <button onClick={exportJSON} className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-slate-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
+          <button onClick={exportJSON} className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-200 transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5">
             <Download size={14} /> JSON
           </button>
         </div>
@@ -151,7 +151,7 @@ export default function ReportDetail() {
         <div className="glass rounded-3xl p-8 flex flex-col items-center gap-4">
           <ScoreGauge score={report.score} tier={report.tier_label} size={180} />
           <TierBadge tier={report.tier_label} size="lg" />
-          <p className="text-slate-500 text-sm">{new Date(report.generated_at).toLocaleString()}</p>
+          <p className="text-zinc-500 text-sm">{new Date(report.generated_at).toLocaleString()}</p>
         </div>
 
         {/* ── Loan terms ── */}
@@ -164,14 +164,14 @@ export default function ReportDetail() {
             ['TX hash', report.loan_tx_hash ?? '—'],
           ].map(([k, v]) => (
             <div key={k} className="flex justify-between px-6 py-4 text-sm">
-              <span className="text-slate-400">{k}</span>
-              <span className="text-slate-100 font-medium font-mono text-xs truncate max-w-48">{v}</span>
+              <span className="text-zinc-400">{k}</span>
+              <span className="text-zinc-100 font-medium font-mono text-xs truncate max-w-48">{v}</span>
             </div>
           ))}
         </div>
 
         {/* ── Adjustment note ── */}
-        <div className="flex items-start gap-2 text-xs text-slate-500 px-1">
+        <div className="flex items-start gap-2 text-xs text-zinc-500 px-1">
           {report.breakdown.adjustment >= 0
             ? <TrendingUp size={12} className="text-emerald-500 shrink-0 mt-0.5" />
             : <TrendingDown size={12} className="text-red-400 shrink-0 mt-0.5" />
@@ -184,7 +184,7 @@ export default function ReportDetail() {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <CheckCircle size={16} className="text-emerald-400" />
-              <h2 className="font-semibold text-slate-200">What worked in your favour</h2>
+              <h2 className="font-semibold text-zinc-200">What worked in your favour</h2>
             </div>
             <div className="grid gap-3">
               {analysis.strengths.map(f => <FactorCard key={f.key} f={f} />)}
@@ -197,7 +197,7 @@ export default function ReportDetail() {
           <section>
             <div className="flex items-center gap-2 mb-4">
               <AlertTriangle size={16} className="text-amber-400" />
-              <h2 className="font-semibold text-slate-200">Areas that pulled the score down</h2>
+              <h2 className="font-semibold text-zinc-200">Areas that pulled the score down</h2>
             </div>
             <div className="grid gap-3">
               {analysis.weaknesses.map(f => <FactorCard key={f.key} f={f} />)}
@@ -211,12 +211,12 @@ export default function ReportDetail() {
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
           <div className="glass rounded-3xl p-8 max-w-sm w-full space-y-5">
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-slate-100">Export encrypted report</h2>
-              <button onClick={() => { setEncryptModal(false); setEncryptPw('') }} className="text-slate-500 hover:text-slate-300">
+              <h2 className="font-semibold text-zinc-100">Export encrypted report</h2>
+              <button onClick={() => { setEncryptModal(false); setEncryptPw('') }} className="text-zinc-500 hover:text-zinc-300">
                 <X size={18} />
               </button>
             </div>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-zinc-400">
               Your report will be encrypted with AES-256-GCM. Keep the password safe — it cannot be recovered.
             </p>
             <div>

@@ -57,10 +57,10 @@ export default function Settings() {
   }
 
   return (
-    <div className="page min-h-screen text-slate-100">
+    <div className="page min-h-screen text-zinc-100">
       <header className="app-header">
         <div className="flex items-center gap-3">
-          <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-slate-500 hover:text-slate-200 transition-colors">
+          <Link to="/dashboard" className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors">
             <ArrowLeft size={17} />
           </Link>
           <span className="font-semibold tracking-tight">Settings</span>
@@ -73,18 +73,18 @@ export default function Settings() {
         {/* ── Account info ── */}
         <div className="glass rounded-2xl divide-y divide-white/5" style={{marginTop:0}}>
           <div className="px-6 py-5">
-            <p className="text-xs text-slate-500 uppercase tracking-wide font-medium mb-4">Account</p>
+            <p className="text-xs text-zinc-500 uppercase tracking-wide font-medium mb-4">Account</p>
             <div className="space-y-3 text-sm">
               {user?.full_name && (
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Name</span>
-                  <span className="text-slate-100">{user.full_name}</span>
+                  <span className="text-zinc-400">Name</span>
+                  <span className="text-zinc-100">{user.full_name}</span>
                 </div>
               )}
               <div className="flex justify-between items-center">
-                <span className="text-slate-400">Email</span>
+                <span className="text-zinc-400">Email</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-slate-100">{user?.email}</span>
+                  <span className="text-zinc-100">{user?.email}</span>
                   {user?.email_verified ? (
                     <span className="flex items-center gap-1 text-xs text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 rounded-full px-2 py-0.5">
                       <CheckCircle size={11} /> Verified
@@ -98,14 +98,14 @@ export default function Settings() {
               </div>
               {user?.profession && (
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Profession</span>
-                  <span className="text-slate-100">{user.profession}</span>
+                  <span className="text-zinc-400">Profession</span>
+                  <span className="text-zinc-100">{user.profession}</span>
                 </div>
               )}
               {user?.date_of_birth && (
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Date of birth</span>
-                  <span className="text-slate-100">{user.date_of_birth}</span>
+                  <span className="text-zinc-400">Date of birth</span>
+                  <span className="text-zinc-100">{user.date_of_birth}</span>
                 </div>
               )}
             </div>
@@ -113,15 +113,15 @@ export default function Settings() {
 
           {/* ── Wallet ── */}
           <div className="px-6 py-5">
-            <p className="text-xs text-slate-500 uppercase tracking-wide font-medium mb-4">Wallet</p>
+            <p className="text-xs text-zinc-500 uppercase tracking-wide font-medium mb-4">Wallet</p>
             {address ? (
               <div className="flex items-center justify-between">
                 <div>
                   <div className="flex items-center gap-2 text-sm">
                     <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <span className="text-slate-100 font-mono text-xs">{truncate(address)}</span>
+                    <span className="text-zinc-100 font-mono text-xs">{truncate(address)}</span>
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">Midnight Lace wallet</p>
+                  <p className="text-xs text-zinc-500 mt-1">Midnight Lace wallet</p>
                 </div>
                 <button
                   onClick={handleDisconnect}
@@ -132,7 +132,7 @@ export default function Settings() {
               </div>
             ) : (
               <div className="flex items-center justify-between">
-                <span className="text-slate-500 text-sm">No wallet connected</span>
+                <span className="text-zinc-500 text-sm">No wallet connected</span>
                 {installed ? (
                   <Button size="sm" onClick={connect} loading={connecting}>Connect Lace</Button>
                 ) : (
@@ -147,9 +147,9 @@ export default function Settings() {
 
           {/* ── Network ── */}
           <div className="px-6 py-5">
-            <p className="text-xs text-slate-500 uppercase tracking-wide font-medium mb-4">Network</p>
+            <p className="text-xs text-zinc-500 uppercase tracking-wide font-medium mb-4">Network</p>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-400">Midnight network</span>
+              <span className="text-zinc-400">Midnight network</span>
               <span className={`font-medium ${network === 'mainnet' ? 'text-emerald-400' : 'text-amber-400'}`}>
                 {network}
               </span>
@@ -159,7 +159,7 @@ export default function Settings() {
 
         {/* ── Password change ── */}
         <div className="glass rounded-2xl p-6">
-          <p className="text-xs text-slate-500 uppercase tracking-wide font-medium mb-5">Change password</p>
+          <p className="text-xs text-zinc-500 uppercase tracking-wide font-medium mb-5">Change password</p>
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div>
               <label className="label">Current password</label>
@@ -207,8 +207,8 @@ export default function Settings() {
         </div>
 
         {/* ── Privacy notice ── */}
-        <div className="glass rounded-2xl p-6 text-sm text-slate-500">
-          <p className="font-medium text-slate-400 mb-2">Privacy notice</p>
+        <div className="glass rounded-2xl p-6 text-sm text-zinc-500">
+          <p className="font-medium text-zinc-400 mb-2">Privacy notice</p>
           <p className="leading-relaxed">
             Raw financial data you upload is processed entirely in your browser and is never transmitted to our servers.
             Credit scores are computed from derived features only. Report data is stored encrypted — only you can decrypt it.

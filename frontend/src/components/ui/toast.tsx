@@ -21,7 +21,7 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = 'ToastViewport'
 
 const toastVariants: Record<string, string> = {
-  default: 'border-white/10 bg-slate-900/90',
+  default: 'border-white/10 bg-zinc-900/90',
   success: 'border-emerald-500/30 bg-emerald-950/80',
   error:   'border-red-500/30 bg-red-950/80',
   info:    'border-white/12 bg-zinc-900/90',
@@ -55,7 +55,7 @@ const ToastTitle = React.forwardRef<
   React.ElementRef<typeof ToastPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitive.Title ref={ref} className={cn('text-sm font-semibold text-slate-100', className)} {...props} />
+  <ToastPrimitive.Title ref={ref} className={cn('text-sm font-semibold text-zinc-100', className)} {...props} />
 ))
 ToastTitle.displayName = 'ToastTitle'
 
@@ -63,7 +63,7 @@ const ToastDescription = React.forwardRef<
   React.ElementRef<typeof ToastPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitive.Description ref={ref} className={cn('text-sm text-slate-400 mt-0.5', className)} {...props} />
+  <ToastPrimitive.Description ref={ref} className={cn('text-sm text-zinc-400 mt-0.5', className)} {...props} />
 ))
 ToastDescription.displayName = 'ToastDescription'
 
@@ -73,7 +73,7 @@ const ToastClose = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <ToastPrimitive.Close
     ref={ref}
-    className={cn('ml-auto shrink-0 text-slate-500 hover:text-slate-300 transition-colors', className)}
+    className={cn('ml-auto shrink-0 text-zinc-500 hover:text-zinc-300 transition-colors', className)}
     toast-close=""
     {...props}
   >

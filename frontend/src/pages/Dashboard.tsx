@@ -53,7 +53,7 @@ export default function Dashboard() {
   const firstName = user?.full_name?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'there'
 
   return (
-    <div className="page min-h-screen text-slate-100">
+    <div className="page min-h-screen text-zinc-100">
 
       {/* ── Header ──────────────────────────────────────── */}
       <header className="app-header">
@@ -63,11 +63,11 @@ export default function Dashboard() {
         <div className="flex items-center gap-2">
           <WalletBar />
           <Link to="/settings"
-            className="p-2 rounded-lg hover:bg-white/5 text-slate-500 hover:text-slate-200 transition-colors">
+            className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors">
             <Settings size={17} />
           </Link>
           <button onClick={handleLogout}
-            className="p-2 rounded-lg hover:bg-white/5 text-slate-500 hover:text-red-400 transition-colors">
+            className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-red-400 transition-colors">
             <LogOut size={17} />
           </button>
         </div>
@@ -78,7 +78,7 @@ export default function Dashboard() {
         {/* ── Welcome ─────────────────────────────────────── */}
         <SlideUp>
           <div>
-            <p className="text-slate-500 text-sm">Welcome back,</p>
+            <p className="text-zinc-500 text-sm">Welcome back,</p>
             <h1 className="text-2xl font-bold mt-0.5 tracking-tight">{firstName}</h1>
           </div>
         </SlideUp>
@@ -108,7 +108,7 @@ export default function Dashboard() {
                       <p className="eyebrow mb-2">Credit Score</p>
                       <div className="flex items-center gap-3">
                         <TierBadge tier={latest.tier_label} size="lg" />
-                        <span className="text-slate-600 text-sm">
+                        <span className="text-zinc-500 text-sm">
                           {daysSince(latest.generated_at) === 0 ? 'Today' : `${daysSince(latest.generated_at)}d ago`}
                         </span>
                       </div>
@@ -130,19 +130,19 @@ export default function Dashboard() {
 
                     <div className="flex-1 space-y-3">
                       <div className="flex justify-between text-sm py-2.5 border-b border-white/5">
-                        <span className="text-slate-500">Loan limit</span>
-                        <span className="text-slate-100 font-semibold">₹{latest.loan_limit.toLocaleString('en-IN')}</span>
+                        <span className="text-zinc-500">Loan limit</span>
+                        <span className="text-zinc-100 font-semibold">₹{latest.loan_limit.toLocaleString('en-IN')}</span>
                       </div>
                       {latest.interest_rate && (
                         <div className="flex justify-between text-sm py-2.5 border-b border-white/5">
-                          <span className="text-slate-500">Interest rate</span>
-                          <span className="text-slate-100 font-semibold">{latest.interest_rate} APR</span>
+                          <span className="text-zinc-500">Interest rate</span>
+                          <span className="text-zinc-100 font-semibold">{latest.interest_rate} APR</span>
                         </div>
                       )}
                       {latest.term_months && (
                         <div className="flex justify-between text-sm py-2.5 border-b border-white/5">
-                          <span className="text-slate-500">Term</span>
-                          <span className="text-slate-100 font-semibold">{latest.term_months} months</span>
+                          <span className="text-zinc-500">Term</span>
+                          <span className="text-zinc-100 font-semibold">{latest.term_months} months</span>
                         </div>
                       )}
 
@@ -172,7 +172,7 @@ export default function Dashboard() {
                         </motion.button>
                       )}
                       {latest.tier === 0 && (
-                        <p className="text-sm text-slate-500 mt-3 leading-relaxed">
+                        <p className="text-sm text-zinc-500 mt-3 leading-relaxed">
                           Score below the 510 threshold. Follow the improvement tips on your report.
                         </p>
                       )}
@@ -187,13 +187,13 @@ export default function Dashboard() {
                   </div>
                   {stale ? (
                     <>
-                      <p className="text-slate-200 font-semibold mb-1">Report expired</p>
-                      <p className="text-slate-500 text-sm mb-6">Scores are valid for 7 days. Upload fresh data to re-score.</p>
+                      <p className="text-zinc-200 font-semibold mb-1">Report expired</p>
+                      <p className="text-zinc-500 text-sm mb-6">Scores are valid for 7 days. Upload fresh data to re-score.</p>
                     </>
                   ) : (
                     <>
-                      <p className="text-slate-200 font-semibold mb-1">No credit score yet</p>
-                      <p className="text-slate-500 text-sm mb-6">Upload your financial data or enter your PAN to get started.</p>
+                      <p className="text-zinc-200 font-semibold mb-1">No credit score yet</p>
+                      <p className="text-zinc-500 text-sm mb-6">Upload your financial data or enter your PAN to get started.</p>
                     </>
                   )}
                   <motion.button
@@ -214,14 +214,14 @@ export default function Dashboard() {
                 <div className="glass rounded-2xl p-5">
                   <p className="eyebrow mb-3">Reports</p>
                   <p className="text-3xl font-bold">{history.length}</p>
-                  <p className="text-slate-600 text-sm mt-0.5">assessments run</p>
+                  <p className="text-zinc-500 text-sm mt-0.5">assessments run</p>
                 </div>
               </StaggerItem>
               <StaggerItem>
                 <div className="glass rounded-2xl p-5">
                   <p className="eyebrow mb-3">Active loans</p>
                   <p className="text-3xl font-bold">{history.filter(r => r.loan_applied).length}</p>
-                  <p className="text-slate-600 text-sm mt-0.5">on Midnight chain</p>
+                  <p className="text-zinc-500 text-sm mt-0.5">on Midnight chain</p>
                 </div>
               </StaggerItem>
               <StaggerItem>
@@ -246,12 +246,12 @@ export default function Dashboard() {
             transition={{ duration: 0.6, delay: 0.2, ease }}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-slate-200 tracking-tight">Score history</h2>
-              <span className="text-xs text-slate-600">{history.length} assessments</span>
+              <h2 className="font-semibold text-zinc-200 tracking-tight">Score history</h2>
+              <span className="text-xs text-zinc-500">{history.length} assessments</span>
             </div>
             <div className="glass rounded-2xl p-6">
               <ScoreHistoryChart reports={history} />
-              <div className="flex items-center gap-5 mt-4 pt-4 border-t border-white/5 text-xs text-slate-600">
+              <div className="flex items-center gap-5 mt-4 pt-4 border-t border-white/5 text-xs text-zinc-500">
                 {[
                   { label: 'Prime', color: '#e5e5e7' },
                   { label: 'Gold', color: '#eab308' },
@@ -277,7 +277,7 @@ export default function Dashboard() {
             transition={{ duration: 0.6, delay: 0.3, ease }}
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-slate-200 tracking-tight">Recent reports</h2>
+              <h2 className="font-semibold text-zinc-200 tracking-tight">Recent reports</h2>
               <Link to="/reports" className="text-sm text-white/55 hover:text-white/70 transition-colors">View all</Link>
             </div>
             <div className="space-y-2">
