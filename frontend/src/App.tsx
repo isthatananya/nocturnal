@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import { Toaster } from './components/ui/toaster'
+import ErrorBoundary from './components/ErrorBoundary'
 
 import Landing from './pages/Landing'
 import Login from './pages/Login'
@@ -29,14 +30,14 @@ export default function App() {
       <Route path="/auth/login" element={<Login />} />
       <Route path="/auth/signup" element={<Signup />} />
 
-      <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-      <Route path="/score" element={<RequireAuth><Score /></RequireAuth>} />
-      <Route path="/score/result" element={<RequireAuth><ScoreResult /></RequireAuth>} />
-      <Route path="/loan/apply" element={<RequireAuth><LoanApply /></RequireAuth>} />
-      <Route path="/loan/active" element={<RequireAuth><LoanActive /></RequireAuth>} />
-      <Route path="/reports" element={<RequireAuth><Reports /></RequireAuth>} />
-      <Route path="/reports/:id" element={<RequireAuth><ReportDetail /></RequireAuth>} />
-      <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
+      <Route path="/dashboard" element={<RequireAuth><ErrorBoundary><Dashboard /></ErrorBoundary></RequireAuth>} />
+      <Route path="/score" element={<RequireAuth><ErrorBoundary><Score /></ErrorBoundary></RequireAuth>} />
+      <Route path="/score/result" element={<RequireAuth><ErrorBoundary><ScoreResult /></ErrorBoundary></RequireAuth>} />
+      <Route path="/loan/apply" element={<RequireAuth><ErrorBoundary><LoanApply /></ErrorBoundary></RequireAuth>} />
+      <Route path="/loan/active" element={<RequireAuth><ErrorBoundary><LoanActive /></ErrorBoundary></RequireAuth>} />
+      <Route path="/reports" element={<RequireAuth><ErrorBoundary><Reports /></ErrorBoundary></RequireAuth>} />
+      <Route path="/reports/:id" element={<RequireAuth><ErrorBoundary><ReportDetail /></ErrorBoundary></RequireAuth>} />
+      <Route path="/settings" element={<RequireAuth><ErrorBoundary><Settings /></ErrorBoundary></RequireAuth>} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
