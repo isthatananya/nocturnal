@@ -33,7 +33,7 @@ function ProductPreview() {
       transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
       className="w-[300px] mx-auto"
     >
-      <div className="glass rounded-3xl p-6 shadow-lifted select-none">
+      <div className="rounded-3xl p-6 shadow-lifted select-none" style={{ background: 'var(--bg-3)', border: '1px solid var(--border)' }}>
         {/* header */}
         <div className="flex items-center justify-between mb-5">
           <span className="text-xs font-semibold text-slate-500 tracking-wide uppercase">Credit Score</span>
@@ -67,9 +67,9 @@ function ProductPreview() {
           ['Interest rate', '10.5% APR'],
           ['Term', '60 months'],
         ].map(([k, v]) => (
-          <div key={k} className="flex justify-between text-sm py-2 border-b border-white/5 last:border-0">
-            <span className="text-slate-500">{k}</span>
-            <span className="text-slate-100 font-medium">{v}</span>
+          <div key={k} className="flex justify-between text-sm py-2" style={{ borderBottom: '1px solid var(--border)' }}>
+            <span style={{ color: 'var(--text-4)' }}>{k}</span>
+            <span className="font-medium" style={{ color: 'var(--text-1)' }}>{v}</span>
           </div>
         ))}
 
@@ -82,18 +82,20 @@ function ProductPreview() {
       <motion.div
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
-        className="absolute -right-4 top-8 glass rounded-2xl px-3 py-2 shadow-card flex items-center gap-2"
+        className="absolute -right-4 top-8 rounded-2xl px-3 py-2 shadow-card flex items-center gap-2"
+        style={{ background: 'var(--bg-4)', border: '1px solid var(--border-2)' }}
       >
-        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.6)]" />
-        <span className="text-xs font-medium text-slate-300">ZK proof verified</span>
+        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" style={{ boxShadow: '0 0 6px 2px rgba(52,211,153,0.55)' }} />
+        <span className="text-xs font-medium" style={{ color: 'var(--text-2)' }}>ZK proof verified</span>
       </motion.div>
 
       <motion.div
         animate={{ y: [0, -5, 0] }}
         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.6 }}
-        className="absolute -left-6 bottom-16 glass rounded-2xl px-3 py-2 shadow-card"
+        className="absolute -left-6 bottom-16 rounded-2xl px-3 py-2 shadow-card"
+        style={{ background: 'var(--bg-4)', border: '1px solid var(--border-2)' }}
       >
-        <span className="text-xs font-semibold text-indigo-300">+47 pts since Jan</span>
+        <span className="text-xs font-semibold" style={{ color: 'var(--accent-2)' }}>+47 pts since Jan</span>
       </motion.div>
     </motion.div>
   )
@@ -103,7 +105,7 @@ export default function Landing() {
   const nav = useNavigate()
 
   return (
-    <div className="page min-h-screen text-slate-100 overflow-x-hidden">
+    <div className="page min-h-screen overflow-x-hidden" style={{ color: 'var(--text-2)' }}>
 
       {/* ── Nav ─────────────────────────────────────────── */}
       <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-8 py-4"
@@ -121,11 +123,10 @@ export default function Landing() {
 
       {/* ── Hero ─────────────────────────────────────────── */}
       <section className="relative pt-36 pb-20 px-8">
-        {/* background glow */}
-        <div className="absolute inset-0 -z-10 pointer-events-none">
-          <div className="absolute top-0 left-0 right-0 h-[600px] bg-hero-glow" />
-          <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-indigo-500/[0.07] blur-[120px]" />
-          <div className="absolute top-40 left-1/3 w-[400px] h-[400px] rounded-full bg-violet-500/[0.05] blur-[100px]" />
+        {/* background glow — Fey-style: minimal single radial, not loud */}
+        <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-[500px] bg-hero-glow opacity-80" />
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[600px] h-[400px] rounded-full bg-indigo-600/[0.06] blur-[100px]" />
         </div>
 
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
@@ -311,9 +312,12 @@ export default function Landing() {
             <span className="text-center text-indigo-400">ZKCredit</span>
           </div>
           {comparison.map(([label, bad, good]) => (
-            <div key={label} className="grid grid-cols-3 px-6 py-4 border-b border-white/5 last:border-0 hover:bg-white/[0.015] transition-colors">
-              <span className="text-slate-300 text-sm font-medium">{label}</span>
-              <span className="text-center text-slate-600 text-sm">{bad}</span>
+            <div key={label} className="grid grid-cols-3 px-6 py-4 last:border-0 transition-colors"
+              style={{ borderBottom: '1px solid var(--border)' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.018)')}
+              onMouseLeave={e => (e.currentTarget.style.background = '')}>
+              <span className="text-sm font-medium" style={{ color: 'var(--text-2)' }}>{label}</span>
+              <span className="text-center text-sm" style={{ color: 'var(--text-5)' }}>{bad}</span>
               <span className="text-center text-emerald-400 text-sm font-semibold">{good}</span>
             </div>
           ))}
