@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
 import { Button } from '../components/ui/button'
 import { toast } from '../hooks/useToast'
+
+const ease = [0.16, 1, 0.3, 1]
 
 export default function Login() {
   const { login } = useAuth()
@@ -25,18 +28,34 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-midnight flex items-center justify-center px-4">
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-indigo-500/8 blur-[100px]" />
+    <div className="page min-h-screen flex items-center justify-center px-4">
+      {/* background */}
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-indigo-500/[0.07] blur-[120px]" />
       </div>
 
       <div className="w-full max-w-md">
-        <div className="text-center mb-10">
-          <Link to="/" className="text-2xl font-bold">ZK<span className="text-indigo-400">Credit</span></Link>
-          <p className="text-slate-400 mt-3">Welcome back</p>
-        </div>
+        {/* logo */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease }}
+          className="text-center mb-10"
+        >
+          <Link to="/" className="text-2xl font-bold tracking-tight">
+            ZK<span className="gradient-text">Credit</span>
+          </Link>
+          <p className="text-slate-500 text-sm mt-2">Welcome back</p>
+        </motion.div>
 
-        <form onSubmit={submit} className="glass rounded-3xl p-8 space-y-5">
+        {/* form card */}
+        <motion.form
+          onSubmit={submit}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.08, ease }}
+          className="glass rounded-2xl p-8 space-y-5"
+        >
           <div>
             <label className="label">Email</label>
             <input
@@ -47,6 +66,7 @@ export default function Login() {
               className="input-field"
               required
               autoComplete="email"
+              autoFocus
             />
           </div>
 
@@ -63,19 +83,30 @@ export default function Login() {
             />
           </div>
 
-          <Button type="submit" loading={loading} className="w-full mt-2">
-            {loading ? 'Signing in...' : 'Sign in'}
-          </Button>
+          <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 22 }}>
+            <Button type="submit" loading={loading} className="w-full">
+              {loading ? 'Signing in…' : 'Sign in'}
+            </Button>
+          </motion.div>
 
           <p className="text-center text-sm text-slate-500">
             No account?{' '}
-            <Link to="/auth/signup" className="text-indigo-400 hover:text-indigo-300">Sign up</Link>
+            <Link to="/auth/signup" className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+              Create one
+            </Link>
           </p>
-        </form>
+        </motion.form>
 
-        <p className="text-center text-xs text-slate-600 mt-6">
-          Demo accounts: alice@zkcredit.demo · bob@zkcredit.demo · password: demo1234
-        </p>
+        {/* demo hint */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-center text-xs text-slate-600 mt-6"
+        >
+          Demo accounts: priya@zkcredit.demo · rahul@zkcredit.demo · password: demo1234
+        </motion.p>
       </div>
     </div>
   )
