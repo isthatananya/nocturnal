@@ -45,8 +45,8 @@ async def rate_limit_score(
     count = await redis.incr(key)
     if count == 1:
         await redis.expire(key, 60)
-    if count > 5:
-        raise HTTPException(429, "Rate limit exceeded — 5 score requests per minute.")
+    if count > 20:
+        raise HTTPException(429, "Rate limit exceeded — 20 score requests per minute.")
     return user
 
 

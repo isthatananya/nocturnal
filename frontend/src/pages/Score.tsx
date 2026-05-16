@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { ArrowLeft, ChevronRight, Download, Upload, FileText, CreditCard, AlertTriangle } from 'lucide-react'
 import { extractFeatures } from '../lib/featureExtract'
 import { credit } from '../lib/api'
@@ -64,6 +64,7 @@ const emptyForm = {
 
 export default function Score() {
   const nav = useNavigate()
+  const location = useLocation()
   const [step, setStep] = useState<Step>('select')
   const [mode, setMode] = useState<Mode>('select')
   const [features, setFeatures] = useState<FeatureVector | null>(null)
@@ -77,6 +78,12 @@ export default function Score() {
   // PAN state
   const [pan, setPan] = useState('')
   const [panLoading, setPanLoading] = useState(false)
+
+  // Auto-enter mode when navigated here from ScoreResult's method cards
+  useEffect(() => {
+    const m = (location.state as any)?.mode as Mode | undefined
+    if (m && m !== 'select') enterMode(m)
+  }, [])
 
   const enterMode = (m: Mode) => { setMode(m); setStep(m); setError(null) }
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, Download, RefreshCw, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react'
+import { ArrowRight, Download, RefreshCw, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, Upload, ClipboardList, CreditCard } from 'lucide-react'
 import type { Report } from '../types'
 import ScoreGauge from '../components/ScoreGauge'
 import TierBadge from '../components/TierBadge'
@@ -21,7 +21,7 @@ export default function ScoreResult() {
   // Prefer router state (set by submit() — available immediately, no flash)
   // Fall back to sessionStorage for users who refresh the page
   const stateReport: Report | undefined = (location.state as any)?.report
-  const [report, setReport] = useState<Report | null>(() => {
+  const [report] = useState<Report | null>(() => {
     if (stateReport) return stateReport
     const raw = sessionStorage.getItem('latest_report')
     return raw ? JSON.parse(raw) : null
@@ -50,6 +50,14 @@ export default function ScoreResult() {
   const inputs = (report as any).inputs ?? undefined
   const analysis = analyseReport(report.breakdown, inputs)
 
+  const SOURCE_META: Record<string, { label: string; Icon: typeof Upload }> = {
+    upload: { label: 'Bank Upload',   Icon: Upload },
+    form:   { label: 'Manual Entry',  Icon: ClipboardList },
+    pan:    { label: 'PAN Card',      Icon: CreditCard },
+  }
+  const src = SOURCE_META[report.data_source] ?? SOURCE_META.upload
+  const SrcIcon = src.Icon
+
   return (
     <div className="page min-h-screen text-zinc-100">
 
@@ -72,21 +80,23 @@ export default function ScoreResult() {
 
       <main className="max-w-3xl mx-auto px-6 py-10 space-y-6">
 
-        {/* ── Simulation banner ─────────────────────────── */}
-        {report.data_source === 'form' && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, ease }}
-            className="flex items-start gap-3 rounded-2xl px-5 py-4 border border-amber-500/20 bg-amber-500/[0.06]"
-          >
-            <AlertCircle size={16} className="text-amber-400 mt-0.5 shrink-0" />
-            <p className="text-sm text-amber-300/80 leading-relaxed">
-              This is a <strong className="text-amber-300">simulation</strong> based on manually entered data.
-              Loan applications require Upload or PAN card verification.
-            </p>
-          </motion.div>
-        )}
+        {/* ── Data source tag ───────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease }}
+          className="flex items-center gap-2"
+        >
+          <span className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 bg-white/5 border border-white/8 rounded-full px-3 py-1.5">
+            <SrcIcon size={11} className="shrink-0" />
+            {src.label}
+          </span>
+          {report.data_source === 'form' && (
+            <span className="text-xs text-amber-400/70 bg-amber-500/[0.06] border border-amber-500/15 rounded-full px-3 py-1.5">
+              Simulation
+            </span>
+          )}
+        </motion.div>
 
         {/* ── Score overview ─────────────────────────────── */}
         <SlideUp>
@@ -100,13 +110,6 @@ export default function ScoreResult() {
               <div className="flex-1 w-full space-y-4">
                 {report.tier > 0 ? (
                   <div className="rounded-2xl border border-white/7 bg-surface p-5 space-y-3">
-                    {report.data_source === 'form' && (
-                      <div className="flex items-center gap-2 text-xs text-amber-400/80 bg-amber-500/[0.06]
-                                      border border-amber-500/20 rounded-xl px-3 py-2">
-                        <AlertCircle size={12} className="shrink-0" />
-                        Simulation only — upload or PAN required for loan applications
-                      </div>
-                    )}
                     <div className="flex justify-between text-sm py-2 border-b border-white/5">
                       <span className="text-zinc-500">Max loan</span>
                       <span className="text-zinc-100 font-bold text-lg">₹{report.loan_limit.toLocaleString('en-IN')}</span>
@@ -123,20 +126,14 @@ export default function ScoreResult() {
                         <span className="text-zinc-100 font-semibold">{report.term_months} months</span>
                       </div>
                     )}
-                    {report.data_source === 'form' ? (
-                      <button disabled className="btn-primary w-full mt-2 opacity-35 cursor-not-allowed flex items-center justify-center gap-2">
-                        Apply for loan <ArrowRight size={15} />
-                      </button>
-                    ) : (
-                      <motion.button
-                        whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-                        onClick={() => nav('/loan/apply')}
-                        className="btn-primary w-full mt-2 flex items-center justify-center gap-2"
-                      >
-                        Apply for loan <ArrowRight size={15} />
-                      </motion.button>
-                    )}
+                    <motion.button
+                      whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                      onClick={() => nav('/loan/apply')}
+                      className="btn-primary w-full mt-2 flex items-center justify-center gap-2"
+                    >
+                      Apply for loan <ArrowRight size={15} />
+                    </motion.button>
                   </div>
                 ) : (
                   <div className="rounded-2xl border border-red-500/15 bg-red-500/[0.04] p-5 text-center">
@@ -222,15 +219,37 @@ export default function ScoreResult() {
           </motion.section>
         )}
 
-        {/* ── Actions ───────────────────────────────────── */}
+        {/* ── Recalculate options ───────────────────────── */}
+        <section>
+          <h2 className="font-semibold text-zinc-200 tracking-tight mb-3 flex items-center gap-2">
+            <RefreshCw size={14} className="text-zinc-500" /> Calculate with a different method
+          </h2>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: 'Bank Upload',  Icon: Upload,        mode: 'upload', active: report.data_source === 'upload' },
+              { label: 'Manual Entry', Icon: ClipboardList, mode: 'form',   active: report.data_source === 'form'   },
+              { label: 'PAN Card',     Icon: CreditCard,    mode: 'pan',    active: report.data_source === 'pan'    },
+            ].map(({ label, Icon, mode, active }) => (
+              <motion.button
+                key={mode}
+                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                onClick={() => nav('/score', { state: { mode } })}
+                className={`flex flex-col items-center gap-2 p-4 rounded-2xl border text-sm font-medium transition-colors
+                  ${active
+                    ? 'border-white/20 bg-white/8 text-zinc-100'
+                    : 'border-white/8 bg-white/3 text-zinc-400 hover:border-white/15 hover:text-zinc-200'
+                  }`}
+              >
+                <Icon size={18} />
+                <span className="text-center leading-tight">{label}</span>
+                {active && <span className="text-[10px] text-zinc-500 font-normal">Current</span>}
+              </motion.button>
+            ))}
+          </div>
+        </section>
+
         <div className="flex gap-3">
-          <motion.button
-            whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-            onClick={() => nav('/score')}
-            className="btn-ghost flex-1 flex items-center justify-center gap-2"
-          >
-            <RefreshCw size={14} /> Re-assess
-          </motion.button>
           <Link to="/reports" className="btn-ghost flex-1 flex items-center justify-center gap-2 text-sm font-medium">
             View all reports
           </Link>

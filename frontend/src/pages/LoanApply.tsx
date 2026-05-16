@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, ExternalLink, Shield } from 'lucide-react'
 import type { Report } from '../types'
@@ -18,23 +18,26 @@ const ease = [0.16, 1, 0.3, 1]
 
 export default function LoanApply() {
   const nav = useNavigate()
+  const location = useLocation()
   const { address, connect, installed } = useWallet()
-  const [report, setReport] = useState<Report | null>(null)
+
+  const stateReport: Report | undefined = (location.state as any)?.report
+  const [report] = useState<Report | null>(() => {
+    if (stateReport) return stateReport
+    const raw = sessionStorage.getItem('latest_report')
+    return raw ? JSON.parse(raw) : null
+  })
   const [amount, setAmount] = useState(0)
   const [proofStep, setProofStep] = useState<ProofStep>('idle')
   const [txHash, setTxHash] = useState<string | null>(null)
   const [proofError, setProofError] = useState<string | null>(null)
 
   useEffect(() => {
-    const raw = sessionStorage.getItem('latest_report')
-    if (!raw) { nav('/score'); return }
-    const r: Report = JSON.parse(raw)
-    if (r.tier === 0) { nav('/score/result'); return }
-    if (r.data_source === 'form') { nav('/score/result'); return }
-    setReport(r)
-    const step = r.loan_limit >= 100000 ? 5000 : r.loan_limit >= 25000 ? 1000 : 500
-    setAmount(Math.round(r.loan_limit / 2 / step) * step || step)
-  }, [nav])
+    if (!report) { nav('/score'); return }
+    if (report.tier === 0) { nav('/score/result'); return }
+    const step = report.loan_limit >= 100000 ? 5000 : report.loan_limit >= 25000 ? 1000 : 500
+    setAmount(Math.round(report.loan_limit / 2 / step) * step || step)
+  }, [nav, report])
 
   const handleApply = async () => {
     if (!report || !address) return
