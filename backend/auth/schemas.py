@@ -1,4 +1,5 @@
 import re
+from datetime import date
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
@@ -16,11 +17,23 @@ def _strong_password(v: str) -> str:
 class SignupRequest(BaseModel):
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
+    full_name: str = Field(min_length=1, max_length=128)
+    date_of_birth: date
+    profession: str = Field(default="", max_length=128)
 
     @field_validator("password")
     @classmethod
     def validate_password(cls, v: str) -> str:
         return _strong_password(v)
+
+    @field_validator("date_of_birth")
+    @classmethod
+    def validate_age(cls, v: date) -> date:
+        today = date.today()
+        age = today.year - v.year - ((today.month, today.day) < (v.month, v.day))
+        if age < 16:
+            raise ValueError("You must be at least 16 years old to register")
+        return v
 
 
 class LoginRequest(BaseModel):
