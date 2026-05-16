@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, Download, RefreshCw, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react'
 import type { Report } from '../types'
@@ -16,20 +16,26 @@ const ease = [0.16, 1, 0.3, 1]
 
 export default function ScoreResult() {
   const nav = useNavigate()
-  const [report, setReport] = useState<Report | null>(null)
+  const location = useLocation()
+
+  // Prefer router state (set by submit() — available immediately, no flash)
+  // Fall back to sessionStorage for users who refresh the page
+  const stateReport: Report | undefined = (location.state as any)?.report
+  const [report, setReport] = useState<Report | null>(() => {
+    if (stateReport) return stateReport
+    const raw = sessionStorage.getItem('latest_report')
+    return raw ? JSON.parse(raw) : null
+  })
   const [history, setHistory] = useState<Report[]>([])
   const [prevScore, setPrevScore] = useState<number | null>(null)
 
   useEffect(() => {
-    const raw = sessionStorage.getItem('latest_report')
-    if (!raw) { nav('/score'); return }
-    const r: Report = JSON.parse(raw)
-    setReport(r)
+    if (!report) { nav('/score'); return }
     credit.reports().then(all => {
       setHistory(all)
-      setPrevScore(all.find(h => h.report_id !== r.report_id)?.score ?? null)
+      setPrevScore(all.find(h => h.report_id !== report.report_id)?.score ?? null)
     }).catch(() => {})
-  }, [nav])
+  }, [nav, report])
 
   const exportJSON = () => {
     if (!report) return

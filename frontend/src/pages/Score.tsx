@@ -130,7 +130,7 @@ export default function Score() {
     try {
       const result = await credit.score(f)
       sessionStorage.setItem('latest_report', JSON.stringify(result))
-      nav('/score/result')
+      nav('/score/result', { state: { report: result } })
     } catch {
       setError('Scoring failed — please try again.')
       setStep('pan')
@@ -183,7 +183,7 @@ export default function Score() {
     try {
       const result = await credit.score(features)
       sessionStorage.setItem('latest_report', JSON.stringify(result))
-      nav('/score/result')
+      nav('/score/result', { state: { report: result } })
     } catch {
       setError('Scoring failed — please try again.')
       setStep(mode)
