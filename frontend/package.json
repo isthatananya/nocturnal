@@ -20,6 +20,7 @@
     "@midnight-ntwrk/midnight-js-network-id": "4.0.4",
     "@midnight-ntwrk/midnight-js-types": "4.0.4",
     "@midnight-ntwrk/midnight-js-utils": "4.0.4",
+    "@midnight-ntwrk/wallet-sdk-address-format": "3.1.1",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-progress": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
