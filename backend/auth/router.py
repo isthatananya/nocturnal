@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from redis.asyncio import Redis
 
 from auth.schemas import (
@@ -18,6 +18,7 @@ from core.deps import (
     clear_failed_logins,
     get_current_user,
     rate_limit_auth,
+    rate_limit_login_ip,
     record_failed_login,
 )
 from core.redis import get_redis
@@ -68,7 +69,13 @@ async def signup(body: SignupRequest, response: Response, redis: Redis = Depends
 
 
 @router.post("/login")
-async def login(body: LoginRequest, response: Response, redis: Redis = Depends(get_redis)):
+async def login(
+    body: LoginRequest,
+    request: Request,
+    response: Response,
+    redis: Redis = Depends(get_redis),
+    _ip_limit: None = Depends(rate_limit_login_ip),
+):
     await rate_limit_auth(body.email, "login", redis)
     await check_account_lockout(body.email, redis)
 

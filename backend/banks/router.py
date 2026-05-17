@@ -9,7 +9,7 @@ from redis.asyncio import Redis
 from auth.utils import decode_token
 from banks.schemas import ApprovalDecision, Bank, CounterResponse, LoanRequest, LoanRequestCreate
 from banks.service import SEEDED_BANKS, compute_approval_probability, compute_risk, get_bank
-from core.deps import get_current_user
+from core.deps import get_current_user, rate_limit_loan_apply
 from core.redis import get_redis
 
 router = APIRouter()
@@ -111,6 +111,10 @@ async def submit_loan_request(
     bank = get_bank(body.bank_id)
     if not bank:
         raise HTTPException(404, "Bank not found")
+
+    # 3 applications per 24h per (borrower, bank) pair — prevents spamming
+    # any single lender.
+    await rate_limit_loan_apply(body.bank_id, user, redis)
 
     tier = body.tier
     tier_label = body.tier_label
