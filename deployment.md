@@ -114,3 +114,109 @@ uv run python scripts/seed_banks.py
 ```
 
 Both scripts are idempotent — they skip records that already exist.
+
+---
+
+## Midnight contract deployment (Option A → real ZK proofs)
+
+The default app build (Option B) wires the proof server and contract source
+but does not deploy `credit_lending.compact` — the apply flow throws
+`CONTRACT_NOT_DEPLOYED` and the UI shows an instructive screen. To activate
+real ZK proofs end-to-end, follow this section.
+
+If any step fails the app gracefully degrades back to Option B; the
+`/deploy` page itself surfaces the specific error code.
+
+### Prereqs (manual, one-time)
+
+These three can't be automated — they're tied to your machine, browser,
+and a rate-limited faucet.
+
+1. **Install the Compact compiler.** Midnight's `compact` CLI is the only
+   tool that turns `.compact` source into the WASM circuit + proving key
+   the proof server consumes. It is not on npm or cargo; install from
+   <https://docs.midnight.network/develop/tutorial/building/contract>.
+   Verify with `compact --version`.
+2. **Install the official Midnight browser wallet** and switch it to the
+   **preprod** network. Reference:
+   <https://docs.midnight.network/develop/tutorial/using/chrome-ext>.
+   Note the shielded address.
+3. **Fund the wallet with preprod tDUST** from Midnight's faucet (link in
+   their docs). Takes 1–3 minutes to land. A faucet drip is enough for
+   the demo — deploys cost gas, loan applies cost only proof CPU.
+
+### Compile the contract
+
+```bash
+./contract/compile.sh
+```
+
+Emits:
+- `contract/build/` — raw compiler output
+- `frontend/public/contract/zk-artifacts/` — runtime-importable copy
+
+Verify before continuing:
+
+```bash
+ls frontend/public/contract/zk-artifacts/
+# expected: index.cjs + zkir / prover-key / verifier-key per circuit
+```
+
+### Deploy via the in-app `/deploy` page
+
+```bash
+# from repo root, three services:
+docker compose up redis proof-server
+uv run --directory backend uvicorn main:app --reload --port 8000
+npm --prefix frontend run dev
+```
+
+1. Open <http://localhost:5173/deploy> (after logging in).
+2. The page walks four prereq checks — wallet installed, connected,
+   funded, artifacts present.
+3. Click **Deploy contract**. The wallet pops a sign request; approve.
+4. Within ~30 s the page returns the contract address + deploy tx hash
+   + a copy-pasteable `.env` snippet.
+
+Paste into project root `.env`:
+
+```env
+VITE_CONTRACT_ADDRESS=0xYOUR_ADDRESS_HERE
+```
+
+Restart the frontend dev server so Vite picks up the new env.
+
+### Verify the live flow
+
+After restart:
+
+| Step | Expected |
+|---|---|
+| `/verify` | Contract address shown (not "— not yet deployed"); proof-server badge healthy |
+| `/score` | Compute via upload / form / PAN — produces a report |
+| `/loan/apply` | Connect wallet → click Apply → wallet asks to sign → preprod tx hash displayed |
+| `/loan/active` | Full amortisation schedule renders; Pay next EMI sends a real `repay` tx |
+
+### Reverting to Option B
+
+Set `VITE_CONTRACT_ADDRESS=` (empty) in `.env`, restart. The UI returns
+to the instructional "deploy first" screen. No code change required.
+
+### Troubleshooting
+
+| Symptom | Likely cause |
+|---|---|
+| `WALLET_NOT_INSTALLED` even with extension installed | Wallet not switched to preprod, or extension didn't inject `window.midnight.mnLace` — refresh the tab after enabling |
+| Deploy succeeds but `applyForLoan` throws `PROOF_FAILED` | Proof server not reachable; check `docker ps` + `curl localhost:6300/health` |
+| `CONTRACT_NOT_DEPLOYED` after pasting address | `.env` line has stray quotes / whitespace; restart dev server |
+| Indexer returns no state for the deployed address | Indexer lag on preprod — wait 30–60 s after deploy |
+| Vite build hard-fails on `.wasm` | Run `npm install --legacy-peer-deps` once — the `vite-plugin-wasm` / polyfills need to be on disk |
+
+### Demo-mode fallback
+
+Set `VITE_DEMO_MODE=1` and the apply flow bypasses the wallet, animates
+proof steps with realistic timings, and renders a fabricated tx hash.
+For stage demos where the wallet path is too fragile (rate-limited
+faucet, flaky venue network). Not a substitute for the real flow —
+prefer live tx hashes when possible.
+
