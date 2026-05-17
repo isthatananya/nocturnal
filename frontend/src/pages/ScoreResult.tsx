@@ -8,6 +8,7 @@ import TierBadge from '../components/TierBadge'
 import ScoreDelta from '../components/ScoreDelta'
 import ScoreHistoryChart from '../components/ScoreHistoryChart'
 import FactorCard from '../components/FactorCard'
+import TopImprovementsCard from '../components/TopImprovementsCard'
 import ZKPrivacyCard from '../components/ZKPrivacyCard'
 import EncryptedDownloadButton from '../components/EncryptedDownloadButton'
 import ProofServerBadge from '../components/ProofServerBadge'
@@ -191,6 +192,9 @@ export default function ScoreResult() {
             </div>
           </div>
         </SlideUp>
+
+        {/* ── Top improvements ──────────────────────────── */}
+        <TopImprovementsCard actions={analysis.topImprovements} currentScore={report.score} />
 
         {/* ── ZK Privacy Card ───────────────────────────── */}
         <ZKPrivacyCard report={report} />
