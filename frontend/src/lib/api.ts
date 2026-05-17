@@ -63,6 +63,22 @@ export const marketplace = {
   pendingCount: () =>
     http.get<{ pending: number }>('/loan-requests/pending-count').then(r => r.data),
 
-  decide: (request_id: string, status: 'approved' | 'rejected', message?: string, tx_hash?: string) =>
-    http.patch<LoanRequest>(`/loan-requests/${request_id}`, { status, message, tx_hash }).then(r => r.data),
+  decide: (
+    request_id: string,
+    status: 'approved' | 'rejected' | 'countered',
+    message?: string,
+    tx_hash?: string,
+    counter?: { amount?: number; rate?: number; term_months?: number },
+  ) =>
+    http.patch<LoanRequest>(`/loan-requests/${request_id}`, {
+      status,
+      message,
+      tx_hash,
+      counter_amount: counter?.amount,
+      counter_rate: counter?.rate,
+      counter_term_months: counter?.term_months,
+    }).then(r => r.data),
+
+  respondToCounter: (request_id: string, decision: 'accepted' | 'declined') =>
+    http.post<LoanRequest>(`/loan-requests/${request_id}/counter-response`, { decision }).then(r => r.data),
 }

@@ -58,7 +58,7 @@ export interface Bank {
   approval_probability: number | null
 }
 
-export type LoanRequestStatus = 'pending' | 'approved' | 'rejected'
+export type LoanRequestStatus = 'pending' | 'approved' | 'rejected' | 'countered'
 
 export interface LoanRequest {
   request_id: string
@@ -79,6 +79,10 @@ export interface LoanRequest {
   approval_probability?: number | null
   risk_score?: number | null
   risk_label?: string | null
+  // Populated only when the bank has countered the application
+  counter_amount?: number | null
+  counter_rate?: number | null
+  counter_term_months?: number | null
 }
 
 export interface FeatureVector {

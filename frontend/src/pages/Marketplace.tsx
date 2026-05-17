@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowRight, CheckCircle, XCircle, Clock, Building2, ChevronRight,
   Percent, Calendar, ShieldCheck, AlertTriangle, Star, IndianRupee,
+  GitCompareArrows,
 } from 'lucide-react'
 import AppNav from '../components/AppNav'
 import { marketplace, credit } from '../lib/api'
@@ -38,6 +39,68 @@ function ProbBar({ prob }: { prob: number }) {
   )
 }
 
+function CounterOfferPanel({
+  req,
+  onRespond,
+}: {
+  req: LoanRequest
+  onRespond: (id: string, decision: 'accepted' | 'declined') => Promise<void>
+}) {
+  const [busy, setBusy] = useState<'accepted' | 'declined' | null>(null)
+
+  const handle = async (decision: 'accepted' | 'declined') => {
+    setBusy(decision)
+    try { await onRespond(req.request_id, decision) } finally { setBusy(null) }
+  }
+
+  const changed = (label: string, was: string | number, now: string | number | null | undefined) => {
+    if (now == null) return null
+    return (
+      <div className="flex items-center justify-between text-xs py-1.5 border-b border-white/5 last:border-0">
+        <span className="text-zinc-500">{label}</span>
+        <span className="font-medium">
+          <span className="text-zinc-600 line-through mr-2">{was}</span>
+          <span className="text-indigo-300">{now}</span>
+        </span>
+      </div>
+    )
+  }
+
+  return (
+    <div className="rounded-xl border border-indigo-500/25 bg-indigo-500/5 p-3 space-y-3">
+      <p className="text-[11px] font-medium text-indigo-300/90 flex items-center gap-1.5">
+        <GitCompareArrows size={11} /> Revised terms from {req.bank_name}
+      </p>
+      <div className="space-y-0">
+        {changed('Amount', `₹${req.amount.toLocaleString('en-IN')}`,
+          req.counter_amount != null ? `₹${req.counter_amount.toLocaleString('en-IN')}` : null)}
+        {changed('Rate', '—',
+          req.counter_rate != null ? `${req.counter_rate}% APR` : null)}
+        {changed('Term', '—',
+          req.counter_term_months != null ? `${req.counter_term_months} months` : null)}
+      </div>
+      <div className="grid grid-cols-2 gap-2 pt-1">
+        <motion.button
+          whileHover={{ scale: busy ? 1 : 1.01 }} whileTap={{ scale: busy ? 1 : 0.97 }}
+          disabled={!!busy}
+          onClick={() => handle('accepted')}
+          className="py-2 rounded-lg text-xs font-semibold bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 hover:bg-emerald-500/25 transition-all disabled:opacity-50"
+        >
+          {busy === 'accepted' ? 'Accepting…' : '✓ Accept'}
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: busy ? 1 : 1.01 }} whileTap={{ scale: busy ? 1 : 0.97 }}
+          disabled={!!busy}
+          onClick={() => handle('declined')}
+          className="py-2 rounded-lg text-xs font-semibold bg-white/5 border border-white/12 text-zinc-300 hover:border-white/25 transition-all disabled:opacity-50"
+        >
+          {busy === 'declined' ? 'Declining…' : '✗ Decline'}
+        </motion.button>
+      </div>
+    </div>
+  )
+}
+
 function StatusChip({ status }: { status: LoanRequest['status'] }) {
   if (status === 'approved') return (
     <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 rounded-full px-2.5 py-1">
@@ -47,6 +110,11 @@ function StatusChip({ status }: { status: LoanRequest['status'] }) {
   if (status === 'rejected') return (
     <span className="flex items-center gap-1.5 text-xs font-medium text-red-400 bg-red-500/10 border border-red-500/25 rounded-full px-2.5 py-1">
       <XCircle size={11} /> Rejected
+    </span>
+  )
+  if (status === 'countered') return (
+    <span className="flex items-center gap-1.5 text-xs font-medium text-indigo-300 bg-indigo-500/10 border border-indigo-500/25 rounded-full px-2.5 py-1">
+      <GitCompareArrows size={11} /> Counter-offer
     </span>
   )
   return (
@@ -91,7 +159,7 @@ export default function Marketplace() {
     init()
   }, [])
 
-  // Real-time: when bank approves/rejects, update request status
+  // Real-time: when bank approves/rejects/counters, update request status
   useWebSocket('/api/ws/borrower-feed', {
     enabled: user?.role !== 'bank',
     onMessage: useCallback((data: unknown) => {
@@ -99,19 +167,43 @@ export default function Marketplace() {
       if (msg?.type === 'decision') {
         setMyRequests(prev => prev.map(r =>
           r.request_id === msg.request_id
-            ? { ...r, status: msg.status, message: msg.message }
+            ? {
+                ...r,
+                status: msg.status,
+                message: msg.message,
+                counter_amount: msg.counter_amount ?? null,
+                counter_rate: msg.counter_rate ?? null,
+                counter_term_months: msg.counter_term_months ?? null,
+              }
             : r
         ))
-        toast(
-          msg.status === 'approved' ? `Loan approved by ${msg.bank_name}!` : `Update from ${msg.bank_name}`,
-          {
-            description: msg.message || (msg.status === 'approved' ? 'Congratulations!' : 'Application not approved.'),
-            variant: msg.status === 'approved' ? 'success' : 'error',
-          }
-        )
+        const title = msg.status === 'approved' ? `Loan approved by ${msg.bank_name}!`
+          : msg.status === 'countered' ? `${msg.bank_name} sent a counter-offer`
+          : `Update from ${msg.bank_name}`
+        const variant = msg.status === 'approved' ? 'success'
+          : msg.status === 'countered' ? 'info'
+          : 'error'
+        const description = msg.message
+          || (msg.status === 'approved' ? 'Congratulations!'
+              : msg.status === 'countered' ? 'Review the revised terms below.'
+              : 'Application not approved.')
+        toast(title, { description, variant })
       }
     }, []),
   })
+
+  const handleCounterResponse = async (request_id: string, decision: 'accepted' | 'declined') => {
+    try {
+      const updated = await marketplace.respondToCounter(request_id, decision)
+      setMyRequests(prev => prev.map(r => r.request_id === request_id ? updated : r))
+      toast(
+        decision === 'accepted' ? 'Counter-offer accepted' : 'Counter-offer declined',
+        { variant: decision === 'accepted' ? 'success' : 'default' },
+      )
+    } catch {
+      toast('Failed to respond', { variant: 'error' })
+    }
+  }
 
   const handleSelectBank = (bank: Bank) => {
     setSelectedBank(bank)
@@ -382,9 +474,15 @@ export default function Marketplace() {
                   </div>
                   {req.message && (
                     <div className="flex items-start gap-2 text-xs text-zinc-500 bg-white/3 rounded-lg px-3 py-2">
-                      <span className="shrink-0 mt-0.5">{req.status === 'approved' ? '✓' : req.status === 'rejected' ? '✗' : '○'}</span>
+                      <span className="shrink-0 mt-0.5">{req.status === 'approved' ? '✓' : req.status === 'rejected' ? '✗' : req.status === 'countered' ? '↔' : '○'}</span>
                       <span className="italic">{req.message}</span>
                     </div>
+                  )}
+                  {req.status === 'countered' && (
+                    <CounterOfferPanel
+                      req={req}
+                      onRespond={handleCounterResponse}
+                    />
                   )}
                 </motion.div>
               ))}

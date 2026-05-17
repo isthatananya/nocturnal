@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   CheckCircle, XCircle, Clock, Building2, RefreshCw,
   ShieldCheck, Wifi, WifiOff, IndianRupee, ChevronDown,
+  GitCompareArrows,
 } from 'lucide-react'
 import AppNav from '../components/AppNav'
 import { marketplace } from '../lib/api'
@@ -17,26 +18,46 @@ import { useAuth } from '../context/AuthContext'
 const ease = [0.16, 1, 0.3, 1]
 
 const COLUMNS: { status: LoanRequestStatus; label: string; icon: typeof Clock; color: string; bg: string }[] = [
-  { status: 'pending',  label: 'Pending',  icon: Clock,        color: 'text-amber-400',  bg: 'border-amber-500/20' },
-  { status: 'approved', label: 'Approved', icon: CheckCircle,  color: 'text-emerald-400', bg: 'border-emerald-500/20' },
-  { status: 'rejected', label: 'Rejected', icon: XCircle,      color: 'text-red-400',    bg: 'border-red-500/20' },
+  { status: 'pending',   label: 'Pending',   icon: Clock,             color: 'text-amber-400',   bg: 'border-amber-500/20'   },
+  { status: 'countered', label: 'Countered', icon: GitCompareArrows,  color: 'text-indigo-400',  bg: 'border-indigo-500/20'  },
+  { status: 'approved',  label: 'Approved',  icon: CheckCircle,       color: 'text-emerald-400', bg: 'border-emerald-500/20' },
+  { status: 'rejected',  label: 'Rejected',  icon: XCircle,           color: 'text-red-400',     bg: 'border-red-500/20'     },
 ]
+
+type BankAction = 'approved' | 'rejected' | 'countered'
+
+interface CounterDraft {
+  amount?: number
+  rate?: number
+  term_months?: number
+}
 
 interface DecideModalProps {
   req: LoanRequest
   onClose: () => void
-  onDecide: (id: string, status: 'approved' | 'rejected', message: string) => Promise<void>
+  onDecide: (id: string, status: BankAction, message: string, counter?: CounterDraft) => Promise<void>
 }
 
 function DecideModal({ req, onClose, onDecide }: DecideModalProps) {
-  const [action, setAction] = useState<'approved' | 'rejected' | null>(null)
+  const [action, setAction] = useState<BankAction | null>(null)
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [counter, setCounter] = useState<CounterDraft>({
+    amount: req.amount,
+    rate: undefined,
+    term_months: undefined,
+  })
+
+  const counterValid = action !== 'countered' || (
+    (counter.amount !== undefined && counter.amount > 0 && counter.amount !== req.amount) ||
+    (counter.rate !== undefined && counter.rate > 0) ||
+    (counter.term_months !== undefined && counter.term_months > 0)
+  )
 
   const handleSubmit = async () => {
-    if (!action) return
+    if (!action || !counterValid) return
     setSubmitting(true)
-    await onDecide(req.request_id, action, message)
+    await onDecide(req.request_id, action, message, action === 'countered' ? counter : undefined)
     setSubmitting(false)
     onClose()
   }
@@ -97,23 +118,76 @@ function DecideModal({ req, onClose, onDecide }: DecideModalProps) {
         </div>
 
         {/* Decision buttons */}
-        <div className="grid grid-cols-2 gap-2">
-          {(['approved', 'rejected'] as const).map(s => (
+        <div className="grid grid-cols-3 gap-2">
+          {([
+            { key: 'approved',  label: '✓ Approve',  on: 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300' },
+            { key: 'countered', label: '↔ Counter',  on: 'bg-indigo-500/20  border-indigo-500/50  text-indigo-300'  },
+            { key: 'rejected',  label: '✗ Reject',   on: 'bg-red-500/20     border-red-500/50     text-red-300'     },
+          ] as const).map(({ key, label, on }) => (
             <button
-              key={s}
-              onClick={() => setAction(action === s ? null : s)}
+              key={key}
+              onClick={() => setAction(action === key ? null : key)}
               className={`py-2.5 rounded-xl text-sm font-medium border transition-all ${
-                action === s
-                  ? s === 'approved'
-                    ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300'
-                    : 'bg-red-500/20 border-red-500/50 text-red-300'
-                  : 'bg-white/4 border-white/8 text-zinc-400 hover:border-white/20'
+                action === key ? on : 'bg-white/4 border-white/8 text-zinc-400 hover:border-white/20'
               }`}
             >
-              {s === 'approved' ? '✓ Approve' : '✗ Reject'}
+              {label}
             </button>
           ))}
         </div>
+
+        {/* Counter-offer inputs */}
+        <AnimatePresence>
+          {action === 'countered' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4 space-y-3"
+            >
+              <p className="text-xs text-indigo-300/80 font-medium flex items-center gap-1.5">
+                <GitCompareArrows size={11} /> Adjust at least one term — leave others blank to keep the original
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="label text-xs">Amount (₹)</label>
+                  <input
+                    type="number" min={1}
+                    value={counter.amount ?? ''}
+                    onChange={e => setCounter(c => ({ ...c, amount: e.target.value ? Number(e.target.value) : undefined }))}
+                    placeholder={req.amount.toString()}
+                    className="input-field text-sm mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Rate (% APR)</label>
+                  <input
+                    type="number" min={0} max={100} step={0.1}
+                    value={counter.rate ?? ''}
+                    onChange={e => setCounter(c => ({ ...c, rate: e.target.value ? Number(e.target.value) : undefined }))}
+                    placeholder="—"
+                    className="input-field text-sm mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="label text-xs">Term (mo)</label>
+                  <input
+                    type="number" min={1} max={120}
+                    value={counter.term_months ?? ''}
+                    onChange={e => setCounter(c => ({ ...c, term_months: e.target.value ? Number(e.target.value) : undefined }))}
+                    placeholder="—"
+                    className="input-field text-sm mt-1"
+                  />
+                </div>
+              </div>
+              {!counterValid && (
+                <p className="text-[11px] text-amber-400/80">
+                  Counter must change at least one of the three terms. Otherwise approve instead.
+                </p>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Decision message */}
         <div>
@@ -123,6 +197,8 @@ function DecideModal({ req, onClose, onDecide }: DecideModalProps) {
             onChange={e => setMessage(e.target.value)}
             placeholder={action === 'approved'
               ? 'e.g. Approved at standard rates. Funds will be disbursed within 2 business days.'
+              : action === 'countered'
+              ? 'e.g. We can offer ₹X at Y% APR over Z months. Accept by EOD Friday.'
               : 'e.g. Current FOIR exceeds our threshold. Please reduce existing obligations.'}
             className="input-field resize-none h-20 text-sm mt-1"
             maxLength={300}
@@ -131,11 +207,13 @@ function DecideModal({ req, onClose, onDecide }: DecideModalProps) {
 
         <motion.button
           whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.97 }}
-          disabled={!action || submitting}
+          disabled={!action || !counterValid || submitting}
           onClick={handleSubmit}
           className={`w-full py-3 rounded-xl text-sm font-semibold transition-all disabled:opacity-40 ${
             action === 'approved'
               ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/30'
+              : action === 'countered'
+              ? 'bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-500/30'
               : action === 'rejected'
               ? 'bg-red-500/15 border border-red-500/35 text-red-300 hover:bg-red-500/25'
               : 'bg-white/5 border border-white/10 text-zinc-400'
@@ -267,13 +345,18 @@ export default function BankDashboard() {
     }, [load]),
   })
 
-  const handleDecide = async (request_id: string, status: 'approved' | 'rejected', message: string) => {
+  const handleDecide = async (
+    request_id: string,
+    status: BankAction,
+    message: string,
+    counter?: CounterDraft,
+  ) => {
     try {
-      const updated = await marketplace.decide(request_id, status, message)
+      const updated = await marketplace.decide(request_id, status, message, undefined, counter)
       setRequests(prev => prev.map(r => r.request_id === request_id ? updated : r))
-      toast(status === 'approved' ? 'Application approved' : 'Application rejected', {
-        variant: status === 'approved' ? 'success' : 'error',
-      })
+      const variant = status === 'approved' ? 'success' : status === 'countered' ? 'info' : 'error'
+      const verb = status === 'approved' ? 'approved' : status === 'countered' ? 'countered' : 'rejected'
+      toast(`Application ${verb}`, { variant })
     } catch {
       toast('Failed to update', { variant: 'error' })
     }
@@ -388,7 +471,7 @@ export default function BankDashboard() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease }}
-            className="grid md:grid-cols-3 gap-5"
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-5"
           >
             {COLUMNS.map(({ status, label, icon: Icon, color, bg }) => {
               const cards = byStatus(status)

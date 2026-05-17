@@ -26,9 +26,24 @@ class LoanRequestCreate(BaseModel):
 
 
 class ApprovalDecision(BaseModel):
-    status: Literal['approved', 'rejected']
+    """Bank-side decision on a pending loan request.
+
+    For status == 'countered', the bank must supply at least one of
+    counter_amount / counter_rate / counter_term_months — that's what makes
+    it a counter rather than a flat approval. The borrower then accepts or
+    declines via /loan-requests/{id}/counter-response.
+    """
+    status: Literal['approved', 'rejected', 'countered']
     message: str | None = None
     tx_hash: str | None = None
+    counter_amount: int | None = Field(default=None, ge=1)
+    counter_rate: float | None = Field(default=None, ge=0, le=100)
+    counter_term_months: int | None = Field(default=None, ge=1, le=120)
+
+
+class CounterResponse(BaseModel):
+    """Borrower's response to a bank's counter-offer."""
+    decision: Literal['accepted', 'declined']
 
 
 class LoanRequest(BaseModel):
@@ -41,7 +56,7 @@ class LoanRequest(BaseModel):
     tier: int
     tier_label: str
     score: int = 0
-    status: Literal['pending', 'approved', 'rejected']
+    status: Literal['pending', 'approved', 'rejected', 'countered']
     created_at: str
     updated_at: str
     message: str | None
@@ -50,3 +65,7 @@ class LoanRequest(BaseModel):
     approval_probability: int | None = None
     risk_score: int | None = None
     risk_label: str | None = None
+    # Counter-offer fields — populated only when the bank countered the application
+    counter_amount: int | None = None
+    counter_rate: float | None = None
+    counter_term_months: int | None = None
