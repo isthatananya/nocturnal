@@ -1,35 +1,16 @@
 #!/usr/bin/env bash
-# Deploy credit_lending.compact to the network configured in .env (preprod by default).
-# Persists the resulting VITE_CONTRACT_ADDRESS back into .env so a frontend restart
-# picks it up automatically.
+# Retired. Deployment moved to the browser at /deploy.
+# See contract/README.md for the full runbook.
 
-set -euo pipefail
+cat <<'EOF' >&2
+deploy.sh has been retired. To deploy credit_lending.compact:
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-ENV_FILE="$ROOT/.env"
+  1. ./contract/compile.sh                 # requires Midnight's `compact` CLI
+  2. npm --prefix frontend run dev
+  3. open http://localhost:5173/deploy     # Lace + tDUST do the rest
+  4. paste the returned address into .env as VITE_CONTRACT_ADDRESS
+  5. restart the dev server
 
-if [ ! -f "$ROOT/.env.local" ]; then
-  echo "Missing .env.local with MIDNIGHT_WALLET_SEED — see contract/README.md"
-  exit 1
-fi
-
-# shellcheck disable=SC1090
-set -a; source "$ROOT/.env.local"; set +a
-: "${MIDNIGHT_WALLET_SEED:?Set MIDNIGHT_WALLET_SEED in .env.local}"
-
-if [ ! -f "$ROOT/contract/build/index.cjs" ]; then
-  echo "Compiled contract artifacts missing. Run ./contract/compile.sh first."
-  exit 1
-fi
-
-echo "Deploying credit_lending.compact to network $(grep ^VITE_NETWORK_ID= "$ENV_FILE" | cut -d= -f2)..."
-ADDR=$(node "$ROOT/contract/scripts/deploy.mjs")
-echo "Deployed at: $ADDR"
-
-# Idempotently patch VITE_CONTRACT_ADDRESS in .env
-if grep -q '^VITE_CONTRACT_ADDRESS=' "$ENV_FILE"; then
-  sed -i.bak "s|^VITE_CONTRACT_ADDRESS=.*|VITE_CONTRACT_ADDRESS=$ADDR|" "$ENV_FILE"
-else
-  echo "VITE_CONTRACT_ADDRESS=$ADDR" >> "$ENV_FILE"
-fi
-echo "Updated $ENV_FILE — restart the frontend dev server."
+Full details in contract/README.md.
+EOF
+exit 2

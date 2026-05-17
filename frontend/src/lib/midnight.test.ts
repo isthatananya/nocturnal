@@ -8,8 +8,6 @@ import {
   isWalletAvailable,
 } from './midnight'
 
-const _origStubEnv = vi.stubEnv
-
 beforeEach(() => {
   delete (window as any).midnight
 })
@@ -25,7 +23,7 @@ describe('isWalletAvailable', () => {
   })
 
   it('returns true when window.midnight.mnLace exists', () => {
-    ;(window as any).midnight = { mnLace: { enable: vi.fn() } }
+    ;(window as any).midnight = { mnLace: { connect: vi.fn() } }
     expect(isWalletAvailable()).toBe(true)
   })
 })
@@ -35,20 +33,26 @@ describe('connectWallet', () => {
     expect(await connectWallet()).toBeNull()
   })
 
-  it('returns {address, api} when Lace authorizes', async () => {
-    const fakeApi = { state: vi.fn().mockResolvedValue({ address: 'mid1abc123' }) }
+  it('returns {address, connection} when Lace v4 connects', async () => {
+    const fakeApi = {
+      getShieldedAddresses: vi.fn().mockResolvedValue({
+        shieldedAddress: 'mid1abc123',
+        shieldedCoinPublicKey: 'coin_pk_hex',
+        shieldedEncryptionPublicKey: 'enc_pk_hex',
+      }),
+    }
     ;(window as any).midnight = {
-      mnLace: { enable: vi.fn().mockResolvedValue(fakeApi) },
+      mnLace: { connect: vi.fn().mockResolvedValue(fakeApi) },
     }
     const conn = await connectWallet()
     expect(conn).not.toBeNull()
     expect(conn?.address).toBe('mid1abc123')
-    expect(conn?.api).toBe(fakeApi)
+    expect(conn?.connection.coinPublicKey).toBe('coin_pk_hex')
   })
 
   it('returns null when Lace throws (user rejected)', async () => {
     ;(window as any).midnight = {
-      mnLace: { enable: vi.fn().mockRejectedValue(new Error('user rejected')) },
+      mnLace: { connect: vi.fn().mockRejectedValue(new Error('user rejected')) },
     }
     expect(await connectWallet()).toBeNull()
   })
@@ -59,7 +63,7 @@ describe('applyForLoan error sentinels', () => {
     walletAddress: 'mid1abc123',
     compiledContract: null,
     creditTier: 3,
-    requestedAmount: 500n,
+    requestedAmount: 500000n,
     interestRateBps: 1400,
     termMonths: 36,
   }
@@ -71,8 +75,8 @@ describe('applyForLoan error sentinels', () => {
   })
 
   it('throws CONTRACT_NOT_DEPLOYED when wallet installed but VITE_CONTRACT_ADDRESS empty', async () => {
-    ;(window as any).midnight = { mnLace: { enable: vi.fn() } }
-    _origStubEnv('VITE_CONTRACT_ADDRESS', '')
+    ;(window as any).midnight = { mnLace: { connect: vi.fn() } }
+    vi.stubEnv('VITE_CONTRACT_ADDRESS', '')
     await expect(applyForLoan(baseParams)).rejects.toBeInstanceOf(MidnightApiError)
     await expect(applyForLoan(baseParams)).rejects.toMatchObject({
       code: MidnightError.CONTRACT_NOT_DEPLOYED,

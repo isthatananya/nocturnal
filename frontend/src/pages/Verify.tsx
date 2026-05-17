@@ -58,7 +58,7 @@ export default function Verify() {
               <thead className="text-zinc-500">
                 <tr className="text-left">
                   <th className="py-1.5 font-medium">Tier</th>
-                  <th className="py-1.5 font-medium text-right">Max loan (DUST)</th>
+                  <th className="py-1.5 font-medium text-right">Max loan (₹)</th>
                   <th className="py-1.5 font-medium text-right">Rate</th>
                   <th className="py-1.5 font-medium text-right">Term</th>
                 </tr>

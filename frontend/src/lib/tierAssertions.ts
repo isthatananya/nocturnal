@@ -8,18 +8,18 @@
 export interface TierTerms {
   tier: number
   label: string
-  maxLoanDust: number     // Uint<64> in the contract — DUST units
+  maxLoanDust: number     // Uint<64> in the contract — symbolic rupee-equivalent units
   rateBps: number         // basis points; 1050 = 10.5%
   termMonths: number
 }
 
 // Source: contract/credit_lending.compact, circuits maxLoanForTier / rateForTier / termForTier
 export const TIER_TERMS: TierTerms[] = [
-  { tier: 0, label: 'None',   maxLoanDust: 0,     rateBps: 2400, termMonths: 12 },
-  { tier: 1, label: 'Bronze', maxLoanDust: 500,   rateBps: 2400, termMonths: 12 },
-  { tier: 2, label: 'Silver', maxLoanDust: 2000,  rateBps: 1800, termMonths: 24 },
-  { tier: 3, label: 'Gold',   maxLoanDust: 7500,  rateBps: 1400, termMonths: 36 },
-  { tier: 4, label: 'Prime',  maxLoanDust: 20000, rateBps: 1050, termMonths: 60 },
+  { tier: 0, label: 'None',   maxLoanDust: 0,        rateBps: 2400, termMonths: 12 },
+  { tier: 1, label: 'Bronze', maxLoanDust: 500000,   rateBps: 2400, termMonths: 12 },
+  { tier: 2, label: 'Silver', maxLoanDust: 2000000,  rateBps: 1800, termMonths: 24 },
+  { tier: 3, label: 'Gold',   maxLoanDust: 5000000,  rateBps: 1400, termMonths: 36 },
+  { tier: 4, label: 'Prime',  maxLoanDust: 10000000, rateBps: 1050, termMonths: 60 },
 ]
 
 export function termsForTier(tier: number): TierTerms | undefined {
@@ -59,10 +59,6 @@ export function assertionsForApply(
     {
       label: 'witness terms match public terms',
       detail: 'Prevents you from claiming terms the scoring engine did not assign.',
-    },
-    {
-      label: 'loanPool ≥ requestedAmount',
-      detail: 'On-chain pool has enough liquidity to fund the loan.',
     },
   ]
 }
