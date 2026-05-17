@@ -107,11 +107,6 @@ export default function ScoreResult() {
               )}
             </span>
           )}
-          {report.data_source === 'form' && (
-            <span className="text-xs text-amber-400/70 bg-amber-500/[0.06] border border-amber-500/15 rounded-full px-3 py-1.5">
-              Simulation
-            </span>
-          )}
         </motion.div>
 
         {/* ── Score overview ─────────────────────────────── */}

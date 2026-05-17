@@ -6,22 +6,23 @@ from dataclasses import dataclass
 # Display:   300 + raw * 6  → 300-900
 #
 # Tier thresholds (CIBIL scale):
-#   Prime  780+   → income-linked up to ₹25L
-#   Gold   690-779 → income-linked up to ₹12L
-#   Silver 600-689 → income-linked up to ₹5L
-#   Bronze 510-599 → income-linked up to ₹1.5L
+#   Prime  780+   → income-linked up to ₹1Cr  (36× monthly, 65% FOIR)
+#   Gold   690-779 → income-linked up to ₹50L  (28× monthly, 60% FOIR)
+#   Silver 600-689 → income-linked up to ₹20L  (20× monthly, 55% FOIR)
+#   Bronze 510-599 → income-linked up to ₹5L   (12× monthly, 50% FOIR)
 #   None   300-509 → no loan
 #
 # Loan limit formula: clamp(income_multiple × monthly_income, floor, cap)
 # also FOIR-capped: available EMI headroom × annuity factor at tier rate
 
 _TIERS = [
-    # (cibil_lo, cibil_hi, tier_id, label, income_mult, floor_inr, cap_inr, apr_pct, term_months)
-    (780, 901, 4, "Prime",  24, 500_000,  2_500_000, 10.5, 60),
-    (690, 780, 3, "Gold",   18, 200_000,  1_200_000, 14.0, 36),
-    (600, 690, 2, "Silver", 12,  75_000,    500_000, 18.0, 24),
-    (510, 600, 1, "Bronze",  6,  20_000,    150_000, 24.0, 12),
-    (300, 510, 0, "None",    0,       0,          0, None, None),
+    # (cibil_lo, cibil_hi, tier_id, label, income_mult, floor_inr, cap_inr, apr_pct, term_months, foir_threshold)
+    # Caps reflect Indian personal loan market: Prime borrowers earning ₹5L+/month can access ₹1Cr+.
+    (780, 901, 4, "Prime",  36,  500_000, 10_000_000, 10.5, 60, 0.65),
+    (690, 780, 3, "Gold",   28,  250_000,  5_000_000, 14.0, 36, 0.60),
+    (600, 690, 2, "Silver", 20,  100_000,  2_000_000, 18.0, 24, 0.55),
+    (510, 600, 1, "Bronze", 12,   30_000,    500_000, 24.0, 12, 0.50),
+    (300, 510, 0, "None",    0,        0,          0, None, None, 0.50),
 ]
 
 # Thin-file cap: borrowers with no credit history and no active products
@@ -43,6 +44,7 @@ def _income_loan_limit(
     monthly_emi: float,
     apr_pct: float | None,
     term_months: int | None,
+    foir_threshold: float = 0.50,
 ) -> int:
     if tier_id == 0 or apr_pct is None or term_months is None:
         return 0
@@ -50,9 +52,9 @@ def _income_loan_limit(
     # Income-multiple base
     base = int(income_mult * monthly_income)
 
-    # FOIR cap: lender allows total EMI ≤ 50% of income
-    # Available EMI headroom = 50% income - existing EMIs
-    headroom = max(0.0, 0.50 * monthly_income - monthly_emi)
+    # FOIR cap: lender allows total EMI ≤ foir_threshold of income (tier-specific)
+    # Available EMI headroom = foir_threshold × income - existing EMIs
+    headroom = max(0.0, foir_threshold * monthly_income - monthly_emi)
     if headroom > 0:
         r = apr_pct / (12 * 100)
         n = term_months
@@ -219,7 +221,7 @@ def compute_score(
     existing_cibil_score: int | None,
 ) -> ScoreResult:
     pay  = _payment_pts(dpd_max_12m, missed_emi_12m, has_settled_account)
-    foir = _foir_pts(monthly_emi_obligations, monthly_income)
+    foir_pts = _foir_pts(monthly_emi_obligations, monthly_income)
     hist = _history_pts(credit_history_months)
     mix  = _credit_mix_pts(
         credit_card_utilization, active_loan_accounts,
@@ -231,7 +233,7 @@ def compute_score(
         bank_bounce_count_12m, itr_filed, existing_cibil_score,
     )
 
-    raw_total = max(0, pay + foir + hist + mix + inq + adj)
+    raw_total = max(0, pay + foir_pts + hist + mix + inq + adj)
 
     # Thin-file cap: no credit history + no active products → uninformative "clean" record
     thin_file = credit_history_months == 0 and active_loan_accounts == 0
@@ -241,19 +243,19 @@ def compute_score(
     raw_total = min(raw_total, 100)
     cibil = _to_cibil(raw_total)
 
-    for lo, hi, tier_id, label, mult, floor_inr, cap_inr, rate, term in _TIERS:
+    for lo, hi, tier_id, label, mult, floor_inr, cap_inr, rate, term, foir_thresh in _TIERS:
         if lo <= cibil < hi:
             rate_str = f"{rate}%" if rate is not None else None
             limit = _income_loan_limit(
                 tier_id, mult, floor_inr, cap_inr,
                 monthly_income, monthly_emi_obligations,
-                rate, term,
+                rate, term, foir_thresh,
             )
             return ScoreResult(
                 score=cibil, tier=tier_id, tier_label=label,
                 loan_limit=limit, interest_rate=rate_str, term_months=term,
-                payment_pts=pay, foir_pts=foir, history_pts=hist,
+                payment_pts=pay, foir_pts=foir_pts, history_pts=hist,
                 credit_mix_pts=mix, inquiry_pts=inq, adjustment=adj,
             )
 
-    return ScoreResult(cibil, 0, "None", 0, None, None, pay, foir, hist, mix, inq, adj)
+    return ScoreResult(cibil, 0, "None", 0, None, None, pay, foir_pts, hist, mix, inq, adj)

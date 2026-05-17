@@ -40,7 +40,7 @@ export default function LoanApply() {
   useEffect(() => {
     if (!report) { nav('/score'); return }
     if (report.tier === 0) { nav('/score/result'); return }
-    const step = report.loan_limit >= 100000 ? 5000 : report.loan_limit >= 25000 ? 1000 : 500
+    const step = report.loan_limit >= 5000000 ? 100000 : report.loan_limit >= 1000000 ? 50000 : report.loan_limit >= 100000 ? 5000 : report.loan_limit >= 25000 ? 1000 : 500
     setAmount(Math.round(report.loan_limit / 2 / step) * step || step)
   }, [nav, report])
 
