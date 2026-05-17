@@ -1,0 +1,51 @@
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis-data:/data
+    # Not exposed publicly — only backend can reach it
+    command: redis-server --save 60 1 --loglevel warning
+
+  proof-server:
+    image: midnightntwrk/proof-server:8.0.3
+    restart: unless-stopped
+    volumes:
+      - proof-keys:/data   # persist downloaded ZK params across restarts (~200 MB)
+    command: midnight-proof-server -v
+    # Not exposed publicly — nginx proxies /proof/ → this container
+
+  backend:
+    build:
+      context: ./backend
+      target: production
+    restart: unless-stopped
+    env_file: .env.prod
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      target: production
+      args:
+        VITE_API_URL: ${VITE_API_URL:-}
+        VITE_NETWORK_ID: ${VITE_NETWORK_ID:-preprod}
+        VITE_INDEXER_URL: ${VITE_INDEXER_URL:-https://indexer.preprod.midnight.network/api/v4/graphql}
+        VITE_INDEXER_WS: ${VITE_INDEXER_WS:-wss://indexer.preprod.midnight.network/api/v4/graphql/ws}
+        VITE_NODE_RPC: ${VITE_NODE_RPC:-https://rpc.preprod.midnight.network}
+        VITE_PROOF_SERVER_URL: ${VITE_PROOF_SERVER_URL:-/proof}
+        VITE_CONTRACT_ADDRESS: ${VITE_CONTRACT_ADDRESS:-}
+        VITE_DEMO_MODE: ${VITE_DEMO_MODE:-}
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - proof-server
+
+volumes:
+  redis-data:
+  proof-keys:

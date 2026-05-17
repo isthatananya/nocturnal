@@ -1,23 +1,19 @@
-# Nocturned — Deployment & Demo Credentials
+# Nocturned — Deployment Guide
 
-## Quick start (Docker)
+---
+
+## Quick start (local dev)
 
 ```bash
-# 1. Copy environment file
-cp .env.example .env          # fill in SECRET_KEY
-
-# 2. Start all services
+cp .env.example .env          # set SECRET_KEY: openssl rand -hex 32
 docker compose up --build -d
 
-# 3. Seed demo borrowers
+# Seed demo data (first time only)
 docker compose exec backend uv run python scripts/generate_demo_users.py
-
-# 4. Seed bank accounts + sample loan requests
-#    (requires borrowers to exist first)
 docker compose exec backend uv run python scripts/seed_banks.py
 ```
 
-App is now live at **http://localhost:5173**
+App at **http://localhost:5173**
 
 ---
 
@@ -28,195 +24,240 @@ App is now live at **http://localhost:5173**
 | Email | Password | Tier | Score | Notes |
 |-------|----------|------|-------|-------|
 | `priya@Nocturned.demo` | `demo1234` | Prime | 900 | Ideal profile, ₹15L limit |
-| `rahul@Nocturned.demo` | `demo1234` | Gold | 714 | Strong, 1 late payment, ₹2L limit |
-| `anita@Nocturned.demo` | `demo1234` | Silver | 636 | Self-employed, high FOIR, ₹90K limit |
-| `suresh@Nocturned.demo` | `demo1234` | Bronze | 522 | Limited history, high FOIR, ₹1L limit |
-| `meena@Nocturned.demo` | `demo1234` | None | 300 | Below eligibility threshold |
-| `vikram@Nocturned.demo` | `demo1234` | Prime | 900 | High earner, ₹21L limit |
+| `rahul@Nocturned.demo` | `demo1234` | Gold | 714 | Strong, 1 late payment |
+| `anita@Nocturned.demo` | `demo1234` | Silver | 636 | Self-employed, high FOIR |
+| `suresh@Nocturned.demo` | `demo1234` | Bronze | 522 | Limited history |
+| `meena@Nocturned.demo` | `demo1234` | None | 300 | Below threshold |
 
 ### Bank Officers
 
-| Email | Password | Bank | Role |
-|-------|----------|------|------|
-| `officer@neonbank.demo` | `NeonBank2026!` | Neon Bank | Loan Officer |
-| `loans@apexcredit.demo` | `ApexCredit2026!` | Apex Credit | Credit Analyst |
-| `defi@horizondefi.demo` | `HorizonDeFi2026!` | Horizon DeFi | DeFi Operations |
+| Email | Password | Bank |
+|-------|----------|------|
+| `officer@neonbank.demo` | `NeonBank2026!` | Neon Bank |
+| `loans@apexcredit.demo` | `ApexCredit2026!` | Apex Credit |
+| `defi@horizondefi.demo` | `HorizonDeFi2026!` | Horizon DeFi |
 
 ---
 
-## Lender criteria
+## Deploying publicly (production build)
 
-| Bank | Min Score | Min Tier | Max Loan | APR |
-|------|-----------|----------|----------|-----|
-| Neon Bank | 690 | Gold | ₹50L | 12.5% |
-| Horizon DeFi | 600 | Silver | ₹30L | 17.5% |
-| Apex Credit | 510 | Bronze | ₹20L | 22.0% |
+### 1 — Server requirements
 
----
-
-## Demo flow (borrower)
-
-1. Log in as `priya@Nocturned.demo`
-2. Navigate to **Score** → upload a Prime demo CSV → compute score
-3. Navigate to **Marketplace** → see Neon Bank at ~98% odds
-4. Click Neon Bank → set amount → Submit application
-5. Log out → log in as `officer@neonbank.demo`
-6. See the new request appear in real time (or after refresh)
-7. Open the request → Approve with a message
-8. Log out → log in as Priya → see the decision in Marketplace
-
----
-
-## Demo flow (bank officer)
-
-1. Log in as `officer@neonbank.demo`
-2. Bank Dashboard shows pre-seeded requests with risk ratings
-3. Filter by "Neon Bank" tab
-4. Review a pending application → click **Review** → Approve or Reject
-5. The borrower's Marketplace page updates in real time
-
----
-
-## Services
-
-| Service | URL | Description |
-|---------|-----|-------------|
-| Frontend | http://localhost:5173 | Vite dev server |
-| Backend API | http://localhost:8000 | FastAPI |
-| Redis | localhost:6379 | Data store + pub/sub |
-| Proof server | http://localhost:6300 | Midnight ZK proof generation |
-
----
-
-## Environment variables (`.env`)
-
-```env
-SECRET_KEY=<random-64-char-hex>
-APP_ENV=development
-SESSION_TTL=86400
-REDIS_URL=redis://redis:6379/0
-ALLOWED_ORIGINS=http://localhost:5173
-```
-
----
-
-## Running seed scripts manually
+Any Linux VPS (Ubuntu 22.04+, **2 GB RAM minimum** — proof-server needs ~1 GB).
 
 ```bash
-# Inside the backend container
-docker compose exec backend bash
-
-# Seed borrowers
-uv run python scripts/generate_demo_users.py
-
-# Seed banks + loan requests (idempotent — safe to re-run)
-uv run python scripts/seed_banks.py
+# Install Docker + Compose plugin
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER && newgrp docker
 ```
 
-Both scripts are idempotent — they skip records that already exist.
+### 2 — Clone and configure
+
+```bash
+git clone https://github.com/YOUR_ORG/nocturned.git
+cd nocturned
+
+cp .env.prod.example .env.prod
+nano .env.prod
+```
+
+Key values in `.env.prod`:
+
+| Variable | Value |
+|----------|-------|
+| `SECRET_KEY` | `openssl rand -hex 32` |
+| `ALLOWED_ORIGINS` | `["https://your-domain.com"]` |
+| `VITE_CONTRACT_ADDRESS` | paste after step 5 below; leave empty for demo mode |
+
+### 3 — Build and start
+
+```bash
+docker compose -f docker-compose.prod.yml --env-file .env.prod up --build -d
+```
+
+The frontend Nginx container listens on **port 80** and proxies:
+- `/api/` → FastAPI backend
+- `/proof/` → Midnight proof server
+- everything else → React SPA (`index.html`)
+
+### 4 — Seed demo data
+
+```bash
+docker compose -f docker-compose.prod.yml exec backend \
+  uv run python scripts/generate_demo_users.py
+
+docker compose -f docker-compose.prod.yml exec backend \
+  uv run python scripts/seed_banks.py
+```
+
+### 5 — HTTPS (recommended)
+
+Put Nginx on the host in front of the Docker stack:
+
+```nginx
+# /etc/nginx/sites-available/nocturned
+server {
+    listen 80;
+    server_name your-domain.com;
+    location / {
+        proxy_pass http://localhost:80;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+```bash
+sudo certbot --nginx -d your-domain.com
+```
 
 ---
 
-## Midnight contract deployment (Option A → real ZK proofs)
+## Deploying the Midnight contract to preprod
 
-The default app build (Option B) wires the proof server and contract source
-but does not deploy `credit_lending.compact` — the apply flow throws
-`CONTRACT_NOT_DEPLOYED` and the UI shows an instructive screen. To activate
-real ZK proofs end-to-end, follow this section.
+This enables real ZK proofs for the loan apply flow. The app works without
+it (Option B / demo mode). This is Option A.
 
-If any step fails the app gracefully degrades back to Option B; the
-`/deploy` page itself surfaces the specific error code.
+### Prerequisites
 
-### Prereqs (manual, one-time)
+**1. Install the Compact compiler**
 
-These three can't be automated — they're tied to your machine, browser,
-and a rate-limited faucet.
+```bash
+# Download from Midnight's developer portal:
+# https://docs.midnight.network/develop/tutorial/building/contract
+compact --version   # verify it's on PATH
+```
 
-1. **Install the Compact compiler.** Midnight's `compact` CLI is the only
-   tool that turns `.compact` source into the WASM circuit + proving key
-   the proof server consumes. It is not on npm or cargo; install from
-   <https://docs.midnight.network/develop/tutorial/building/contract>.
-   Verify with `compact --version`.
-2. **Install the official Midnight browser wallet** and switch it to the
-   **preprod** network. Reference:
-   <https://docs.midnight.network/develop/tutorial/using/chrome-ext>.
-   Note the shielded address.
-3. **Fund the wallet with preprod tDUST** from Midnight's faucet (link in
-   their docs). Takes 1–3 minutes to land. A faucet drip is enough for
-   the demo — deploys cost gas, loan applies cost only proof CPU.
+**2. Install Midnight Lace wallet**
 
-### Compile the contract
+- Chrome extension: https://www.lace.io
+- Switch to **preprod** network inside the wallet settings
+
+**3. Get preprod tDUST**
+
+Midnight faucet: https://faucet.preprod.midnight.network
+(one drip is enough — deploy costs a small gas fee)
+
+### Step A — Compile the contract
+
+Run on the machine where `compact` is installed (not inside Docker):
 
 ```bash
 ./contract/compile.sh
 ```
 
-Emits:
-- `contract/build/` — raw compiler output
-- `frontend/public/contract/zk-artifacts/` — runtime-importable copy
-
-Verify before continuing:
+Emits WASM circuit + proving key into `frontend/public/contract/zk-artifacts/`.
 
 ```bash
+# Verify output exists:
 ls frontend/public/contract/zk-artifacts/
-# expected: index.cjs + zkir / prover-key / verifier-key per circuit
+# Expected: index.cjs + zkir / prover-key / verifier-key files per circuit
 ```
 
-### Deploy via the in-app `/deploy` page
+If running the prod Docker stack, copy the artifacts in before building the
+frontend image (they're baked into the nginx container via `COPY`).
+
+### Step B — Deploy via /deploy page
+
+Make sure the dev server (or prod stack) is running:
 
 ```bash
-# from repo root, three services:
-docker compose up redis proof-server
-uv run --directory backend uvicorn main:app --reload --port 8000
-npm --prefix frontend run dev
+# Dev:
+docker compose up -d
+# Then open: http://localhost:5173/deploy
+
+# Prod:
+# open: https://your-domain.com/deploy
 ```
 
-1. Open <http://localhost:5173/deploy> (after logging in).
-2. The page walks four prereq checks — wallet installed, connected,
-   funded, artifacts present.
-3. Click **Deploy contract**. The wallet pops a sign request; approve.
-4. Within ~30 s the page returns the contract address + deploy tx hash
-   + a copy-pasteable `.env` snippet.
+The page runs four checks automatically: Lace installed → connected to preprod
+→ wallet funded → ZK artifacts present. Then:
 
-Paste into project root `.env`:
+1. Click **Deploy contract**
+2. Approve the Lace signature prompt
+3. Wait ~30 s for the preprod transaction to confirm
+4. Copy the contract address from the result
 
-```env
-VITE_CONTRACT_ADDRESS=0xYOUR_ADDRESS_HERE
+### Step C — Activate the contract address
+
+**Dev (local):**
+```bash
+# Add to .env:
+VITE_CONTRACT_ADDRESS=0xYOUR_ADDRESS
+
+# Restart just the frontend (Vite picks up env changes on restart):
+docker compose restart frontend
 ```
 
-Restart the frontend dev server so Vite picks up the new env.
+**Prod:** VITE_ vars are baked in at build time, so rebuild the frontend image:
+```bash
+# Edit .env.prod — set VITE_CONTRACT_ADDRESS=0xYOUR_ADDRESS
+docker compose -f docker-compose.prod.yml --env-file .env.prod \
+  up --build -d frontend
+```
 
-### Verify the live flow
+### Step D — Verify end-to-end
 
-After restart:
+| Page | What to check |
+|------|--------------|
+| `/verify` | Contract address shown (not "not deployed"); proof-server badge green |
+| `/score` | Compute a score via upload / form |
+| `/loan/apply` | Connect Lace → Apply → wallet prompts to sign → preprod tx hash shown |
+| `/loan/active` | Full amortisation schedule; "Pay EMI" sends a real `repay` tx |
 
-| Step | Expected |
-|---|---|
-| `/verify` | Contract address shown (not "— not yet deployed"); proof-server badge healthy |
-| `/score` | Compute via upload / form / PAN — produces a report |
-| `/loan/apply` | Connect wallet → click Apply → wallet asks to sign → preprod tx hash displayed |
-| `/loan/active` | Full amortisation schedule renders; Pay next EMI sends a real `repay` tx |
+---
 
-### Reverting to Option B
+## Proof server first-run (important)
 
-Set `VITE_CONTRACT_ADDRESS=` (empty) in `.env`, restart. The UI returns
-to the instructional "deploy first" screen. No code change required.
+The proof server downloads ~200 MB of ZK parameter files from Midnight's S3
+on first start. Only happens once per volume:
 
-### Troubleshooting
+```
+Fetching public parameters for k=10 - finished.
+...
+starting service: "actix-web-service-0.0.0.0:6300"  ← ready
+```
 
-| Symptom | Likely cause |
-|---|---|
-| `WALLET_NOT_INSTALLED` even with extension installed | Wallet not switched to preprod, or extension didn't inject `window.midnight.mnLace` — refresh the tab after enabling |
-| Deploy succeeds but `applyForLoan` throws `PROOF_FAILED` | Proof server not reachable; check `docker ps` + `curl localhost:6300/health` |
-| `CONTRACT_NOT_DEPLOYED` after pasting address | `.env` line has stray quotes / whitespace; restart dev server |
-| Indexer returns no state for the deployed address | Indexer lag on preprod — wait 30–60 s after deploy |
-| Vite build hard-fails on `.wasm` | Run `npm install --legacy-peer-deps` once — the `vite-plugin-wasm` / polyfills need to be on disk |
+**Wait for "starting service" before deploying or applying for loans.**
 
-### Demo-mode fallback
+The `proof-keys` volume in `docker-compose.prod.yml` persists these files
+across restarts so you never re-download them.
 
-Set `VITE_DEMO_MODE=1` and the apply flow bypasses the wallet, animates
-proof steps with realistic timings, and renders a fabricated tx hash.
-For stage demos where the wallet path is too fragile (rate-limited
-faucet, flaky venue network). Not a substitute for the real flow —
-prefer live tx hashes when possible.
+---
 
+## Demo mode (no wallet needed)
+
+Set `VITE_DEMO_MODE=1` in `.env` / `.env.prod`. The loan apply flow bypasses
+Lace, animates proof steps with realistic timing, and shows a fabricated tx
+hash. Use this on demo machines where installing Lace isn't possible.
+Rebuild the frontend after changing it (it's baked at build time).
+
+---
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---------|-----|
+| `WALLET_NOT_INSTALLED` with Lace installed | Wallet not set to **preprod** network; reload after switching |
+| `CONTRACT_NOT_DEPLOYED` after pasting address | Stray quotes/whitespace in `.env`; rebuild frontend after editing |
+| `/deploy` shows "artifacts missing" | Run `./contract/compile.sh`; check `ls frontend/public/contract/zk-artifacts/` |
+| `PROOF_FAILED` on apply | Proof server not ready yet (wait for "starting service" log); or `compact` version mismatch |
+| Indexer returns no state after deploy | Preprod indexer lag — wait 30–60 s after deploy tx confirms |
+| Blank page | Hard-refresh (Cmd+Shift+R); check browser console |
+| Proof server re-downloads keys every restart | `proof-keys` Docker volume was deleted — recreate with `docker volume create` |
+| Frontend build fails with WASM error | Run `npm install --legacy-peer-deps` inside the `frontend/` dir first |
+
+---
+
+## Environment reference
+
+| Variable | Where set | Notes |
+|----------|-----------|-------|
+| `SECRET_KEY` | `.env` / `.env.prod` | `openssl rand -hex 32` |
+| `ALLOWED_ORIGINS` | `.env` / `.env.prod` | JSON array of allowed frontend origins |
+| `REDIS_URL` | docker-compose env | auto-set to `redis://redis:6379/0` in compose |
+| `VITE_NETWORK_ID` | `.env.prod` (build arg) | `preprod` or `testnet` |
+| `VITE_INDEXER_URL` | `.env.prod` (build arg) | Midnight preprod GraphQL indexer |
+| `VITE_PROOF_SERVER_URL` | `.env.prod` (build arg) | `/proof` when nginx proxies it |
+| `VITE_CONTRACT_ADDRESS` | `.env.prod` (build arg) | Deployed contract address; empty = demo mode |
+| `VITE_DEMO_MODE` | `.env.prod` (build arg) | `1` to bypass wallet; omit for real ZK flow |
