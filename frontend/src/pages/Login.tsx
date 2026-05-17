@@ -105,7 +105,7 @@ export default function Login() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-center text-xs text-zinc-500 mt-6"
         >
-          Demo accounts: priya@zkcredit.demo · rahul@zkcredit.demo · password: demo1234
+          Demo accounts: priya@Nocturned.demo · rahul@Nocturned.demo · password: demo1234
         </motion.p>
       </div>
     </div>

@@ -99,7 +99,7 @@ export default function Signup() {
     const finalRole: 'borrower' | 'bank' = goal === 'bank' ? 'bank' : 'borrower'
     try {
       await signup(email, password, name.trim(), dob, finalProfession, finalRole)
-      toast('Account created', { description: `Welcome to ZKCredit, ${firstName}!`, variant: 'success' })
+      toast('Account created', { description: `Welcome to Nocturned, ${firstName}!`, variant: 'success' })
       nav(goal === 'score' ? '/score' : goal === 'bank' ? '/bank/dashboard' : '/marketplace')
     } catch (err: unknown) {
       const status = (err as any)?.response?.status
@@ -136,7 +136,7 @@ export default function Signup() {
               ? 'Create your account'
               : step === 2
               ? <span>Nice to meet you, <span className="text-white font-medium">{firstName}</span>!</span>
-              : 'What brings you to ZKCredit?'}
+              : 'What brings you to Nocturned?'}
           </p>
         </div>
 

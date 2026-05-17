@@ -55,35 +55,35 @@ BANK_OFFICERS = [
 # Pre-computed from generate_demo_users.py scoring inputs
 # (email, tier, tier_label, score, loan_limit)
 BORROWER_PROFILES = {
-    "priya@zkcredit.demo":  {"tier": 4, "tier_label": "Prime",  "score": 832, "loan_limit": 3_420_000},
-    "rahul@zkcredit.demo":  {"tier": 3, "tier_label": "Gold",   "score": 718, "loan_limit": 1_736_000},
-    "anita@zkcredit.demo":  {"tier": 2, "tier_label": "Silver", "score": 643, "loan_limit":   900_000},
-    "suresh@zkcredit.demo": {"tier": 1, "tier_label": "Bronze", "score": 524, "loan_limit":   336_000},
-    "meena@zkcredit.demo":  {"tier": 0, "tier_label": "None",   "score": 398, "loan_limit":         0},
+    "priya@Nocturned.demo":  {"tier": 4, "tier_label": "Prime",  "score": 832, "loan_limit": 3_420_000},
+    "rahul@Nocturned.demo":  {"tier": 3, "tier_label": "Gold",   "score": 718, "loan_limit": 1_736_000},
+    "anita@Nocturned.demo":  {"tier": 2, "tier_label": "Silver", "score": 643, "loan_limit":   900_000},
+    "suresh@Nocturned.demo": {"tier": 1, "tier_label": "Bronze", "score": 524, "loan_limit":   336_000},
+    "meena@Nocturned.demo":  {"tier": 0, "tier_label": "None",   "score": 398, "loan_limit":         0},
 }
 
 # Sample seeded requests: (borrower_email, bank_id, amount, status, message, days_ago)
 SAMPLE_REQUESTS = [
     # Priya (Prime) — approved by Neon, pending at Horizon
-    ("priya@zkcredit.demo", "neon_bank",     4_000_000, "approved",
+    ("priya@Nocturned.demo", "neon_bank",     4_000_000, "approved",
      "Excellent credit profile. Approved at Prime rates. Funds disbursed.", 5),
-    ("priya@zkcredit.demo", "horizon_defi",  1_500_000, "pending", "", 1),
+    ("priya@Nocturned.demo", "horizon_defi",  1_500_000, "pending", "", 1),
 
     # Rahul (Gold) — approved by Apex, pending at Neon
-    ("rahul@zkcredit.demo", "neon_bank",     1_200_000, "pending", "", 2),
-    ("rahul@zkcredit.demo", "apex_credit",     800_000, "approved",
+    ("rahul@Nocturned.demo", "neon_bank",     1_200_000, "pending", "", 2),
+    ("rahul@Nocturned.demo", "apex_credit",     800_000, "approved",
      "Strong Gold-tier profile. Approved at standard rates.", 7),
 
     # Anita (Silver) — rejected by Horizon, pending at Apex
-    ("anita@zkcredit.demo", "horizon_defi",  1_000_000, "rejected",
+    ("anita@Nocturned.demo", "horizon_defi",  1_000_000, "rejected",
      "FOIR concerns — current EMI obligations exceed Silver threshold for this amount. Consider a smaller request.", 4),
-    ("anita@zkcredit.demo", "apex_credit",     500_000, "pending", "", 1),
+    ("anita@Nocturned.demo", "apex_credit",     500_000, "pending", "", 1),
 
     # Suresh (Bronze) — pending at Apex
-    ("suresh@zkcredit.demo", "apex_credit",    200_000, "pending", "", 3),
+    ("suresh@Nocturned.demo", "apex_credit",    200_000, "pending", "", 3),
 
     # Meena (None) — rejected everywhere she applied
-    ("meena@zkcredit.demo", "apex_credit",     100_000, "rejected",
+    ("meena@Nocturned.demo", "apex_credit",     100_000, "rejected",
      "Score below minimum eligibility threshold. Please improve credit profile and reapply.", 6),
 ]
 

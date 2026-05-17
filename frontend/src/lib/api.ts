@@ -5,7 +5,7 @@ import { encryptInputs } from './crypto'
 const http = axios.create({
   baseURL: '/api',
   withCredentials: true,
-  headers: { 'X-ZKCredit-Request': '1' },
+  headers: { 'X-Nocturned-Request': '1' },
 })
 
 export const auth = {

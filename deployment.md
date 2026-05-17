@@ -1,4 +1,4 @@
-# ZKCredit — Deployment & Demo Credentials
+# Nocturned — Deployment & Demo Credentials
 
 ## Quick start (Docker)
 
@@ -27,12 +27,12 @@ App is now live at **http://localhost:5173**
 
 | Email | Password | Tier | Score | Notes |
 |-------|----------|------|-------|-------|
-| `priya@zkcredit.demo` | `demo1234` | Prime | 900 | Ideal profile, ₹15L limit |
-| `rahul@zkcredit.demo` | `demo1234` | Gold | 714 | Strong, 1 late payment, ₹2L limit |
-| `anita@zkcredit.demo` | `demo1234` | Silver | 636 | Self-employed, high FOIR, ₹90K limit |
-| `suresh@zkcredit.demo` | `demo1234` | Bronze | 522 | Limited history, high FOIR, ₹1L limit |
-| `meena@zkcredit.demo` | `demo1234` | None | 300 | Below eligibility threshold |
-| `vikram@zkcredit.demo` | `demo1234` | Prime | 900 | High earner, ₹21L limit |
+| `priya@Nocturned.demo` | `demo1234` | Prime | 900 | Ideal profile, ₹15L limit |
+| `rahul@Nocturned.demo` | `demo1234` | Gold | 714 | Strong, 1 late payment, ₹2L limit |
+| `anita@Nocturned.demo` | `demo1234` | Silver | 636 | Self-employed, high FOIR, ₹90K limit |
+| `suresh@Nocturned.demo` | `demo1234` | Bronze | 522 | Limited history, high FOIR, ₹1L limit |
+| `meena@Nocturned.demo` | `demo1234` | None | 300 | Below eligibility threshold |
+| `vikram@Nocturned.demo` | `demo1234` | Prime | 900 | High earner, ₹21L limit |
 
 ### Bank Officers
 
@@ -56,7 +56,7 @@ App is now live at **http://localhost:5173**
 
 ## Demo flow (borrower)
 
-1. Log in as `priya@zkcredit.demo`
+1. Log in as `priya@Nocturned.demo`
 2. Navigate to **Score** → upload a Prime demo CSV → compute score
 3. Navigate to **Marketplace** → see Neon Bank at ~98% odds
 4. Click Neon Bank → set amount → Submit application

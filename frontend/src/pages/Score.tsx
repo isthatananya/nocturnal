@@ -114,7 +114,7 @@ export default function Score() {
     const blob = new Blob([cols.join(',') + '\n' + example], { type: 'text/csv' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = 'zkcredit_india_template.csv'
+    a.download = 'Nocturned_india_template.csv'
     a.click()
   }
 

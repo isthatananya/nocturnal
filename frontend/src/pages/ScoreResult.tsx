@@ -53,7 +53,7 @@ export default function ScoreResult() {
     const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `zkcredit-report-${report.report_id}.json`
+    a.download = `Nocturned-report-${report.report_id}.json`
     a.click()
   }
 

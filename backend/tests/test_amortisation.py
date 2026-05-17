@@ -94,7 +94,7 @@ def app(fake_redis):
 
 
 def _headers() -> dict:
-    return {"X-ZKCredit-Request": "1"}
+    return {"X-Nocturned-Request": "1"}
 
 
 def _score_body() -> dict:
