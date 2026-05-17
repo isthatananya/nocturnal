@@ -1,7 +1,7 @@
 FROM node:20-alpine AS base
 WORKDIR /app
 COPY package*.json .
-RUN npm install
+RUN rm -f package-lock.json && npm install --legacy-peer-deps
 
 FROM base AS development
 CMD ["npm", "run", "dev"]

@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { ArrowLeft, ChevronRight, Download, Upload, FileText, CreditCard, AlertTriangle } from 'lucide-react'
 import { extractFeatures } from '../lib/featureExtract'
 import { credit } from '../lib/api'
-import { DEMO_PROFILES, mockPanLookup } from '../lib/demoData'
+import { DEMO_PROFILES, mockPanLookup, profileLabel } from '../lib/demoData'
 import FileDropzone from '../components/FileDropzone'
 import { Button } from '../components/ui/button'
 import type { FeatureVector, EmploymentType } from '../types'
@@ -240,8 +240,7 @@ export default function Score() {
           {selectedDemo !== null && (
             <div className="flex items-start gap-3 bg-amber-400/5 border border-amber-400/20 rounded-xl px-4 py-3 mb-5">
               <div>
-                <span className="text-amber-400 font-medium text-sm">{DEMO_PROFILES[selectedDemo].name}</span>
-                <span className="text-zinc-400 text-sm"> · {DEMO_PROFILES[selectedDemo].role}, {DEMO_PROFILES[selectedDemo].city}</span>
+                <span className="text-amber-400 font-medium text-sm">{profileLabel(DEMO_PROFILES[selectedDemo])}</span>
                 <p className="text-zinc-500 text-xs mt-0.5">{DEMO_PROFILES[selectedDemo].scenario}</p>
               </div>
             </div>
@@ -406,9 +405,9 @@ export default function Score() {
             <p className="text-zinc-500 text-sm mb-3 text-center">or try a demo profile</p>
             <div className="grid grid-cols-2 gap-3">
               {DEMO_PROFILES.map((p, i) => (
-                <button key={p.name} onClick={() => loadDemo(i)} className="glass-hover rounded-xl p-4 text-left">
+                <button key={p.id} onClick={() => loadDemo(i)} className="glass-hover rounded-xl p-4 text-left">
                   <div className="flex items-center justify-between mb-1">
-                    <p className="text-sm font-medium text-zinc-200">{p.name}</p>
+                    <p className="text-sm font-medium text-zinc-200">{profileLabel(p)}</p>
                     <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${
                       p.expectedTier === 'Prime'  ? 'text-white/55 bg-white/6 border-white/12' :
                       p.expectedTier === 'Gold'   ? 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30' :
@@ -417,8 +416,7 @@ export default function Score() {
                                                     'text-zinc-500 bg-zinc-500/10 border-zinc-500/30'
                     }`}>{p.expectedTier}</span>
                   </div>
-                  <p className="text-xs text-zinc-500">{p.role}</p>
-                  <p className="text-xs text-zinc-500">{p.city}</p>
+                  <p className="text-xs text-zinc-500 leading-relaxed">{p.scenario}</p>
                 </button>
               ))}
             </div>

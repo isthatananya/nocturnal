@@ -2,19 +2,14 @@ import type { FeatureVector } from '../types'
 import panProfileData from '../data/pan_profiles.json'
 
 export interface DemoProfile {
-  name: string
-  role: string
-  city: string
+  id: string                   // e.g. "prime_profile_01" — stable across renames
   scenario: string
   expectedTier: string
   features: FeatureVector
 }
 
-export const DEMO_PROFILES: DemoProfile[] = [
+const _RAW: Omit<DemoProfile, 'id'>[] = [
   {
-    name: 'Priya Sharma',
-    role: 'Senior Software Engineer',
-    city: 'Bengaluru',
     scenario: 'Prime — perfect profile, full loan limit',
     expectedTier: 'Prime',
     features: {
@@ -38,9 +33,6 @@ export const DEMO_PROFILES: DemoProfile[] = [
     },
   },
   {
-    name: 'Rahul Gupta',
-    role: 'Product Manager',
-    city: 'Delhi NCR',
     scenario: 'Gold — strong profile with one late payment',
     expectedTier: 'Gold',
     features: {
@@ -64,9 +56,6 @@ export const DEMO_PROFILES: DemoProfile[] = [
     },
   },
   {
-    name: 'Anita Desai',
-    role: 'Freelance Graphic Designer',
-    city: 'Pune',
     scenario: 'Silver — self-employed, irregular income',
     expectedTier: 'Silver',
     features: {
@@ -81,18 +70,15 @@ export const DEMO_PROFILES: DemoProfile[] = [
       active_loan_accounts: 1,
       secured_loans_count: 0,
       employment_type: 'self_employed',
-      employment_months: 36,       // bumped from 28 → qualifies for +2 adj
+      employment_months: 36,
       bank_bounce_count_12m: 1,
       itr_filed: true,
-      existing_cibil_score: 680,   // added → +1 adj; total raw ≈52 → CIBIL 612 (Silver)
+      existing_cibil_score: 680,
       signed_by: 'Axis_Bank',
       data_source: 'upload',
     },
   },
   {
-    name: 'Suresh Kumar',
-    role: 'Retail Store Employee',
-    city: 'Lucknow',
     scenario: 'Bronze — limited history, high EMI burden',
     expectedTier: 'Bronze',
     features: {
@@ -116,9 +102,6 @@ export const DEMO_PROFILES: DemoProfile[] = [
     },
   },
   {
-    name: 'Meena Pillai',
-    role: 'Street Food Vendor',
-    city: 'Chennai',
     scenario: 'None — ineligible, multiple defaults',
     expectedTier: 'None',
     features: {
@@ -142,10 +125,7 @@ export const DEMO_PROFILES: DemoProfile[] = [
     },
   },
   {
-    name: 'Vikram Singh',
-    role: 'IAS Officer',
-    city: 'Mumbai',
-    scenario: 'Fraudster — Prime score but requests over-limit amount',
+    scenario: 'Fraudster — Prime score, will request over-limit amount',
     expectedTier: 'Prime',
     features: {
       monthly_income: 200000,
@@ -169,10 +149,23 @@ export const DEMO_PROFILES: DemoProfile[] = [
   },
 ]
 
+// Number each profile within its tier so labels stay stable when entries are added/removed.
+const _counters: Record<string, number> = {}
+export const DEMO_PROFILES: DemoProfile[] = _RAW.map(p => {
+  const slug = p.expectedTier.toLowerCase()
+  _counters[slug] = (_counters[slug] ?? 0) + 1
+  const n = String(_counters[slug]).padStart(2, '0')
+  return { id: `${slug}_profile_${n}`, ...p }
+})
+
+export function profileLabel(p: DemoProfile): string {
+  return `${p.expectedTier} Profile ${p.id.slice(-2)}`
+}
+
 // PAN lookup — maps 4-digit numeric part of PAN to one of 20 tier-distributed profiles.
 // Indices 0-3: None, 4-7: Bronze, 8-11: Silver, 12-15: Gold, 16-19: Prime.
 export function mockPanLookup(pan: string): FeatureVector {
   const idx = (parseInt(pan.slice(5, 9)) || 0) % 20
   const profile = panProfileData.profiles[idx] as FeatureVector
-  return { ...profile, data_source: 'pan', signed_by: 'Experian_India_Simulated' }
+  return { ...profile, data_source: 'pan', signed_by: 'Synthetic_Bureau' }
 }

@@ -14,5 +14,13 @@ echo "Copying ZK artifacts to frontend..."
 mkdir -p "$ARTIFACTS_DIR"
 cp -r "$SCRIPT_DIR/build/"* "$ARTIFACTS_DIR/"
 
+# The frontend ESM import needs index.cjs at a stable path
+if [ -f "$SCRIPT_DIR/build/index.cjs" ]; then
+  cp "$SCRIPT_DIR/build/index.cjs" "$ARTIFACTS_DIR/index.cjs"
+fi
+
 echo "Done. Artifacts at: $ARTIFACTS_DIR"
-echo "Next: deploy the contract to preprod with 'npx create-mn-app' or the Midnight CLI."
+echo "Next:"
+echo "  1. echo 'MIDNIGHT_WALLET_SEED=<your-hex>' >> .env.local"
+echo "  2. ./contract/deploy.sh"
+echo "  3. Uncomment the Option A block in frontend/src/lib/midnight.ts"

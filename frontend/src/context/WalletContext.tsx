@@ -33,10 +33,10 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     setConnecting(true)
     setError(null)
     try {
-      const addr = await connectWallet()
-      if (!addr) throw new Error('Wallet returned no address')
-      setAddress(addr)
-      await auth.linkWallet(addr)
+      const conn = await connectWallet()
+      if (!conn) throw new Error('Wallet returned no address')
+      setAddress(conn.address)
+      await auth.linkWallet(conn.address)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to connect wallet')
     } finally {

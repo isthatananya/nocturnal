@@ -28,6 +28,8 @@ export interface Report {
   loan_applied: boolean
   loan_tx_hash: string | null
   encrypted_inputs?: string   // AES-256-GCM blob; decryptable only on originating device
+  encrypted_at_rest?: boolean
+  encrypted_at_rest_fp?: string   // sha256(ciphertext)[:16] — verification handle for at-rest cipher
 }
 
 export interface User {

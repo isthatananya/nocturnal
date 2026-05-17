@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, Download, RefreshCw, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, Upload, ClipboardList, CreditCard, Lock } from 'lucide-react'
+import { ArrowRight, Download, RefreshCw, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, Upload, ClipboardList, CreditCard, Lock, ShieldCheck } from 'lucide-react'
 import type { Report, FeatureVector } from '../types'
 import ScoreGauge from '../components/ScoreGauge'
 import TierBadge from '../components/TierBadge'
@@ -9,6 +9,9 @@ import ScoreDelta from '../components/ScoreDelta'
 import ScoreHistoryChart from '../components/ScoreHistoryChart'
 import FactorCard from '../components/FactorCard'
 import ZKPrivacyCard from '../components/ZKPrivacyCard'
+import EncryptedDownloadButton from '../components/EncryptedDownloadButton'
+import ProofServerBadge from '../components/ProofServerBadge'
+import TierProofPreview from '../components/TierProofPreview'
 import { analyseReport } from '../lib/scoreAnalysis'
 import { decryptInputs } from '../lib/crypto'
 import { credit } from '../lib/api'
@@ -68,6 +71,9 @@ export default function ScoreResult() {
     <div className="page min-h-screen text-zinc-100">
 
       <AppNav back title="Score Result" />
+      <div className="fixed bottom-4 right-4 z-30">
+        <ProofServerBadge />
+      </div>
 
       <main className="max-w-3xl mx-auto px-6 py-10 space-y-6">
 
@@ -84,7 +90,21 @@ export default function ScoreResult() {
           </span>
           {report.encrypted_inputs && (
             <span className="flex items-center gap-1.5 text-xs text-emerald-400/80 bg-emerald-500/[0.06] border border-emerald-500/15 rounded-full px-3 py-1.5">
-              <Lock size={10} className="shrink-0" /> Encrypted
+              <Lock size={10} className="shrink-0" /> Encrypted on device
+            </span>
+          )}
+          {report.encrypted_at_rest && (
+            <span
+              title="Stored on server as AES-256-GCM ciphertext. Fingerprint = SHA-256(ciphertext)[:16]."
+              className="flex items-center gap-1.5 text-xs text-sky-400/80 bg-sky-500/[0.06] border border-sky-500/15 rounded-full px-3 py-1.5"
+            >
+              <ShieldCheck size={10} className="shrink-0" />
+              Encrypted at rest
+              {report.encrypted_at_rest_fp && (
+                <code className="ml-0.5 font-mono text-[10px] text-sky-300/70">
+                  {report.encrypted_at_rest_fp.slice(0, 8)}
+                </code>
+              )}
             </span>
           )}
           {report.data_source === 'form' && (
@@ -99,13 +119,17 @@ export default function ScoreResult() {
           <div className="glass rounded-3xl p-8">
             <div className="flex items-center justify-between mb-4">
               <ScoreDelta current={report.score} previous={prevScore} />
-              <motion.button
-                whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-                onClick={exportJSON}
-                className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
-              >
-                <Download size={13} /> Export
-              </motion.button>
+              <div className="flex items-center gap-3">
+                <motion.button
+                  whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                  onClick={exportJSON}
+                  className="flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+                  title="Download the plaintext report JSON"
+                >
+                  <Download size={13} /> Export
+                </motion.button>
+                <EncryptedDownloadButton report={report} />
+              </div>
             </div>
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="flex flex-col items-center gap-3">
@@ -165,6 +189,9 @@ export default function ScoreResult() {
 
         {/* ── ZK Privacy Card ───────────────────────────── */}
         <ZKPrivacyCard report={report} />
+
+        {/* ── Tier proof preview ────────────────────────── */}
+        <TierProofPreview report={report} />
 
         {/* ── Strengths ─────────────────────────────────── */}
         {analysis.strengths.length > 0 && (
