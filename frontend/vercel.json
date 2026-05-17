@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://nocturnal-production-06b5.up.railway.app/api/:path*"
+    },
+    {
+      "source": "/dataset/:path*",
+      "destination": "https://nocturnal-production-06b5.up.railway.app/dataset/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
