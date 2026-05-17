@@ -1,4 +1,4 @@
-import { motion, type Variants, type MotionProps } from 'framer-motion'
+import { motion, type Variants } from 'framer-motion'
 
 /* ── Apple-style spring presets ─────────────────────────────── */
 const spring = { type: 'spring' as const, stiffness: 380, damping: 28 }

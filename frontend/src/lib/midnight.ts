@@ -9,8 +9,6 @@
 // uncomment the marked block in `applyForLoan` below. The packages and imports
 // needed for the real ZK proof path are already installed via package.json.
 
-import type { DAppConnectorWalletAPI } from '@midnight-ntwrk/dapp-connector-api'
-
 // ── Error sentinels ──────────────────────────────────────────────────────────
 
 export const MidnightError = {
@@ -38,13 +36,13 @@ export function isWalletAvailable(): boolean {
 
 export interface WalletConnection {
   address: string
-  api: DAppConnectorWalletAPI
+  api: unknown
 }
 
 export async function connectWallet(): Promise<WalletConnection | null> {
   if (!isWalletAvailable()) return null
   try {
-    const api: DAppConnectorWalletAPI = await (window as any).midnight.mnLace.enable()
+    const api: any = await (window as any).midnight.mnLace.enable()
     const address = await api.state().then((s: any) => s.address)
     return { address, api }
   } catch {

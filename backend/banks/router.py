@@ -65,7 +65,7 @@ async def list_banks(
     result = []
     for b in SEEDED_BANKS:
         prob = compute_approval_probability(score, tier, b) if score is not None and tier is not None else None
-        result.append(Bank(**b, features=b["features"], approval_probability=prob))
+        result.append(Bank(**b, approval_probability=prob))
     # Sort by approval probability descending (None last)
     result.sort(key=lambda b: b.approval_probability if b.approval_probability is not None else -1, reverse=True)
     return result
@@ -76,7 +76,7 @@ async def get_bank_detail(bank_id: str, user: dict = Depends(get_current_user)):
     b = get_bank(bank_id)
     if not b:
         raise HTTPException(404, "Bank not found")
-    return Bank(**b, features=b["features"])
+    return Bank(**b)
 
 
 # ── Loan Requests ──────────────────────────────────────────────────────────

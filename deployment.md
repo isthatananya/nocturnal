@@ -27,12 +27,12 @@ App is now live at **http://localhost:5173**
 
 | Email | Password | Tier | Score | Notes |
 |-------|----------|------|-------|-------|
-| `priya@zkcredit.demo` | `demo1234` | Prime | ~832 | Ideal profile, ₹34L limit |
-| `rahul@zkcredit.demo` | `demo1234` | Gold | ~718 | Strong, 1 late payment |
-| `anita@zkcredit.demo` | `demo1234` | Silver | ~643 | Self-employed, some risk |
-| `suresh@zkcredit.demo` | `demo1234` | Bronze | ~524 | Limited history, high FOIR |
-| `meena@zkcredit.demo` | `demo1234` | None | ~398 | Below eligibility threshold |
-| `vikram@zkcredit.demo` | `demo1234` | Prime | ~851 | High earner, ₹39.6L limit |
+| `priya@zkcredit.demo` | `demo1234` | Prime | 900 | Ideal profile, ₹15L limit |
+| `rahul@zkcredit.demo` | `demo1234` | Gold | 714 | Strong, 1 late payment, ₹2L limit |
+| `anita@zkcredit.demo` | `demo1234` | Silver | 636 | Self-employed, high FOIR, ₹90K limit |
+| `suresh@zkcredit.demo` | `demo1234` | Bronze | 522 | Limited history, high FOIR, ₹1L limit |
+| `meena@zkcredit.demo` | `demo1234` | None | 300 | Below eligibility threshold |
+| `vikram@zkcredit.demo` | `demo1234` | Prime | 900 | High earner, ₹21L limit |
 
 ### Bank Officers
 

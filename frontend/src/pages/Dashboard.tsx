@@ -37,11 +37,15 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (user?.role === 'bank') {
+      nav('/bank/dashboard', { replace: true })
+      return
+    }
     credit.reports().catch(() => [] as Report[]).then(reports => {
       setHistory(reports)
       setLatest(reports[0] ?? null)
     }).finally(() => setLoading(false))
-  }, [])
+  }, [user?.role])
 
   const stale = latest && daysSince(latest.generated_at) >= 7
   const firstName = user?.full_name?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'there'

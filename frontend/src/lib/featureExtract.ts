@@ -59,6 +59,7 @@ function buildFeatures(row: Record<string, unknown>): FeatureVector {
     itr_filed:               parseBool(row.itr_filed ?? false),
     existing_cibil_score:    cibil,
     signed_by:               String(row.signed_by ?? 'Manual_Upload'),
+    data_source:             'upload',
   }
 }
 

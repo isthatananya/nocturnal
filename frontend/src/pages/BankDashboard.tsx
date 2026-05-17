@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  CheckCircle, XCircle, Clock, Building2, RefreshCw, Users,
-  TrendingUp, ShieldCheck, Wifi, WifiOff, IndianRupee, ChevronDown,
+  CheckCircle, XCircle, Clock, Building2, RefreshCw,
+  ShieldCheck, Wifi, WifiOff, IndianRupee, ChevronDown,
 } from 'lucide-react'
 import AppNav from '../components/AppNav'
 import { marketplace } from '../lib/api'
@@ -32,8 +32,6 @@ function DecideModal({ req, onClose, onDecide }: DecideModalProps) {
   const [action, setAction] = useState<'approved' | 'rejected' | null>(null)
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
-
-  const bank = { max_loan: req.amount * 2 } // fallback
 
   const handleSubmit = async () => {
     if (!action) return
