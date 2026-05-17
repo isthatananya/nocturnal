@@ -17,6 +17,8 @@ import Reports from './pages/Reports'
 import ReportDetail from './pages/ReportDetail'
 import Settings from './pages/Settings'
 import Verify from './pages/Verify'
+import Marketplace from './pages/Marketplace'
+import BankDashboard from './pages/BankDashboard'
 
 function Spinner() {
   return (
@@ -30,6 +32,14 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
   if (loading) return <Spinner />
   if (!user) return <Navigate to="/auth/login" replace />
+  return <>{children}</>
+}
+
+function RequireBank({ children }: { children: React.ReactNode }) {
+  const { user, loading } = useAuth()
+  if (loading) return <Spinner />
+  if (!user) return <Navigate to="/auth/login" replace />
+  if (user.role !== 'bank') return <Navigate to="/dashboard" replace />
   return <>{children}</>
 }
 
@@ -60,15 +70,23 @@ export default function App() {
           <Route path="/auth/login"  element={<GuestOnly><PageTransition><Login /></PageTransition></GuestOnly>} />
           <Route path="/auth/signup" element={<GuestOnly><PageTransition><Signup /></PageTransition></GuestOnly>} />
 
-          <Route path="/dashboard"    element={<Wrap><Dashboard /></Wrap>} />
-          <Route path="/score"        element={<Wrap><Score /></Wrap>} />
-          <Route path="/score/result" element={<Wrap><ScoreResult /></Wrap>} />
-          <Route path="/loan/apply"   element={<Wrap><LoanApply /></Wrap>} />
-          <Route path="/loan/active"  element={<Wrap><LoanActive /></Wrap>} />
-          <Route path="/reports"      element={<Wrap><Reports /></Wrap>} />
-          <Route path="/reports/:id"  element={<Wrap><ReportDetail /></Wrap>} />
-          <Route path="/settings"     element={<Wrap><Settings /></Wrap>} />
-          <Route path="/verify"       element={<Wrap><Verify /></Wrap>} />
+          <Route path="/dashboard"       element={<Wrap><Dashboard /></Wrap>} />
+          <Route path="/score"           element={<Wrap><Score /></Wrap>} />
+          <Route path="/score/result"    element={<Wrap><ScoreResult /></Wrap>} />
+          <Route path="/loan/apply"      element={<Wrap><LoanApply /></Wrap>} />
+          <Route path="/loan/active"     element={<Wrap><LoanActive /></Wrap>} />
+          <Route path="/reports"         element={<Wrap><Reports /></Wrap>} />
+          <Route path="/reports/:id"     element={<Wrap><ReportDetail /></Wrap>} />
+          <Route path="/settings"        element={<Wrap><Settings /></Wrap>} />
+          <Route path="/verify"          element={<Wrap><Verify /></Wrap>} />
+          <Route path="/marketplace"     element={<Wrap><Marketplace /></Wrap>} />
+          <Route path="/bank/dashboard"  element={
+            <RequireBank>
+              <ErrorBoundary>
+                <PageTransition><BankDashboard /></PageTransition>
+              </ErrorBoundary>
+            </RequireBank>
+          } />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

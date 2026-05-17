@@ -22,10 +22,7 @@ export default function ScoreGauge({ score, tier, size = 180 }: Props) {
   const cx = size / 2
   const cy = size / 2
   const strokeWidth = 10
-  const circumference = 2 * Math.PI * r
-  const arcLength = (circumference * 240) / 360
   const pct = (score - SCORE_MIN) / (SCORE_MAX - SCORE_MIN)
-  const filled = pct * arcLength
   const color = TIER_STROKE[tier]
 
   function describeArc(startAngle: number, endAngle: number): string {

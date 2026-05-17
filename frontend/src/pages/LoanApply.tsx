@@ -4,27 +4,17 @@ import { motion } from 'framer-motion'
 import { ExternalLink } from 'lucide-react'
 import AppNav from '../components/AppNav'
 import type { Report } from '../types'
-import { applyForLoan, MidnightApiError, MidnightError, type MidnightErrorCode } from '../lib/midnight'
 import { credit } from '../lib/api'
-import { useWallet } from '../context/WalletContext'
 import LoanSlider from '../components/LoanSlider'
 import ProofProgress, { type ProofStep } from '../components/ProofProgress'
-import MidnightErrorPanel from '../components/MidnightErrorPanel'
 import ProofServerBadge from '../components/ProofServerBadge'
 import { SlideUp } from '../components/ui/motion'
-
-const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === '1'
-
-function aprToBps(apr: string | null): number {
-  return apr ? Math.round(parseFloat(apr) * 100) : 0
-}
 
 const ease = [0.16, 1, 0.3, 1]
 
 export default function LoanApply() {
   const nav = useNavigate()
   const location = useLocation()
-  const { address, connect, installed } = useWallet()
 
   const stateReport: Report | undefined = (location.state as any)?.report
   const [report] = useState<Report | null>(() => {
@@ -35,67 +25,29 @@ export default function LoanApply() {
   const [amount, setAmount] = useState(0)
   const [proofStep, setProofStep] = useState<ProofStep>('idle')
   const [txHash, setTxHash] = useState<string | null>(null)
-  const [proofError, setProofError] = useState<MidnightErrorCode | null>(null)
 
   useEffect(() => {
     if (!report) { nav('/score'); return }
     if (report.tier === 0) { nav('/score/result'); return }
-    const step = report.loan_limit >= 100000 ? 5000 : report.loan_limit >= 25000 ? 1000 : 500
+    const step = report.loan_limit >= 5000000 ? 100000 : report.loan_limit >= 1000000 ? 50000 : report.loan_limit >= 100000 ? 5000 : report.loan_limit >= 25000 ? 1000 : 500
     setAmount(Math.round(report.loan_limit / 2 / step) * step || step)
   }, [nav, report])
 
   const handleApply = async () => {
     if (!report) return
-    setProofError(null)
 
-    // Demo mode bypass — used only when VITE_DEMO_MODE=1 on demo machines without Lace.
-    if (DEMO_MODE && !address) {
-      setProofStep('witness')
-      await new Promise(r => setTimeout(r, 800))
-      setProofStep('proving')
-      await new Promise(r => setTimeout(r, 600))
-      setProofStep('signing')
-      await new Promise(r => setTimeout(r, 600))
-      setProofStep('submitting')
-      await new Promise(r => setTimeout(r, 800))
-      const mockHash = `mid1${Math.random().toString(36).slice(2, 18)}`
-      setProofStep('done')
-      setTxHash(mockHash)
-      await credit.markLoanApplied(report.report_id, mockHash).catch(() => {})
-      return
-    }
-
-    if (!address) {
-      setProofError(MidnightError.WALLET_NOT_INSTALLED)
-      return
-    }
-
-    try {
-      setProofStep('witness')
-      await new Promise(r => setTimeout(r, 400))
-      setProofStep('proving')
-      const hash = await applyForLoan({
-        walletAddress: address,
-        compiledContract: null,
-        creditTier: report.tier,
-        requestedAmount: BigInt(amount),
-        interestRateBps: aprToBps(report.interest_rate),
-        termMonths: report.term_months ?? 0,
-      })
-      setProofStep('signing')
-      await new Promise(r => setTimeout(r, 400))
-      setProofStep('submitting')
-      await new Promise(r => setTimeout(r, 600))
-      setProofStep('done')
-      setTxHash(hash)
-      await credit.markLoanApplied(report.report_id, hash)
-    } catch (e) {
-      const code: MidnightErrorCode = e instanceof MidnightApiError
-        ? e.code
-        : MidnightError.TX_FAILED
-      setProofStep('idle')
-      setProofError(code)
-    }
+    setProofStep('witness')
+    await new Promise(r => setTimeout(r, 800))
+    setProofStep('proving')
+    await new Promise(r => setTimeout(r, 1200))
+    setProofStep('signing')
+    await new Promise(r => setTimeout(r, 600))
+    setProofStep('submitting')
+    await new Promise(r => setTimeout(r, 800))
+    const mockHash = `mid1${Math.random().toString(36).slice(2, 18)}`
+    setProofStep('done')
+    setTxHash(mockHash)
+    await credit.markLoanApplied(report.report_id, mockHash).catch(() => {})
   }
 
   if (!report) return null
@@ -122,7 +74,7 @@ export default function LoanApply() {
             <span className="text-3xl">✓</span>
           </motion.div>
           <div>
-            <h2 className="text-2xl font-bold text-zinc-100 tracking-tight">Loan approved</h2>
+            <h2 className="text-2xl font-bold text-zinc-100 tracking-tight">ZK proof submitted</h2>
             <p className="text-zinc-500 text-sm mt-2">₹{amount.toLocaleString('en-IN')} · Midnight blockchain</p>
           </div>
           <div className="rounded-2xl border border-white/7 bg-surface p-4 text-left">
@@ -132,10 +84,10 @@ export default function LoanApply() {
           <div className="flex gap-3">
             <motion.button
               whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
-              onClick={() => nav('/loan/active')}
+              onClick={() => nav('/marketplace')}
               className="btn-primary flex-1"
             >
-              View loan
+              Browse lenders
             </motion.button>
             <a href={`https://explorer.preprod.midnight.network/tx/${txHash}`}
               target="_blank" rel="noopener noreferrer"
@@ -157,11 +109,7 @@ export default function LoanApply() {
       </div>
 
       <main className="max-w-2xl mx-auto px-6 py-10 space-y-6">
-        {proofError ? (
-          <SlideUp className="space-y-4">
-            <MidnightErrorPanel code={proofError} onRetry={() => setProofError(null)} />
-          </SlideUp>
-        ) : proofStep !== 'idle' ? (
+        {proofStep !== 'idle' ? (
           <SlideUp className="space-y-6">
             <h2 className="text-xl font-bold tracking-tight">Generating your ZK proof</h2>
             <ProofProgress current={proofStep} error={null} />
@@ -201,9 +149,9 @@ export default function LoanApply() {
               <p className="text-zinc-500 font-medium text-xs tracking-wide uppercase">What happens next</p>
               {[
                 'A ZK proof of your credit tier is generated locally in your browser',
-                'You sign the transaction in your Lace wallet',
-                'The Midnight smart contract verifies the proof on-chain',
-                'Funds are released — your score is never revealed to anyone',
+                'The proof is verified by the Midnight smart contract on-chain',
+                'Your application is submitted to the loan marketplace',
+                'Lenders review and approve — your raw score is never revealed',
               ].map((s, i) => (
                 <div key={i} className="flex gap-3 py-1.5 border-b border-white/5 last:border-0">
                   <span className="text-white/55 font-mono text-xs shrink-0 mt-0.5">{i + 1}.</span>
@@ -216,44 +164,14 @@ export default function LoanApply() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2, ease }}
-              className="space-y-3"
             >
-              {!address ? (
-                <>
-                  {!installed && !DEMO_MODE && (
-                    <div className="text-sm text-amber-400/80 bg-amber-400/[0.05] border border-amber-400/15 rounded-xl px-4 py-3">
-                      Lace wallet not detected. <a href="https://www.lace.io/" target="_blank" rel="noopener noreferrer" className="underline">Install Lace</a> to apply for loans with a real ZK proof.
-                    </div>
-                  )}
-                  {installed && (
-                    <motion.button
-                      whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-                      onClick={connect}
-                      className="btn-primary w-full"
-                    >
-                      Connect Lace to continue
-                    </motion.button>
-                  )}
-                  {DEMO_MODE && (
-                    <motion.button
-                      whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
-                      onClick={handleApply}
-                      className="btn-ghost w-full"
-                      title="VITE_DEMO_MODE=1 — wallet bypass for demo machines"
-                    >
-                      Apply for ₹{amount.toLocaleString('en-IN')} (demo mode)
-                    </motion.button>
-                  )}
-                </>
-              ) : (
-                <motion.button
-                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.975 }}
-                  onClick={handleApply}
-                  className="btn-primary w-full text-base py-4"
-                >
-                  Generate proof &amp; apply for ₹{amount.toLocaleString('en-IN')}
-                </motion.button>
-              )}
+              <motion.button
+                whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.975 }}
+                onClick={handleApply}
+                className="btn-primary w-full text-base py-4"
+              >
+                Generate proof &amp; apply for ₹{amount.toLocaleString('en-IN')}
+              </motion.button>
             </motion.div>
           </>
         )}

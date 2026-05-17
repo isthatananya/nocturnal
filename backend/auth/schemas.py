@@ -1,7 +1,10 @@
 import re
 from datetime import date
+from typing import Literal
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
+
+UserRole = Literal['borrower', 'bank']
 
 
 def _strong_password(v: str) -> str:
@@ -20,6 +23,7 @@ class SignupRequest(BaseModel):
     full_name: str = Field(min_length=1, max_length=128)
     date_of_birth: date
     profession: str = Field(default="", max_length=128)
+    role: UserRole = 'borrower'
 
     @field_validator("password")
     @classmethod

@@ -19,8 +19,8 @@ export default function LoanSlider({ max, value, onChange, interestRate, termMon
   const emi = calcEMI(value, interestRate, termMonths)
   const pct = max > 0 ? (value / max) * 100 : 0
 
-  // Smart step: round to nearest clean denomination
-  const step = max >= 100000 ? 5000 : max >= 25000 ? 1000 : 500
+  // Smart step: round to nearest clean denomination (supports crore-level limits)
+  const step = max >= 5000000 ? 100000 : max >= 1000000 ? 50000 : max >= 100000 ? 5000 : max >= 25000 ? 1000 : 500
 
   return (
     <div className="space-y-4">

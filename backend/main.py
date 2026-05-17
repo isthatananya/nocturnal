@@ -12,6 +12,7 @@ from core.config import settings
 from core.redis import get_redis
 from auth.router import router as auth_router
 from credit.router import router as credit_router
+from banks.router import router as banks_router
 
 
 @asynccontextmanager
@@ -69,6 +70,7 @@ app.add_middleware(CSRFMiddleware)
 
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(credit_router, prefix="/api", tags=["credit"])
+app.include_router(banks_router, prefix="/api", tags=["banks"])
 
 # Single source of truth for demo CSVs. Frontend dropzone fetches /dataset/upload/tier_*.csv.
 _DATASETS_DIR = Path(__file__).resolve().parent / "datasets"

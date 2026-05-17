@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, FileText, Zap } from 'lucide-react'
+import { ArrowRight, FileText, Zap, Landmark } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { credit } from '../lib/api'
 import type { Report } from '../types'
@@ -37,11 +37,15 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (user?.role === 'bank') {
+      nav('/bank/dashboard', { replace: true })
+      return
+    }
     credit.reports().catch(() => [] as Report[]).then(reports => {
       setHistory(reports)
       setLatest(reports[0] ?? null)
     }).finally(() => setLoading(false))
-  }, [])
+  }, [user?.role])
 
   const stale = latest && daysSince(latest.generated_at) >= 7
   const firstName = user?.full_name?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'there'
@@ -96,11 +100,6 @@ export default function Dashboard() {
                         </div>
                       )}
                     </div>
-                    {latest.data_source === 'form' && (
-                      <span className="chip border-amber-500/25 text-amber-400 bg-amber-500/8 text-xs">
-                        Simulation
-                      </span>
-                    )}
                   </div>
 
                   <div className="flex items-center gap-10">
@@ -128,10 +127,10 @@ export default function Dashboard() {
                         <motion.button
                           whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
                           transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-                          onClick={() => nav('/loan/apply', { state: { report: latest } })}
+                          onClick={() => nav('/marketplace')}
                           className="btn-primary w-full mt-3 flex items-center justify-center gap-2"
                         >
-                          Apply for loan <ArrowRight size={15} />
+                          <Landmark size={15} /> Browse lenders
                         </motion.button>
                       )}
                       {latest.loan_applied && (

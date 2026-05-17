@@ -18,8 +18,8 @@ export default function Login() {
     e.preventDefault()
     setLoading(true)
     try {
-      await login(email, password)
-      nav('/dashboard')
+      const me = await login(email, password)
+      nav(me.role === 'bank' ? '/bank/dashboard' : '/dashboard')
     } catch {
       toast('Invalid credentials', { description: 'Check your email and password.', variant: 'error' })
     } finally {

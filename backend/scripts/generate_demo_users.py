@@ -146,6 +146,7 @@ async def seed():
             "profession": user["profession"],
             "wallet_address": "",
             "email_verified": "0",
+            "role": "borrower",
         })
         await r.set(f"user:email:{email}", user_id)
 
@@ -170,6 +171,7 @@ async def seed():
                 "inquiry_pts": result.inquiry_pts,
                 "adjustment": result.adjustment,
             },
+            "data_source": "form",
             "generated_at": now,
             "cached": False,
             "loan_applied": False,

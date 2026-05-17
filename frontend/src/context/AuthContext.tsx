@@ -5,8 +5,8 @@ import type { User } from '../types'
 interface AuthState {
   user: User | null
   loading: boolean
-  login: (email: string, password: string) => Promise<void>
-  signup: (email: string, password: string, full_name: string, date_of_birth: string, profession: string) => Promise<void>
+  login: (email: string, password: string) => Promise<User>
+  signup: (email: string, password: string, full_name: string, date_of_birth: string, profession: string, role?: 'borrower' | 'bank') => Promise<User>
   logout: () => Promise<void>
 }
 
@@ -23,16 +23,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .finally(() => setLoading(false))
   }, [])
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     await auth.login(email, password)
     const me = await auth.me()
     setUser(me)
+    return me
   }
 
-  const signup = async (email: string, password: string, full_name: string, date_of_birth: string, profession: string) => {
-    await auth.signup(email, password, full_name, date_of_birth, profession)
+  const signup = async (email: string, password: string, full_name: string, date_of_birth: string, profession: string, role: 'borrower' | 'bank' = 'borrower'): Promise<User> => {
+    await auth.signup(email, password, full_name, date_of_birth, profession, role)
     const me = await auth.me()
     setUser(me)
+    return me
   }
 
   const logout = async () => {

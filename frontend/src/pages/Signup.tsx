@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { CheckCircle, ChevronRight, BarChart2, Landmark } from 'lucide-react'
+import { CheckCircle, ChevronRight, BarChart2, Landmark, Building2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { Button } from '../components/ui/button'
 import DateInput from '../components/ui/DateInput'
@@ -93,13 +93,14 @@ export default function Signup() {
     setStep(3)
   }
 
-  const handleGoal = async (goal: 'score' | 'loan') => {
+  const handleGoal = async (goal: 'score' | 'marketplace' | 'bank') => {
     setLoading(true)
     const finalProfession = profession === 'Others' ? customProfession.trim() : profession
+    const finalRole: 'borrower' | 'bank' = goal === 'bank' ? 'bank' : 'borrower'
     try {
-      await signup(email, password, name.trim(), dob, finalProfession)
+      await signup(email, password, name.trim(), dob, finalProfession, finalRole)
       toast('Account created', { description: `Welcome to ZKCredit, ${firstName}!`, variant: 'success' })
-      nav(goal === 'score' ? '/score' : '/loan/apply')
+      nav(goal === 'score' ? '/score' : goal === 'bank' ? '/bank/dashboard' : '/marketplace')
     } catch (err: unknown) {
       const status = (err as any)?.response?.status
       const detail = (err as any)?.response?.data?.detail
@@ -291,15 +292,30 @@ export default function Signup() {
             <button
               type="button"
               disabled={loading}
-              onClick={() => handleGoal('loan')}
+              onClick={() => handleGoal('marketplace')}
               className="group w-full flex items-center gap-4 p-5 rounded-2xl border border-white/8 bg-white/4 hover:bg-emerald-500/10 hover:border-emerald-500/40 transition-all duration-200 text-left disabled:opacity-50"
             >
               <div className="w-11 h-11 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/25 transition-colors">
                 <Landmark size={20} className="text-emerald-400" />
               </div>
               <div>
-                <div className="font-medium text-zinc-100">Apply for a Loan</div>
-                <div className="text-xs text-zinc-400 mt-0.5">Get instant loan eligibility with privacy</div>
+                <div className="font-medium text-zinc-100">Browse Loan Marketplace</div>
+                <div className="text-xs text-zinc-400 mt-0.5">See lenders and apply with ZK proof — as a borrower</div>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              disabled={loading}
+              onClick={() => handleGoal('bank')}
+              className="group w-full flex items-center gap-4 p-5 rounded-2xl border border-white/8 bg-white/4 hover:bg-indigo-500/10 hover:border-indigo-500/40 transition-all duration-200 text-left disabled:opacity-50"
+            >
+              <div className="w-11 h-11 rounded-xl bg-indigo-500/15 flex items-center justify-center shrink-0 group-hover:bg-indigo-500/25 transition-colors">
+                <Building2 size={20} className="text-indigo-400" />
+              </div>
+              <div>
+                <div className="font-medium text-zinc-100">I'm a Lending Institution</div>
+                <div className="text-xs text-zinc-400 mt-0.5">Review loan requests on the bank dashboard</div>
               </div>
             </button>
 

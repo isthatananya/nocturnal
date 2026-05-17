@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { ArrowLeft, ChevronRight, Download, Upload, FileText, CreditCard, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, ChevronRight, Download, Upload, FileText, CreditCard } from 'lucide-react'
 import { extractFeatures } from '../lib/featureExtract'
 import { credit } from '../lib/api'
 import { DEMO_PROFILES, mockPanLookup, profileLabel } from '../lib/demoData'
@@ -222,17 +222,11 @@ export default function Score() {
   // ── Preview screen ────────────────────────────────────────────────────────────
 
   if (step === 'preview' && features) {
-    const isForm = features.data_source === 'form'
     return (
       <div className="page min-h-screen text-zinc-100">
         <header className="app-header flex items-center gap-3">
           <button onClick={() => { setStep(mode); setFormStep(1) }} className="p-2 rounded-lg hover:bg-white/5 text-zinc-400"><ArrowLeft size={18} /></button>
           <span className="font-semibold">Confirm your data</span>
-          {isForm && (
-            <span className="ml-auto flex items-center gap-1.5 text-xs text-amber-400 bg-amber-400/8 border border-amber-400/20 rounded-full px-3 py-1">
-              <AlertTriangle size={11} /> Simulation only — loan not available
-            </span>
-          )}
         </header>
         <main className="max-w-2xl mx-auto px-8 py-10">
           <p className="text-zinc-400 text-sm mb-5">Only these derived features are sent. Your raw data stays local.</p>
@@ -289,7 +283,7 @@ export default function Score() {
           <div className="flex gap-3">
             <button onClick={() => { setStep(mode); setFormStep(4) }} className="btn-ghost flex-1">Change data</button>
             <button onClick={submit} className="btn-primary flex-1 flex items-center justify-center gap-2">
-              {isForm ? 'Run simulation' : 'Compute score'} <ChevronRight size={16} />
+              Compute score <ChevronRight size={16} />
             </button>
           </div>
         </main>
@@ -308,7 +302,7 @@ export default function Score() {
         </header>
         <main className="max-w-2xl mx-auto px-8 py-12">
           <h1 className="text-2xl font-bold mb-2">How would you like to proceed?</h1>
-          <p className="text-zinc-400 text-sm mb-8">Choose your data source — PAN and upload are eligible for loan approval. Form entries are for simulation only.</p>
+          <p className="text-zinc-400 text-sm mb-8">Choose your data source — all three modes are scored and eligible for loan approval.</p>
 
           <div className="space-y-4">
             <button onClick={() => enterMode('upload')} className="group w-full glass-hover rounded-2xl p-6 text-left flex items-center gap-5">
@@ -346,9 +340,9 @@ export default function Score() {
               <div className="flex-1">
                 <div className="flex items-center gap-2">
                   <p className="font-semibold text-zinc-100">Fill out manually</p>
-                  <span className="text-xs bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full px-2 py-0.5">Simulation only</span>
+                  <span className="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full px-2 py-0.5">Loan eligible</span>
                 </div>
-                <p className="text-zinc-400 text-sm mt-0.5">Enter your financial details step by step. Great for exploring eligibility — no loan approval.</p>
+                <p className="text-zinc-400 text-sm mt-0.5">Enter your financial details step by step. Instantly scored and eligible for loan approval.</p>
               </div>
               <ChevronRight size={18} className="text-zinc-500 group-hover:text-zinc-400 transition-colors" />
             </button>
@@ -464,10 +458,10 @@ export default function Score() {
           <div className="glass rounded-xl p-4 text-xs text-zinc-500 space-y-1">
             <p className="font-medium text-zinc-400">Demo PAN numbers to try</p>
             {[
-              ['ZKPAN0016P', 'Prime (~900) · idx 16'],
-              ['ZKPAN0012G', 'Gold (~750) · idx 12'],
-              ['ZKPAN0008S', 'Silver (~642) · idx 8'],
-              ['ZKPAN0004B', 'Bronze (~540) · idx 4'],
+              ['ZKPAN0032P', 'Prime (~900) · idx 32'],
+              ['ZKPAN0024G', 'Gold (~768) · idx 24'],
+              ['ZKPAN0016S', 'Silver (~678) · idx 16'],
+              ['ZKPAN0008B', 'Bronze (~516) · idx 8'],
               ['ZKPAN0000N', 'None (~318) · idx 0'],
             ].map(([p, label]) => (
               <button key={p} onClick={() => { setPan(p); setError(null) }}
@@ -495,9 +489,6 @@ export default function Score() {
             <span className="font-semibold">Manual Form</span>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-amber-400 bg-amber-400/8 border border-amber-400/20 rounded-full px-3 py-1 flex items-center gap-1.5">
-              <AlertTriangle size={11} /> Simulation only
-            </span>
             <span className="text-xs text-zinc-500">Step {formStep} of 4</span>
           </div>
         </header>
@@ -600,8 +591,8 @@ export default function Score() {
                 <p className="text-xs text-zinc-500 mt-1">If you know your CIBIL score, it acts as a cross-reference signal.</p>
               </div>
               <div className="glass rounded-xl p-4 text-sm text-zinc-400">
-                <p className="font-medium text-amber-400 mb-1 text-xs uppercase tracking-wide">Simulation mode</p>
-                <p className="text-xs leading-relaxed">This report is for self-assessment only. Manual entries are not verified and cannot be used for loan applications. Upload bank data or use PAN lookup for a verified score.</p>
+                <p className="font-medium text-zinc-300 mb-1 text-xs uppercase tracking-wide">Self-reported data</p>
+                <p className="text-xs leading-relaxed">Your entered values are scored against the CIBIL-aligned model. The result is eligible for on-chain loan approval via Midnight.</p>
               </div>
             </>
           )}

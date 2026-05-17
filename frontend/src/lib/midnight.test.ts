@@ -11,7 +11,6 @@ import {
 const _origStubEnv = vi.stubEnv
 
 beforeEach(() => {
-  // @ts-expect-error — augment globals
   delete (window as any).midnight
 })
 

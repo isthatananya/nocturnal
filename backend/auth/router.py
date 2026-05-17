@@ -55,6 +55,7 @@ async def signup(body: SignupRequest, response: Response, redis: Redis = Depends
         "full_name": body.full_name,
         "date_of_birth": body.date_of_birth.isoformat(),
         "profession": body.profession,
+        "role": body.role,
         "wallet_address": "",
         "email_verified": "0",
     })
@@ -109,6 +110,7 @@ async def me(user: dict = Depends(get_current_user)):
         "date_of_birth": user.get("date_of_birth") or None,
         "profession": user.get("profession") or None,
         "wallet_address": user.get("wallet_address") or None,
+        "role": user.get("role") or "borrower",
         "email_verified": user.get("email_verified") == "1",
     }
 

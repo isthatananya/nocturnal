@@ -162,10 +162,10 @@ export function profileLabel(p: DemoProfile): string {
   return `${p.expectedTier} Profile ${p.id.slice(-2)}`
 }
 
-// PAN lookup — maps 4-digit numeric part of PAN to one of 20 tier-distributed profiles.
-// Indices 0-3: None, 4-7: Bronze, 8-11: Silver, 12-15: Gold, 16-19: Prime.
+// PAN lookup — maps 4-digit numeric part of PAN to one of 40 tier-distributed profiles.
+// Indices 0-7: None, 8-15: Bronze, 16-23: Silver, 24-31: Gold, 32-39: Prime.
 export function mockPanLookup(pan: string): FeatureVector {
-  const idx = (parseInt(pan.slice(5, 9)) || 0) % 20
+  const idx = (parseInt(pan.slice(5, 9)) || 0) % 40
   const profile = panProfileData.profiles[idx] as FeatureVector
   return { ...profile, data_source: 'pan', signed_by: 'Synthetic_Bureau' }
 }
