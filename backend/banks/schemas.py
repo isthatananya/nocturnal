@@ -40,9 +40,13 @@ class LoanRequest(BaseModel):
     amount: int
     tier: int
     tier_label: str
+    score: int = 0
     status: Literal['pending', 'approved', 'rejected']
     created_at: str
     updated_at: str
     message: str | None
     tx_hash: str | None
     borrower_name: str | None = None
+    approval_probability: int | None = None
+    risk_score: int | None = None
+    risk_label: str | None = None

@@ -50,3 +50,14 @@ def compute_approval_probability(score: int, tier: int, bank: dict) -> int:
         return 0
     margin = score - bank["min_score"]
     return min(98, 60 + min(38, margin // 5))
+
+
+def compute_risk(tier: int, amount: int, bank: dict) -> tuple[int, str]:
+    """Return (risk_score 0-100, risk_label) for a loan request."""
+    base = {4: 5, 3: 18, 2: 38, 1: 62, 0: 88}.get(tier, 88)
+    # Amount aggressiveness — what % of bank max
+    pct = (amount / bank["max_loan"] * 100) if bank["max_loan"] > 0 else 100
+    amount_adj = 12 if pct > 85 else 6 if pct > 65 else 2 if pct > 45 else 0
+    score = min(100, base + amount_adj)
+    label = "Very Low" if score < 18 else "Low" if score < 36 else "Medium" if score < 58 else "High" if score < 78 else "Very High"
+    return score, label

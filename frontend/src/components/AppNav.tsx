@@ -1,6 +1,8 @@
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { LogOut, Settings, BarChart2, ArrowLeft, Landmark, Building2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { marketplace } from '../lib/api'
 
 interface Props {
   back?: boolean
@@ -10,13 +12,23 @@ interface Props {
 export default function AppNav({ back = false, title }: Props) {
   const { logout, user } = useAuth()
   const nav = useNavigate()
+  const [pendingCount, setPendingCount] = useState(0)
+
+  const isBank = user?.role === 'bank'
+
+  useEffect(() => {
+    if (!isBank) return
+    marketplace.pendingCount().then(d => setPendingCount(d.pending)).catch(() => {})
+    const interval = setInterval(() => {
+      marketplace.pendingCount().then(d => setPendingCount(d.pending)).catch(() => {})
+    }, 30_000)
+    return () => clearInterval(interval)
+  }, [isBank])
 
   const handleLogout = async () => {
     await logout()
     nav('/')
   }
-
-  const isBank = user?.role === 'bank'
 
   return (
     <header className="app-header">
@@ -42,9 +54,14 @@ export default function AppNav({ back = false, title }: Props) {
           <Link
             to="/bank/dashboard"
             title="Bank dashboard"
-            className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors"
+            className="relative p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors"
           >
             <Building2 size={17} />
+            {pendingCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-amber-400 text-[9px] font-bold text-black px-1 leading-none">
+                {pendingCount > 99 ? '99+' : pendingCount}
+              </span>
+            )}
           </Link>
         ) : (
           <>

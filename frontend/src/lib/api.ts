@@ -60,6 +60,9 @@ export const marketplace = {
   incoming: (bank_id?: string) =>
     http.get<LoanRequest[]>('/loan-requests/incoming', { params: bank_id ? { bank_id } : {} }).then(r => r.data),
 
+  pendingCount: () =>
+    http.get<{ pending: number }>('/loan-requests/pending-count').then(r => r.data),
+
   decide: (request_id: string, status: 'approved' | 'rejected', message?: string, tx_hash?: string) =>
     http.patch<LoanRequest>(`/loan-requests/${request_id}`, { status, message, tx_hash }).then(r => r.data),
 }

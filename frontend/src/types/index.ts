@@ -69,12 +69,16 @@ export interface LoanRequest {
   amount: number
   tier: number
   tier_label: TierLabel
+  score: number
   status: LoanRequestStatus
   created_at: string
   updated_at: string
   message: string | null
   tx_hash: string | null
   borrower_name?: string | null
+  approval_probability?: number | null
+  risk_score?: number | null
+  risk_label?: string | null
 }
 
 export interface FeatureVector {

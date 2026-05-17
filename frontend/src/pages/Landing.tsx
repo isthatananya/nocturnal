@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Shield, Zap, Lock, ArrowRight, CheckCircle, ChevronRight } from 'lucide-react'
+import { Shield, Zap, Lock, ArrowRight, CheckCircle, ChevronRight, Building2, Percent, Users } from 'lucide-react'
 
 const ease = [0.25, 0.46, 0.45, 0.94]
 
@@ -8,13 +8,19 @@ const steps = [
   { n: '01', title: 'Upload locally', body: "Drop your bank CSV or enter a PAN. Data is parsed in your browser — nothing touches a server." },
   { n: '02', title: 'Score privately', body: 'A 15-feature credit vector is scored. The algorithm is deterministic and fully auditable.' },
   { n: '03', title: 'ZK proof minted', body: "A cryptographic proof of your tier is created on Midnight. It proves you qualify without revealing your score." },
-  { n: '04', title: 'Loan unlocked', body: 'The smart contract verifies the proof and releases funds. No collateral, no data shared.' },
+  { n: '04', title: 'Marketplace match', body: 'Browse lenders, see approval odds, and apply — your raw score is never revealed to any bank.' },
 ]
 
 const features = [
   { icon: Lock,   title: 'Zero data exposure',      body: "Raw financial data never leaves your device. We score a derived feature vector, not your records." },
   { icon: Shield, title: 'Cryptographic fairness',  body: 'Credit tiers are enforced by ZK circuits, not UI logic. The contract cannot be gamed or manipulated.' },
   { icon: Zap,    title: 'Truly undercollateralized', body: 'Most DeFi demands 150% collateral. ZKCredit uses proof-of-creditworthiness instead.' },
+]
+
+const LENDERS = [
+  { name: 'Neon Bank',      color: '#6366f1', rate: '12.5%', tier: 'Gold+',   max: '₹50L',  desc: 'Premium rates for top-tier borrowers' },
+  { name: 'Apex Credit',    color: '#f59e0b', rate: '22.0%', tier: 'Bronze+', max: '₹20L',  desc: 'Accessible credit for all eligible borrowers' },
+  { name: 'Horizon DeFi',   color: '#10b981', rate: '17.5%', tier: 'Silver+', max: '₹30L',  desc: 'Decentralised lending on Midnight blockchain' },
 ]
 
 const comparison = [
@@ -325,8 +331,71 @@ export default function Landing() {
         </motion.div>
       </section>
 
-      {/* ── CTA ─────────────────────────────────────────── */}
-      <section className="py-32 px-8 relative overflow-hidden">
+      {/* ── Lender marketplace section ───────────────────── */}
+      <section className="py-24 px-8 max-w-5xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.55, ease }}
+          className="text-center mb-14"
+        >
+          <p className="eyebrow mb-3">Marketplace</p>
+          <h2 className="text-3xl font-bold tracking-tight">Three lenders. One ZK proof.</h2>
+          <p className="text-zinc-400 mt-3 max-w-xl mx-auto text-sm leading-relaxed">
+            Your encrypted credit tier is submitted to the lenders you choose. They see only what the ZK proof discloses — nothing else.
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-3 gap-5 mb-10">
+          {LENDERS.map((l, i) => (
+            <motion.div
+              key={l.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.55, delay: i * 0.08, ease }}
+              className="glass rounded-2xl p-6 space-y-4"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  style={{ background: `${l.color}22`, border: `1px solid ${l.color}44` }}>
+                  <Building2 size={18} style={{ color: l.color }} />
+                </div>
+                <div>
+                  <div className="font-semibold text-sm text-zinc-100">{l.name}</div>
+                  <div className="text-zinc-500 text-xs">{l.tier} eligible</div>
+                </div>
+              </div>
+              <p className="text-zinc-400 text-xs leading-relaxed">{l.desc}</p>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="flex items-center gap-1.5 text-zinc-400">
+                  <Percent size={11} style={{ color: l.color }} /> {l.rate} APR
+                </div>
+                <div className="flex items-center gap-1.5 text-zinc-400">
+                  <ArrowRight size={11} style={{ color: l.color }} /> Up to {l.max}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, ease }}
+          className="text-center"
+        >
+          <button onClick={() => nav('/auth/signup')}
+            className="btn-ghost inline-flex items-center gap-2 text-sm">
+            Join as a lender <Building2 size={14} />
+          </button>
+        </motion.div>
+      </section>
+
+      {/* ── Dual CTA ─────────────────────────────────────── */}
+      <section className="py-28 px-8 relative overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-gradient-radial from-white/[0.03] via-transparent to-transparent" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-white/[0.02] blur-[100px]" />
@@ -336,20 +405,43 @@ export default function Landing() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, ease }}
-          className="max-w-2xl mx-auto text-center"
+          className="max-w-3xl mx-auto"
         >
-          <h2 className="text-4xl font-bold tracking-tight mb-4">
-            Ready to prove your creditworthiness?
-          </h2>
-          <p className="text-zinc-400 text-lg mb-10">No collateral. No data exposure. Just math.</p>
-          <motion.button
-            whileHover={{ scale: 1.022, y: -1 }} whileTap={{ scale: 0.97 }}
-            transition={{ type: 'spring', stiffness: 500, damping: 32 }}
-            onClick={() => nav('/auth/signup')}
-            className="btn-primary text-base px-10 py-4"
-          >
-            Get started — it's free <ArrowRight size={16} />
-          </motion.button>
+          <div className="text-center mb-10">
+            <h2 className="text-4xl font-bold tracking-tight mb-3">Ready to get started?</h2>
+            <p className="text-zinc-400">Join as a borrower or a lending institution.</p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-5">
+            <motion.div whileHover={{ y: -3 }} transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+              className="glass rounded-2xl p-7 text-center space-y-4 border border-white/8 hover:border-white/15 transition-colors cursor-pointer"
+              onClick={() => nav('/auth/signup')}>
+              <div className="w-12 h-12 rounded-2xl bg-white/8 flex items-center justify-center mx-auto">
+                <Users size={22} className="text-white/55" />
+              </div>
+              <div>
+                <h3 className="font-bold text-zinc-100 mb-1">I'm a Borrower</h3>
+                <p className="text-zinc-500 text-sm">Get a ZK-verified credit score and apply for loans across multiple lenders.</p>
+              </div>
+              <span className="btn-primary inline-flex items-center gap-2 text-sm py-2.5 px-5">
+                Check my credit <ArrowRight size={14} />
+              </span>
+            </motion.div>
+
+            <motion.div whileHover={{ y: -3 }} transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+              className="glass rounded-2xl p-7 text-center space-y-4 border border-indigo-500/15 hover:border-indigo-500/35 transition-colors cursor-pointer"
+              onClick={() => nav('/auth/signup')}>
+              <div className="w-12 h-12 rounded-2xl bg-indigo-500/15 flex items-center justify-center mx-auto">
+                <Building2 size={22} className="text-indigo-400" />
+              </div>
+              <div>
+                <h3 className="font-bold text-zinc-100 mb-1">I'm a Lender</h3>
+                <p className="text-zinc-500 text-sm">Review ZK-verified loan applications in real time. Zero raw data exposure.</p>
+              </div>
+              <span className="btn-ghost inline-flex items-center gap-2 text-sm py-2.5 px-5 border-indigo-500/25 hover:border-indigo-500/45">
+                Open bank dashboard <ArrowRight size={14} />
+              </span>
+            </motion.div>
+          </div>
         </motion.div>
       </section>
 
