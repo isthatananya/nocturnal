@@ -1,4 +1,5 @@
 export type TierLabel = 'None' | 'Bronze' | 'Silver' | 'Gold' | 'Prime'
+export type UserRole = 'borrower' | 'bank'
 export type EmploymentType = 'salaried' | 'self_employed' | 'business_owner' | 'unemployed'
 
 export interface Breakdown {
@@ -39,7 +40,41 @@ export interface User {
   date_of_birth: string | null
   profession: string | null
   wallet_address: string | null
+  role: UserRole
   email_verified?: boolean
+}
+
+export interface Bank {
+  bank_id: string
+  name: string
+  tagline: string
+  min_score: number
+  min_tier: number
+  max_loan: number
+  interest_rate: number
+  term_months: number
+  logo_color: string
+  features: string[]
+  approval_probability: number | null
+}
+
+export type LoanRequestStatus = 'pending' | 'approved' | 'rejected'
+
+export interface LoanRequest {
+  request_id: string
+  user_id: string
+  bank_id: string
+  bank_name: string
+  report_id: string
+  amount: number
+  tier: number
+  tier_label: TierLabel
+  status: LoanRequestStatus
+  created_at: string
+  updated_at: string
+  message: string | null
+  tx_hash: string | null
+  borrower_name?: string | null
 }
 
 export interface FeatureVector {

@@ -1,20 +1,14 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { CheckCircle, Clock, Unlink } from 'lucide-react'
+import { CheckCircle, Clock } from 'lucide-react'
 import AppNav from '../components/AppNav'
 import { useAuth } from '../context/AuthContext'
-import { useWallet } from '../context/WalletContext'
 import { auth } from '../lib/api'
 import { toast } from '../hooks/useToast'
 import { Button } from '../components/ui/button'
 
-function truncate(addr: string) {
-  return `${addr.slice(0, 10)}...${addr.slice(-8)}`
-}
-
 export default function Settings() {
   const { user } = useAuth()
-  const { address, installed, connect, disconnect, connecting } = useWallet()
   const network = import.meta.env.VITE_NETWORK_ID
 
   const [currentPw, setCurrentPw] = useState('')
@@ -49,11 +43,6 @@ export default function Settings() {
     } finally {
       setPwLoading(false)
     }
-  }
-
-  const handleDisconnect = async () => {
-    await disconnect()
-    toast('Wallet disconnected', { variant: 'success' })
   }
 
   return (
@@ -101,41 +90,11 @@ export default function Settings() {
                   <span className="text-zinc-100">{user.date_of_birth}</span>
                 </div>
               )}
+              <div className="flex justify-between">
+                <span className="text-zinc-400">Role</span>
+                <span className="text-zinc-100 capitalize">{user?.role ?? 'borrower'}</span>
+              </div>
             </div>
-          </div>
-
-          {/* ── Wallet ── */}
-          <div className="px-6 py-5">
-            <p className="text-xs text-zinc-500 uppercase tracking-wide font-medium mb-4">Wallet</p>
-            {address ? (
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                    <span className="text-zinc-100 font-mono text-xs">{truncate(address)}</span>
-                  </div>
-                  <p className="text-xs text-zinc-500 mt-1">Midnight Lace wallet</p>
-                </div>
-                <button
-                  onClick={handleDisconnect}
-                  className="flex items-center gap-1.5 text-xs text-red-400 hover:text-red-300 border border-red-400/20 hover:border-red-400/40 bg-red-400/5 hover:bg-red-400/10 rounded-lg px-3 py-1.5 transition-colors"
-                >
-                  <Unlink size={12} /> Disconnect
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between">
-                <span className="text-zinc-500 text-sm">No wallet connected</span>
-                {installed ? (
-                  <Button size="sm" onClick={connect} loading={connecting}>Connect Lace</Button>
-                ) : (
-                  <a href="https://lacewallet.io" target="_blank" rel="noopener noreferrer"
-                    className="text-xs text-amber-400 border border-amber-400/20 bg-amber-400/5 rounded-lg px-3 py-1.5 hover:bg-amber-400/10 transition-colors">
-                    Install Lace wallet
-                  </a>
-                )}
-              </div>
-            )}
           </div>
 
           {/* ── Network ── */}
@@ -205,6 +164,7 @@ export default function Settings() {
           <p className="leading-relaxed">
             Raw financial data you upload is processed entirely in your browser and is never transmitted to our servers.
             Credit scores are computed from derived features only. Report data is stored encrypted — only you can decrypt it.
+            Lenders receive only a ZK proof of your credit tier, never your raw score or financial details.
           </p>
         </div>
         </motion.div>

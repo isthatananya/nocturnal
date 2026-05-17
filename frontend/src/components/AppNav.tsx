@@ -1,22 +1,22 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { LogOut, Settings, BarChart2, ArrowLeft } from 'lucide-react'
+import { LogOut, Settings, BarChart2, ArrowLeft, Landmark, Building2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import WalletBar from './WalletBar'
 
 interface Props {
-  /** Show a back arrow + title instead of the logo */
   back?: boolean
   title?: string
 }
 
 export default function AppNav({ back = false, title }: Props) {
-  const { logout } = useAuth()
+  const { logout, user } = useAuth()
   const nav = useNavigate()
 
   const handleLogout = async () => {
     await logout()
     nav('/')
   }
+
+  const isBank = user?.role === 'bank'
 
   return (
     <header className="app-header">
@@ -38,14 +38,32 @@ export default function AppNav({ back = false, title }: Props) {
       )}
 
       <div className="flex items-center gap-1">
-        <WalletBar />
-        <Link
-          to="/score"
-          title="Check score"
-          className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors"
-        >
-          <BarChart2 size={17} />
-        </Link>
+        {isBank ? (
+          <Link
+            to="/bank/dashboard"
+            title="Bank dashboard"
+            className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors"
+          >
+            <Building2 size={17} />
+          </Link>
+        ) : (
+          <>
+            <Link
+              to="/marketplace"
+              title="Loan marketplace"
+              className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors"
+            >
+              <Landmark size={17} />
+            </Link>
+            <Link
+              to="/score"
+              title="Check score"
+              className="p-2 rounded-lg hover:bg-white/5 text-zinc-500 hover:text-zinc-200 transition-colors"
+            >
+              <BarChart2 size={17} />
+            </Link>
+          </>
+        )}
         <Link
           to="/settings"
           title="Settings"

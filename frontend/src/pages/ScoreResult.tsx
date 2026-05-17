@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, Download, RefreshCw, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, Upload, ClipboardList, CreditCard, Lock, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Download, RefreshCw, CheckCircle, AlertTriangle, TrendingUp, TrendingDown, Upload, ClipboardList, CreditCard, Lock, ShieldCheck, Landmark } from 'lucide-react'
 import type { Report, FeatureVector } from '../types'
 import ScoreGauge from '../components/ScoreGauge'
 import TierBadge from '../components/TierBadge'
@@ -151,14 +151,24 @@ export default function ScoreResult() {
                         <span className="text-zinc-100 font-semibold">{report.term_months} months</span>
                       </div>
                     )}
-                    <motion.button
-                      whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 22 }}
-                      onClick={() => nav('/loan/apply', { state: { report } })}
-                      className="btn-primary w-full mt-2 flex items-center justify-center gap-2"
-                    >
-                      Apply for loan <ArrowRight size={15} />
-                    </motion.button>
+                    <div className="flex gap-2 mt-2">
+                      <motion.button
+                        whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                        onClick={() => nav('/marketplace')}
+                        className="btn-primary flex-1 flex items-center justify-center gap-2"
+                      >
+                        <Landmark size={15} /> Browse lenders
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.015 }} whileTap={{ scale: 0.975 }}
+                        transition={{ type: 'spring', stiffness: 400, damping: 22 }}
+                        onClick={() => nav('/loan/apply', { state: { report } })}
+                        className="btn-ghost flex items-center justify-center gap-2"
+                      >
+                        Quick apply <ArrowRight size={15} />
+                      </motion.button>
+                    </div>
                   </div>
                 ) : (
                   <div className="rounded-2xl border border-red-500/15 bg-red-500/[0.04] p-5 text-center">
