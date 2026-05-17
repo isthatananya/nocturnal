@@ -7,9 +7,9 @@ from fastapi import APIRouter, Depends, HTTPException, WebSocket, WebSocketDisco
 from redis.asyncio import Redis
 
 from auth.utils import decode_token
-from banks.schemas import ApprovalDecision, Bank, LoanRequest, LoanRequestCreate
+from banks.schemas import ApprovalDecision, Bank, CounterResponse, LoanRequest, LoanRequestCreate
 from banks.service import SEEDED_BANKS, compute_approval_probability, compute_risk, get_bank
-from core.deps import get_current_user
+from core.deps import get_current_user, rate_limit_loan_apply
 from core.redis import get_redis
 
 router = APIRouter()
@@ -23,6 +23,24 @@ def _require_bank(user: dict) -> dict:
     if user.get("role") != "bank":
         raise HTTPException(403, "Bank role required")
     return user
+
+
+def _maybe_int(v: str | None) -> int | None:
+    if v is None or v == "":
+        return None
+    try:
+        return int(v)
+    except ValueError:
+        return None
+
+
+def _maybe_float(v: str | None) -> float | None:
+    if v is None or v == "":
+        return None
+    try:
+        return float(v)
+    except ValueError:
+        return None
 
 
 def _raw_to_loan_request(raw: dict, borrower_name: str | None = None) -> LoanRequest:
@@ -51,6 +69,9 @@ def _raw_to_loan_request(raw: dict, borrower_name: str | None = None) -> LoanReq
         approval_probability=prob,
         risk_score=risk_score,
         risk_label=risk_label,
+        counter_amount=_maybe_int(raw.get("counter_amount")),
+        counter_rate=_maybe_float(raw.get("counter_rate")),
+        counter_term_months=_maybe_int(raw.get("counter_term_months")),
     )
 
 
@@ -90,6 +111,10 @@ async def submit_loan_request(
     bank = get_bank(body.bank_id)
     if not bank:
         raise HTTPException(404, "Bank not found")
+
+    # 3 applications per 24h per (borrower, bank) pair — prevents spamming
+    # any single lender.
+    await rate_limit_loan_apply(body.bank_id, user, redis)
 
     tier = body.tier
     tier_label = body.tier_label
@@ -249,21 +274,30 @@ async def decide_request(
     if not raw:
         raise HTTPException(404, "Loan request not found")
 
-    now = _now()
-    await redis.hset(f"loan_request:{request_id}", mapping={
-        "status": body.status,
-        "updated_at": now,
-        "message": body.message or "",
-        "tx_hash": body.tx_hash or "",
-    })
-    raw.update({
-        "status": body.status,
-        "updated_at": now,
-        "message": body.message or "",
-        "tx_hash": body.tx_hash or "",
-    })
+    # Counter requires at least one revised term, otherwise it's indistinguishable
+    # from a plain approval and the borrower has nothing to accept/decline.
+    if body.status == "countered" and not any([body.counter_amount, body.counter_rate, body.counter_term_months]):
+        raise HTTPException(400, "Counter-offer requires at least one of counter_amount, counter_rate, counter_term_months")
 
-    # Notify the borrower side via a different channel
+    # Block re-decisions once the request has reached a terminal state.
+    if raw.get("status") in ("approved", "rejected"):
+        raise HTTPException(409, f"Request already {raw['status']}; cannot be modified")
+
+    now = _now()
+    mapping = {
+        "status": body.status,
+        "updated_at": now,
+        "message": body.message or "",
+        "tx_hash": body.tx_hash or "",
+    }
+    if body.status == "countered":
+        mapping["counter_amount"] = str(body.counter_amount) if body.counter_amount is not None else ""
+        mapping["counter_rate"] = str(body.counter_rate) if body.counter_rate is not None else ""
+        mapping["counter_term_months"] = str(body.counter_term_months) if body.counter_term_months is not None else ""
+    await redis.hset(f"loan_request:{request_id}", mapping=mapping)
+    raw.update(mapping)
+
+    # Notify the borrower
     notification = json.dumps({
         "type": "decision",
         "request_id": request_id,
@@ -271,8 +305,63 @@ async def decide_request(
         "bank_name": raw.get("bank_name"),
         "status": body.status,
         "message": body.message or "",
+        "counter_amount": body.counter_amount,
+        "counter_rate": body.counter_rate,
+        "counter_term_months": body.counter_term_months,
     })
     await redis.publish(f"borrower:decision:{raw.get('user_id')}", notification)
+
+    return _raw_to_loan_request(raw)
+
+
+@router.post("/loan-requests/{request_id}/counter-response", response_model=LoanRequest)
+async def respond_to_counter(
+    request_id: str,
+    body: CounterResponse,
+    user: dict = Depends(get_current_user),
+    redis: Redis = Depends(get_redis),
+):
+    """Borrower accepts or declines a bank's counter-offer.
+
+    Accept → status becomes `approved`, with counter terms applied as the
+    final amount/rate/term. Decline → status becomes `rejected`. Either way
+    the request reaches a terminal state.
+    """
+    raw = await redis.hgetall(f"loan_request:{request_id}")
+    if not raw:
+        raise HTTPException(404, "Loan request not found")
+    if raw.get("user_id") != user["id"]:
+        raise HTTPException(403, "Not your loan request")
+    if raw.get("status") != "countered":
+        raise HTTPException(400, f"Request is {raw.get('status')!r}, not countered")
+
+    now = _now()
+    if body.decision == "accepted":
+        # The counter terms become the final terms. Update `amount` so the
+        # downstream views show the agreed figure rather than the original.
+        new_amount = _maybe_int(raw.get("counter_amount")) or int(raw["amount"])
+        mapping = {
+            "status": "approved",
+            "updated_at": now,
+            "amount": str(new_amount),
+        }
+    else:
+        mapping = {
+            "status": "rejected",
+            "updated_at": now,
+        }
+    await redis.hset(f"loan_request:{request_id}", mapping=mapping)
+    raw.update(mapping)
+
+    # Notify the bank side
+    notification = json.dumps({
+        "type": "counter_response",
+        "request_id": request_id,
+        "bank_id": raw.get("bank_id"),
+        "decision": body.decision,
+        "final_status": mapping["status"],
+    })
+    await redis.publish("bank:new_request", notification)
 
     return _raw_to_loan_request(raw)
 

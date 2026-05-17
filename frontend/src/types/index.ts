@@ -58,7 +58,7 @@ export interface Bank {
   approval_probability: number | null
 }
 
-export type LoanRequestStatus = 'pending' | 'approved' | 'rejected'
+export type LoanRequestStatus = 'pending' | 'approved' | 'rejected' | 'countered'
 
 export interface LoanRequest {
   request_id: string
@@ -79,6 +79,10 @@ export interface LoanRequest {
   approval_probability?: number | null
   risk_score?: number | null
   risk_label?: string | null
+  // Populated only when the bank has countered the application
+  counter_amount?: number | null
+  counter_rate?: number | null
+  counter_term_months?: number | null
 }
 
 export interface FeatureVector {
@@ -110,6 +114,33 @@ export interface ActiveLoan {
   repaid: boolean
   interest_rate: string
   term_months: number
+}
+
+export type EmiStatus = 'paid' | 'due' | 'overdue' | 'upcoming'
+
+export interface EmiRow {
+  seq: number
+  due_date: string
+  principal: number
+  interest: number
+  emi: number
+  balance: number
+  status: EmiStatus
+}
+
+export interface LoanSchedule {
+  report_id: string
+  principal: number
+  apr_pct: number
+  term_months: number
+  emi: number
+  total_interest: number
+  total_paid: number
+  paid_count: number
+  fully_repaid: boolean
+  loan_tx_hash: string | null
+  loan_repaid: boolean
+  rows: EmiRow[]
 }
 
 export const TIER_COLORS: Record<TierLabel, string> = {

@@ -1,11 +1,11 @@
 import axios from 'axios'
-import type { Bank, FeatureVector, LoanRequest, Report, User } from '../types'
+import type { Bank, FeatureVector, LoanRequest, LoanSchedule, Report, User } from '../types'
 import { encryptInputs } from './crypto'
 
 const http = axios.create({
   baseURL: '/api',
   withCredentials: true,
-  headers: { 'X-ZKCredit-Request': '1' },
+  headers: { 'X-Nocturned-Request': '1' },
 })
 
 export const auth = {
@@ -42,6 +42,21 @@ export const credit = {
 
   markLoanApplied: (report_id: string, tx_hash: string) =>
     http.patch(`/reports/${report_id}/loan`, { tx_hash }),
+
+  schedule: (report_id: string) =>
+    http.get<LoanSchedule>(`/reports/${report_id}/schedule`).then(r => r.data),
+
+  repayNextEmi: (report_id: string, tx_hash?: string) =>
+    http.post<{ ok: boolean; paid_emi_count: number; loan_repaid: boolean }>(
+      `/reports/${report_id}/repay`,
+      { tx_hash },
+    ).then(r => r.data),
+
+  bureauLookup: (pan: string) =>
+    http.post<FeatureVector & { _cached?: boolean; _provider?: string }>(
+      `/bureau/pan-lookup`,
+      { pan },
+    ).then(r => r.data),
 }
 
 export const marketplace = {
@@ -63,6 +78,22 @@ export const marketplace = {
   pendingCount: () =>
     http.get<{ pending: number }>('/loan-requests/pending-count').then(r => r.data),
 
-  decide: (request_id: string, status: 'approved' | 'rejected', message?: string, tx_hash?: string) =>
-    http.patch<LoanRequest>(`/loan-requests/${request_id}`, { status, message, tx_hash }).then(r => r.data),
+  decide: (
+    request_id: string,
+    status: 'approved' | 'rejected' | 'countered',
+    message?: string,
+    tx_hash?: string,
+    counter?: { amount?: number; rate?: number; term_months?: number },
+  ) =>
+    http.patch<LoanRequest>(`/loan-requests/${request_id}`, {
+      status,
+      message,
+      tx_hash,
+      counter_amount: counter?.amount,
+      counter_rate: counter?.rate,
+      counter_term_months: counter?.term_months,
+    }).then(r => r.data),
+
+  respondToCounter: (request_id: string, decision: 'accepted' | 'declined') =>
+    http.post<LoanRequest>(`/loan-requests/${request_id}/counter-response`, { decision }).then(r => r.data),
 }

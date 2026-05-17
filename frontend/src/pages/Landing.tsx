@@ -14,7 +14,7 @@ const steps = [
 const features = [
   { icon: Lock,   title: 'Zero data exposure',      body: "Raw financial data never leaves your device. We score a derived feature vector, not your records." },
   { icon: Shield, title: 'Cryptographic fairness',  body: 'Credit tiers are enforced by ZK circuits, not UI logic. The contract cannot be gamed or manipulated.' },
-  { icon: Zap,    title: 'Truly undercollateralized', body: 'Most DeFi demands 150% collateral. ZKCredit uses proof-of-creditworthiness instead.' },
+  { icon: Zap,    title: 'Truly undercollateralized', body: 'Most DeFi demands 150% collateral. Nocturned uses proof-of-creditworthiness instead.' },
 ]
 
 const LENDERS = [
@@ -264,7 +264,7 @@ export default function Landing() {
           transition={{ duration: 0.55, ease }}
           className="text-center mb-16"
         >
-          <p className="eyebrow mb-3">Why ZKCredit</p>
+          <p className="eyebrow mb-3">Why Nocturned</p>
           <h2 className="text-3xl font-bold tracking-tight">Privacy is not a feature. It's the foundation.</h2>
         </motion.div>
 
@@ -303,7 +303,7 @@ export default function Landing() {
           className="text-center mb-12"
         >
           <p className="eyebrow mb-3">Comparison</p>
-          <h2 className="text-3xl font-bold tracking-tight">Traditional DeFi vs ZKCredit</h2>
+          <h2 className="text-3xl font-bold tracking-tight">Traditional DeFi vs Nocturned</h2>
         </motion.div>
 
         <motion.div
@@ -316,7 +316,7 @@ export default function Landing() {
           <div className="grid grid-cols-3 text-xs text-zinc-500 px-6 py-4 border-b border-white/5 font-semibold tracking-wide uppercase">
             <span />
             <span className="text-center">Traditional DeFi</span>
-            <span className="text-center text-white/55">ZKCredit</span>
+            <span className="text-center text-white/55">Nocturned</span>
           </div>
           {comparison.map(([label, bad, good]) => (
             <div key={label} className="grid grid-cols-3 px-6 py-4 last:border-0 transition-colors"

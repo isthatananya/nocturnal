@@ -54,7 +54,7 @@ export default function EncryptedDownloadButton({ report }: Props) {
       a.href = url
       const tier = report.tier_label.toLowerCase()
       const date = (report.generated_at || new Date().toISOString()).slice(0, 10)
-      a.download = `zkcredit-report-${tier}-${date}.encrypted.json`
+      a.download = `Nocturned-report-${tier}-${date}.encrypted.json`
       a.click()
       URL.revokeObjectURL(url)
       close()

@@ -1,9 +1,14 @@
-// ZKCredit — Credit Lending Contract
+// Nocturned — Credit Lending Contract
 // Deployed on Midnight (preprod / mainnet)
 //
 // Private witnesses hold the user's credit tier and expected loan terms.
 // The circuit proves the tier meets the threshold and that the requested
 // terms match — without revealing the tier to anyone on-chain.
+//
+// Amounts are in symbolic rupee-equivalent units (Uint<64>). The contract
+// records a LoanRecord per borrower; it does NOT transfer DUST. A real
+// production lending pool would add liquidity / escrow / settlement on
+// top of this proof layer.
 
 pragma language_version >= 1.0.0;
 
@@ -14,7 +19,7 @@ import CompactStandardLibrary;
 struct LoanRecord {
   amount:     Uint<64>;
   issuedAt:   Uint<64>;
-  interestBps: Uint<16>;   // basis points, e.g. 700 = 7%
+  interestBps: Uint<16>;   // basis points, e.g. 1050 = 10.5%
   termMonths: Uint<8>;
   repaid:     Boolean;
 }
@@ -22,25 +27,26 @@ struct LoanRecord {
 // ── Ledger (public on-chain state) ─────────────────────────────────────────
 
 ledger {
-  loanPool:    Cell<Uint<64>>;
   activeLoans: Map<ZswapCoinPublicKey, LoanRecord>;
 }
 
 // ── Private witnesses ──────────────────────────────────────────────────────
-// These are held in the user's local wallet state.
-// The proof server uses them to satisfy the circuit without exposing them.
+// Held in the user's local wallet state. The proof server uses them to
+// satisfy the circuit without exposing them on-chain.
 
 witness creditTier:          Uint<8>;
 witness expectedInterestBps: Uint<16>;
 witness expectedTermMonths:  Uint<8>;
 
 // ── Helpers ────────────────────────────────────────────────────────────────
+// Tier caps mirror frontend/src/lib/tierAssertions.ts. If these change,
+// update both files together.
 
 pure circuit maxLoanForTier(tier: Uint<8>): Uint<64> {
-  if tier >= 4 { return 20000; }
-  if tier >= 3 { return 7500;  }
-  if tier >= 2 { return 2000;  }
-  if tier >= 1 { return 500;   }
+  if tier >= 4 { return 10000000; }   // Prime  ₹1Cr
+  if tier >= 3 { return 5000000;  }   // Gold   ₹50L
+  if tier >= 2 { return 2000000;  }   // Silver ₹20L
+  if tier >= 1 { return 500000;   }   // Bronze ₹5L
   return 0;
 }
 
@@ -83,10 +89,6 @@ export circuit applyForLoan(
   assert expRate == interestBps "Witness interest rate mismatch";
   assert expTerm == termMonths  "Witness term mismatch";
 
-  assert loanPool >= requestedAmount "Insufficient funds in loan pool";
-
-  // Update public ledger
-  loanPool = loanPool - requestedAmount;
   const caller = ownPublicKey();
   activeLoans = Map.insert(activeLoans, caller, LoanRecord {
     amount:      requestedAmount,
@@ -97,13 +99,12 @@ export circuit applyForLoan(
   });
 }
 
-// Repay the caller's active loan.
-export circuit repay(amount: Uint<64>): [] {
+// Mark the caller's active loan as repaid.
+export circuit repay(_amount: Uint<64>): [] {
   const caller = ownPublicKey();
   const loan = Map.lookup_inner(activeLoans, caller);
   assert !loan.repaid "Loan already repaid";
 
-  loanPool = loanPool + amount;
   activeLoans = Map.insert(activeLoans, caller, LoanRecord {
     amount:      loan.amount,
     issuedAt:    loan.issuedAt,

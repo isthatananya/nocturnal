@@ -22,14 +22,14 @@ async def lifespan(app: FastAPI):
     await redis.aclose()
 
 
-app = FastAPI(title="ZKCredit API", lifespan=lifespan)
+app = FastAPI(title="Nocturned API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Content-Type", "Authorization", "X-ZKCredit-Request"],
+    allow_headers=["Content-Type", "Authorization", "X-Nocturned-Request"],
 )
 
 
@@ -47,7 +47,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 
 class CSRFMiddleware(BaseHTTPMiddleware):
-    """Require X-ZKCredit-Request header on all state-changing API requests.
+    """Require X-Nocturned-Request header on all state-changing API requests.
 
     Browsers cannot send custom headers cross-origin without a CORS preflight
     that our CORS policy will reject from unknown origins — this blocks CSRF.
@@ -59,7 +59,7 @@ class CSRFMiddleware(BaseHTTPMiddleware):
         if (
             request.method not in self._SAFE
             and request.url.path.startswith("/api/")
-            and request.headers.get("X-ZKCredit-Request") != "1"
+            and request.headers.get("X-Nocturned-Request") != "1"
         ):
             return JSONResponse({"detail": "CSRF check failed"}, status_code=403)
         return await call_next(request)

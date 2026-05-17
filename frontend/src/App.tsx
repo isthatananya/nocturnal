@@ -19,6 +19,7 @@ import Settings from './pages/Settings'
 import Verify from './pages/Verify'
 import Marketplace from './pages/Marketplace'
 import BankDashboard from './pages/BankDashboard'
+import Deploy from './pages/Deploy'
 
 function Spinner() {
   return (
@@ -79,6 +80,7 @@ export default function App() {
           <Route path="/reports/:id"     element={<Wrap><ReportDetail /></Wrap>} />
           <Route path="/settings"        element={<Wrap><Settings /></Wrap>} />
           <Route path="/verify"          element={<Wrap><Verify /></Wrap>} />
+          <Route path="/deploy"          element={<Wrap><Deploy /></Wrap>} />
           <Route path="/marketplace"     element={<Wrap><Marketplace /></Wrap>} />
           <Route path="/bank/dashboard"  element={
             <RequireBank>

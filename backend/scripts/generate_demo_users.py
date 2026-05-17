@@ -3,12 +3,12 @@ Seed Redis with 6 demo user accounts for judge demonstrations.
 Run: uv run python scripts/generate_demo_users.py
 
 Personas:
-  priya@zkcredit.demo  → Prime   (score ~100, ideal applicant)
-  rahul@zkcredit.demo  → Gold    (score ~76)
-  anita@zkcredit.demo  → Silver  (score ~59)
-  suresh@zkcredit.demo → Bronze  (score ~35)
-  meena@zkcredit.demo  → None    (score ~0, high-risk)
-  vikram@zkcredit.demo → Prime   (high earner — shows over-limit rejection)
+  priya@Nocturned.demo  → Prime   (score ~100, ideal applicant)
+  rahul@Nocturned.demo  → Gold    (score ~76)
+  anita@Nocturned.demo  → Silver  (score ~59)
+  suresh@Nocturned.demo → Bronze  (score ~35)
+  meena@Nocturned.demo  → None    (score ~0, high-risk)
+  vikram@Nocturned.demo → Prime   (high earner — shows over-limit rejection)
 """
 
 import asyncio
@@ -35,7 +35,7 @@ from core.config import settings
 
 DEMO_USERS = [
     {
-        "email": "priya@zkcredit.demo",
+        "email": "priya@Nocturned.demo",
         "password": "demo1234",
         "full_name": "Priya Sharma",
         "date_of_birth": "1995-03-12",
@@ -50,7 +50,7 @@ DEMO_USERS = [
         ),
     },
     {
-        "email": "rahul@zkcredit.demo",
+        "email": "rahul@Nocturned.demo",
         "password": "demo1234",
         "full_name": "Rahul Gupta",
         "date_of_birth": "1992-07-24",
@@ -65,7 +65,7 @@ DEMO_USERS = [
         ),
     },
     {
-        "email": "anita@zkcredit.demo",
+        "email": "anita@Nocturned.demo",
         "password": "demo1234",
         "full_name": "Anita Desai",
         "date_of_birth": "1989-11-05",
@@ -80,7 +80,7 @@ DEMO_USERS = [
         ),
     },
     {
-        "email": "suresh@zkcredit.demo",
+        "email": "suresh@Nocturned.demo",
         "password": "demo1234",
         "full_name": "Suresh Kumar",
         "date_of_birth": "1986-02-18",
@@ -95,7 +95,7 @@ DEMO_USERS = [
         ),
     },
     {
-        "email": "meena@zkcredit.demo",
+        "email": "meena@Nocturned.demo",
         "password": "demo1234",
         "full_name": "Meena Pillai",
         "date_of_birth": "1998-09-30",
@@ -110,7 +110,7 @@ DEMO_USERS = [
         ),
     },
     {
-        "email": "vikram@zkcredit.demo",
+        "email": "vikram@Nocturned.demo",
         "password": "demo1234",
         "full_name": "Vikram Singh",
         "date_of_birth": "1983-06-14",

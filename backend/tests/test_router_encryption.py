@@ -60,7 +60,7 @@ def _sample_score_body() -> dict:
 
 
 def _headers() -> dict:
-    return {"X-ZKCredit-Request": "1"}
+    return {"X-Nocturned-Request": "1"}
 
 
 @pytest.mark.asyncio

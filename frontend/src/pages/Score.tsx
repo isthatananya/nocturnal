@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { ArrowLeft, ChevronRight, Download, Upload, FileText, CreditCard } from 'lucide-react'
 import { extractFeatures } from '../lib/featureExtract'
 import { credit } from '../lib/api'
-import { DEMO_PROFILES, mockPanLookup, profileLabel } from '../lib/demoData'
+import { DEMO_PROFILES, profileLabel } from '../lib/demoData'
 import FileDropzone from '../components/FileDropzone'
 import { Button } from '../components/ui/button'
 import type { FeatureVector, EmploymentType } from '../types'
@@ -114,7 +114,7 @@ export default function Score() {
     const blob = new Blob([cols.join(',') + '\n' + example], { type: 'text/csv' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = 'zkcredit_india_template.csv'
+    a.download = 'Nocturned_india_template.csv'
     a.click()
   }
 
@@ -127,19 +127,20 @@ export default function Score() {
     if (!PAN_RE.test(p)) { setError('Invalid PAN format. Expected: ABCDE1234F'); return }
     setError(null)
     setPanLoading(true)
-    // Simulate bureau lookup latency
-    await new Promise(r => setTimeout(r, 1600))
-    const f = mockPanLookup(p)
-    setFeatures(f)
-    setPanLoading(false)
-    // PAN goes straight to scoring — no preview step
-    setStep('scoring')
     try {
-      const result = await credit.score(f)
+      const lookup = await credit.bureauLookup(p)
+      // Strip the metadata fields the backend tags responses with — they
+      // aren't part of the FeatureVector shape the scorer expects.
+      const { _cached: _c, _provider: _pv, ...f } = lookup as any
+      setFeatures(f as FeatureVector)
+      setPanLoading(false)
+      setStep('scoring')
+      const result = await credit.score(f as FeatureVector)
       sessionStorage.setItem('latest_report', JSON.stringify(result))
       nav('/score/result', { state: { report: result } })
-    } catch {
-      setError('Scoring failed — please try again.')
+    } catch (e: any) {
+      setPanLoading(false)
+      setError(e?.response?.data?.detail ?? 'Bureau lookup failed — please try again.')
       setStep('pan')
     }
   }

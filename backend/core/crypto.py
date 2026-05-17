@@ -19,7 +19,7 @@ from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from core.config import settings
 
 _VERSION = "v1"
-_HKDF_SALT = b"zkcredit/report/v1"
+_HKDF_SALT = b"Nocturned/report/v1"
 _NONCE_LEN = 12
 
 
