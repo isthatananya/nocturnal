@@ -1,6 +1,6 @@
 import { AlertTriangle, ExternalLink, RefreshCw, Terminal } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { MidnightError, type MidnightErrorCode } from '../lib/midnight'
+import { MidnightError, type MidnightErrorCode } from '../lib/midnightShared'
 
 interface Props {
   code: MidnightErrorCode

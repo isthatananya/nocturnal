@@ -43,7 +43,7 @@ export default function Login() {
           className="text-center mb-10"
         >
           <Link to="/" className="text-2xl font-bold tracking-tight">
-            ZK<span className="gradient-text">Credit</span>
+            Noc<span className="gradient-text">turned</span>
           </Link>
           <p className="text-zinc-500 text-sm mt-2">Welcome back</p>
         </motion.div>
@@ -105,7 +105,7 @@ export default function Login() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="text-center text-xs text-zinc-500 mt-6"
         >
-          Demo accounts: priya@Nocturned.demo · rahul@Nocturned.demo · password: demo1234
+          Demo accounts: priya@zkcredit.demo · rahul@zkcredit.demo · password: demo1234
         </motion.p>
       </div>
     </div>

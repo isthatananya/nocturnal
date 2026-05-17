@@ -44,7 +44,7 @@ export default function AppNav({ back = false, title }: Props) {
         </div>
       ) : (
         <Link to="/dashboard" className="flex items-center gap-2 font-bold text-lg tracking-tight">
-          ZK<span className="gradient-text">Credit</span>
+          Noc<span className="gradient-text">turned</span>
           <span className="text-[10px] font-normal text-amber-400/60 border border-amber-400/20 rounded px-1.5 py-0.5 leading-none">preprod</span>
         </Link>
       )}

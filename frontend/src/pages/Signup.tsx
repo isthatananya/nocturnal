@@ -128,7 +128,7 @@ export default function Signup() {
       <div className="w-full max-w-md">
         {/* Logo + dynamic heading */}
         <div className="text-center mb-8">
-          <Link to="/" className="text-2xl font-bold">ZK<span className="text-white/55">Credit</span></Link>
+          <Link to="/" className="text-2xl font-bold">Noc<span className="text-white/55">turned</span></Link>
           <p className="text-zinc-400 mt-3 h-6 transition-all duration-300">
             {step === 1 && firstName
               ? <span>Welcome, <span className="text-white font-medium">{firstName}</span> 👋</span>

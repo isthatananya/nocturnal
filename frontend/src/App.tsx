@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { useAuth } from './context/AuthContext'
@@ -12,14 +13,17 @@ import Dashboard from './pages/Dashboard'
 import Score from './pages/Score'
 import ScoreResult from './pages/ScoreResult'
 import LoanApply from './pages/LoanApply'
-import LoanActive from './pages/LoanActive'
 import Reports from './pages/Reports'
 import ReportDetail from './pages/ReportDetail'
 import Settings from './pages/Settings'
 import Verify from './pages/Verify'
 import Marketplace from './pages/Marketplace'
 import BankDashboard from './pages/BankDashboard'
-import Deploy from './pages/Deploy'
+
+// Lazy-load pages that pull in Midnight SDK / WASM — prevents ledger-v8 WASM
+// from running wbindgen_start() at app boot and crashing the module graph.
+const LoanActive = lazy(() => import('./pages/LoanActive'))
+const Deploy     = lazy(() => import('./pages/Deploy'))
 
 function Spinner() {
   return (
@@ -75,12 +79,12 @@ export default function App() {
           <Route path="/score"           element={<Wrap><Score /></Wrap>} />
           <Route path="/score/result"    element={<Wrap><ScoreResult /></Wrap>} />
           <Route path="/loan/apply"      element={<Wrap><LoanApply /></Wrap>} />
-          <Route path="/loan/active"     element={<Wrap><LoanActive /></Wrap>} />
+          <Route path="/loan/active"     element={<Wrap><Suspense fallback={<Spinner />}><LoanActive /></Suspense></Wrap>} />
           <Route path="/reports"         element={<Wrap><Reports /></Wrap>} />
           <Route path="/reports/:id"     element={<Wrap><ReportDetail /></Wrap>} />
           <Route path="/settings"        element={<Wrap><Settings /></Wrap>} />
           <Route path="/verify"          element={<Wrap><Verify /></Wrap>} />
-          <Route path="/deploy"          element={<Wrap><Deploy /></Wrap>} />
+          <Route path="/deploy"          element={<Wrap><Suspense fallback={<Spinner />}><Deploy /></Suspense></Wrap>} />
           <Route path="/marketplace"     element={<Wrap><Marketplace /></Wrap>} />
           <Route path="/bank/dashboard"  element={
             <RequireBank>

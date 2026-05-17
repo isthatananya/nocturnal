@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Activity, RefreshCw } from 'lucide-react'
-import { probeProofServer, type ProofServerStatus } from '../lib/midnight'
+import { probeProofServer, type ProofServerStatus } from '../lib/midnightShared'
 
 type State = { kind: 'checking' } | { kind: 'result'; status: ProofServerStatus }
 

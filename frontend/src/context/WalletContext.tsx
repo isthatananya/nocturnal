@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { connectWallet, isWalletAvailable } from '../lib/midnight'
+import { isWalletAvailable } from '../lib/midnightShared'
 import { auth } from '../lib/api'
 import { useAuth } from './AuthContext'
 
@@ -33,6 +33,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     setConnecting(true)
     setError(null)
     try {
+      const { connectWallet } = await import('../lib/midnight')
       const conn = await connectWallet()
       if (!conn) throw new Error('Wallet returned no address')
       setAddress(conn.address)

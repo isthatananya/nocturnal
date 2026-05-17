@@ -118,7 +118,7 @@ export default function Landing() {
       <nav className="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-8 py-4"
         style={{ background: 'rgba(0,0,0,0.78)', backdropFilter: 'blur(24px)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
         <span className="font-bold text-lg tracking-tight">
-          ZK<span className="gradient-text">Credit</span>
+          Noc<span className="gradient-text">turned</span>
         </span>
         <div className="flex items-center gap-2">
           <button onClick={() => nav('/auth/login')} className="btn-ghost py-2 px-4 text-sm">Log in</button>
@@ -447,7 +447,7 @@ export default function Landing() {
 
       {/* ── Footer ──────────────────────────────────────── */}
       <footer className="border-t border-white/5 px-8 py-8 flex items-center justify-between text-zinc-600 text-sm max-w-5xl mx-auto">
-        <span className="font-semibold text-zinc-500">ZK<span className="text-white/40">Credit</span></span>
+        <span className="font-semibold text-zinc-500">Noc<span className="text-white/40">turned</span></span>
         <span>Built on Midnight · Hackathon May 2026</span>
       </footer>
     </div>

@@ -50,12 +50,26 @@ export default defineConfig({
       },
     },
   },
-  // Pre-bundle the Midnight SDK and force WASM-friendly chunking.
+  // Exclude all Midnight SDK packages from Vite's esbuild pre-bundler.
+  // compact-js ships ESM-only (no dist/cjs/) — esbuild can't process it,
+  // crashing the entire module graph on startup. Native ESM imports work fine.
   optimizeDeps: {
     exclude: [
+      '@midnight-ntwrk/compact-js',
+      '@midnight-ntwrk/compact-runtime',
       '@midnight-ntwrk/onchain-runtime-v3',
       '@midnight-ntwrk/ledger-v8',
-      '@midnight-ntwrk/compact-runtime',
+      '@midnight-ntwrk/midnight-js-contracts',
+      '@midnight-ntwrk/midnight-js-types',
+      '@midnight-ntwrk/midnight-js-network-id',
+      '@midnight-ntwrk/midnight-js-fetch-zk-config-provider',
+      '@midnight-ntwrk/midnight-js-http-client-proof-provider',
+      '@midnight-ntwrk/midnight-js-indexer-public-data-provider',
+      '@midnight-ntwrk/midnight-js-level-private-state-provider',
+      '@midnight-ntwrk/midnight-js-utils',
+      '@midnight-ntwrk/dapp-connector-api',
+      '@midnight-ntwrk/platform-js',
+      '@midnight-ntwrk/wallet-sdk-address-format',
     ],
   },
   worker: {
