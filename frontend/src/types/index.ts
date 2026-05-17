@@ -116,6 +116,33 @@ export interface ActiveLoan {
   term_months: number
 }
 
+export type EmiStatus = 'paid' | 'due' | 'overdue' | 'upcoming'
+
+export interface EmiRow {
+  seq: number
+  due_date: string
+  principal: number
+  interest: number
+  emi: number
+  balance: number
+  status: EmiStatus
+}
+
+export interface LoanSchedule {
+  report_id: string
+  principal: number
+  apr_pct: number
+  term_months: number
+  emi: number
+  total_interest: number
+  total_paid: number
+  paid_count: number
+  fully_repaid: boolean
+  loan_tx_hash: string | null
+  loan_repaid: boolean
+  rows: EmiRow[]
+}
+
 export const TIER_COLORS: Record<TierLabel, string> = {
   None:   'text-zinc-400',
   Bronze: 'text-amber-500',

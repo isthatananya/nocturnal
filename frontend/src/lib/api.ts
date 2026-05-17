@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Bank, FeatureVector, LoanRequest, Report, User } from '../types'
+import type { Bank, FeatureVector, LoanRequest, LoanSchedule, Report, User } from '../types'
 import { encryptInputs } from './crypto'
 
 const http = axios.create({
@@ -42,6 +42,21 @@ export const credit = {
 
   markLoanApplied: (report_id: string, tx_hash: string) =>
     http.patch(`/reports/${report_id}/loan`, { tx_hash }),
+
+  schedule: (report_id: string) =>
+    http.get<LoanSchedule>(`/reports/${report_id}/schedule`).then(r => r.data),
+
+  repayNextEmi: (report_id: string, tx_hash?: string) =>
+    http.post<{ ok: boolean; paid_emi_count: number; loan_repaid: boolean }>(
+      `/reports/${report_id}/repay`,
+      { tx_hash },
+    ).then(r => r.data),
+
+  bureauLookup: (pan: string) =>
+    http.post<FeatureVector & { _cached?: boolean; _provider?: string }>(
+      `/bureau/pan-lookup`,
+      { pan },
+    ).then(r => r.data),
 }
 
 export const marketplace = {

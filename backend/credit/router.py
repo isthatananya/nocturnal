@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException
 from redis.asyncio import Redis
 
+from core.config import settings
 from core.crypto import (
     CryptoError,
     ciphertext_fingerprint,
@@ -14,6 +15,8 @@ from core.crypto import (
 )
 from core.deps import get_current_user, rate_limit_score
 from core.redis import get_redis
+from credit.amortisation import generate_schedule, parse_issued_date, schedule_to_dict
+from credit.bureau import get_bureau_client, pan_cache_key, validate_pan
 from credit.schemas import ScoreRequest, ScoreResponse
 from credit.scoring import compute_score
 
@@ -190,7 +193,132 @@ async def mark_loan_applied(
 
     report["loan_applied"] = True
     report["loan_tx_hash"] = body.get("tx_hash")
+    # Seed disbursement metadata so the amortisation schedule has an anchor.
+    report.setdefault("loan_issued_at", datetime.now(timezone.utc).isoformat())
+    report.setdefault("paid_emi_count", 0)
+    report.setdefault("loan_repaid", False)
 
     sealed = _seal(report, user["id"])
     await redis.set(f"report:data:{report_id}", json.dumps(sealed))
     return {"ok": True}
+
+
+# ── Bureau lookup ────────────────────────────────────────────────────────────
+
+
+_BUREAU_CACHE_TTL = 60 * 60 * 24 * 30   # 30 days
+
+
+@router.post("/bureau/pan-lookup")
+async def bureau_pan_lookup(
+    body: dict,
+    user=Depends(get_current_user),
+    redis: Redis = Depends(get_redis),
+):
+    """Resolve a PAN to a `FeatureVector`-shaped record via the configured
+    bureau client. Results are cached 30 days under a PAN-derived hash key
+    so repeated lookups don't trigger a fresh bureau pull (a hard inquiry
+    costs the user score points).
+
+    Body: `{"pan": "ABCDE1234F"}`
+    """
+    pan = validate_pan(body.get("pan", "") if isinstance(body, dict) else "")
+    cache_key = pan_cache_key(pan, settings.secret_key)
+
+    cached = await redis.get(cache_key)
+    if cached:
+        return {**json.loads(cached), "_cached": True, "_provider": (await redis.get(cache_key + ":provider")) or "unknown"}
+
+    client = get_bureau_client(settings)
+    profile = await client.lookup(pan)
+
+    await redis.setex(cache_key, _BUREAU_CACHE_TTL, json.dumps(profile))
+    await redis.setex(cache_key + ":provider", _BUREAU_CACHE_TTL, client.provider_name)
+    return {**profile, "_cached": False, "_provider": client.provider_name}
+
+
+# ── Amortisation schedule + repayment ────────────────────────────────────────
+
+
+@router.get("/reports/{report_id}/schedule")
+async def get_loan_schedule(
+    report_id: str,
+    user=Depends(get_current_user),
+    redis: Redis = Depends(get_redis),
+):
+    """Returns the amortisation schedule for an approved loan.
+
+    The schedule is generated deterministically from amount/apr/term/issued_at
+    so callers always see the same rows for the same loan — paid EMIs are
+    tracked via `paid_emi_count` on the report.
+    """
+    raw = await redis.get(f"report:data:{report_id}")
+    if not raw:
+        raise HTTPException(404, "Report not found")
+    record = json.loads(raw)
+    _assert_owner(record, user["id"])
+    report = _open(record, user["id"])
+
+    if not report.get("loan_applied"):
+        raise HTTPException(400, "No loan has been issued against this report yet")
+
+    schedule = generate_schedule(
+        principal=report.get("loan_limit") or 0,
+        apr=report.get("interest_rate"),
+        term_months=report.get("term_months"),
+        start_date=parse_issued_date(report.get("loan_issued_at") or report.get("generated_at")),
+        paid_count=int(report.get("paid_emi_count") or 0),
+    )
+    return {
+        **schedule_to_dict(schedule),
+        "report_id": report_id,
+        "loan_tx_hash": report.get("loan_tx_hash"),
+        "loan_repaid": bool(report.get("loan_repaid")),
+    }
+
+
+@router.post("/reports/{report_id}/repay")
+async def repay_next_emi(
+    report_id: str,
+    body: dict | None = None,
+    user=Depends(get_current_user),
+    redis: Redis = Depends(get_redis),
+):
+    """Mark the next outstanding EMI as paid.
+
+    Optional `tx_hash` in the body links the payment to a Midnight repayment
+    transaction. When the final EMI is paid, `loan_repaid` flips to True.
+    """
+    raw = await redis.get(f"report:data:{report_id}")
+    if not raw:
+        raise HTTPException(404, "Report not found")
+    record = json.loads(raw)
+    _assert_owner(record, user["id"])
+    report = _open(record, user["id"])
+
+    if not report.get("loan_applied"):
+        raise HTTPException(400, "No loan has been issued against this report yet")
+    if report.get("loan_repaid"):
+        raise HTTPException(409, "Loan already fully repaid")
+
+    term = int(report.get("term_months") or 0)
+    paid = int(report.get("paid_emi_count") or 0)
+    if paid >= term:
+        report["loan_repaid"] = True
+    else:
+        paid += 1
+        report["paid_emi_count"] = paid
+        if paid >= term:
+            report["loan_repaid"] = True
+
+    if body and isinstance(body, dict) and body.get("tx_hash"):
+        # Track the most recent repayment tx — the wallet may produce a tx per EMI.
+        report["last_repay_tx_hash"] = body.get("tx_hash")
+
+    sealed = _seal(report, user["id"])
+    await redis.set(f"report:data:{report_id}", json.dumps(sealed))
+    return {
+        "ok": True,
+        "paid_emi_count": paid,
+        "loan_repaid": bool(report.get("loan_repaid")),
+    }
